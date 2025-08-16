@@ -22,7 +22,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function SetNameDialog({
   open,
@@ -85,6 +85,10 @@ export default function Home({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [roomCodeToJoin, setRoomCodeToJoin] = useState('');
+  
+  const createFormRef = useRef<HTMLFormElement>(null);
+  const joinFormRef = useRef<HTMLFormElement>(null);
+  const actionToPerformRef = useRef<'create' | 'join' | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('codeshare-user');
@@ -96,16 +100,38 @@ export default function Home({
   const handleNameSet = (name: string) => {
     localStorage.setItem('codeshare-user', name);
     setUserName(name);
-    // Now that the name is set, proceed with the action
-    if (isCreateModalOpen) {
-      document.getElementById('create-room-form')?.requestSubmit();
-      setIsCreateModalOpen(false);
-    }
-    if (isJoinModalOpen && roomCodeToJoin) {
-       document.getElementById('join-room-form')?.requestSubmit();
-      setIsJoinModalOpen(false);
+
+    // Use a timeout to allow the state to update before submitting the form
+    setTimeout(() => {
+        if (actionToPerformRef.current === 'create') {
+            createFormRef.current?.submit();
+        } else if (actionToPerformRef.current === 'join') {
+            joinFormRef.current?.submit();
+        }
+    }, 0);
+
+    setIsCreateModalOpen(false);
+    setIsJoinModalOpen(false);
+  };
+
+  const handleCreateClick = () => {
+    if (userName) {
+        createFormRef.current?.submit();
+    } else {
+        actionToPerformRef.current = 'create';
+        setIsCreateModalOpen(true);
     }
   };
+
+  const handleJoinClick = () => {
+    if (userName) {
+        joinFormRef.current?.submit();
+    } else {
+        actionToPerformRef.current = 'join';
+        setIsJoinModalOpen(true);
+    }
+  };
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-background">
@@ -144,7 +170,7 @@ export default function Home({
             </p>
           </CardContent>
           <CardFooter>
-            <form id="create-room-form" action={createRoomAction}>
+            <form ref={createFormRef} action={createRoomAction}>
               {userName && <input type="hidden" name="userName" value={userName} />}
               <SetNameDialog
                 open={isCreateModalOpen}
@@ -152,13 +178,9 @@ export default function Home({
                 onNameSet={handleNameSet}
               >
                 <Button
-                  type={userName ? 'submit' : 'button'}
-                  className="w-full"
-                  onClick={() => {
-                    if (!userName) {
-                      setIsCreateModalOpen(true);
-                    }
-                  }}
+                  type="button"
+                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  onClick={handleCreateClick}
                 >
                   Create Room
                 </Button>
@@ -174,14 +196,14 @@ export default function Home({
               Enter a 4-digit room code to join a session.
             </CardDescription>
           </CardHeader>
-          <form id="join-room-form" action={joinRoomAction}>
+          <form ref={joinFormRef} action={joinRoomAction}>
             <CardContent>
               <Input
                 name="code"
                 placeholder="e.g. 1234"
                 maxLength={4}
                 required
-                pattern="\d{4}"
+                pattern="\\d{4}"
                 title="Please enter a 4-digit code"
                 className="text-center text-lg tracking-widest"
                 onChange={(e) => setRoomCodeToJoin(e.target.value)}
@@ -195,14 +217,10 @@ export default function Home({
                 onNameSet={handleNameSet}
               >
                 <Button
-                  type={userName ? 'submit' : 'button'}
+                  type="button"
                   className="w-full"
                   variant="secondary"
-                   onClick={() => {
-                    if (!userName) {
-                      setIsJoinModalOpen(true);
-                    }
-                  }}
+                  onClick={handleJoinClick}
                 >
                   Join Room
                 </Button>
