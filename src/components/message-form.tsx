@@ -11,8 +11,12 @@ import { useToast } from '@/hooks/use-toast';
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} size="icon" variant="ghost" aria-label="Send message">
-      {pending ? <Loader2 className="animate-spin" /> : <Send className="text-accent"/>}
+    <Button type="submit" disabled={pending} size="icon" variant="ghost" aria-label="Send message" className="group">
+      {pending ? (
+        <Loader2 className="animate-spin" />
+      ) : (
+        <Send className="text-accent transition-transform group-hover:scale-110 group-hover:translate-x-0.5" />
+      )}
     </Button>
   );
 }
@@ -45,7 +49,7 @@ export function MessageForm({
     <form
       ref={formRef}
       action={formAction}
-      className="flex items-center gap-2 bg-white rounded-lg p-2 border border-border"
+      className="flex items-center gap-2 rounded-lg p-2 border border-border bg-card"
     >
       <input type="hidden" name="roomCode" value={roomCode} />
       <input type="hidden" name="userName" value={userName} />
