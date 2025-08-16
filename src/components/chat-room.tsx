@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 import Link from 'next/link';
+import { Logo } from './logo';
 
 async function fetchRoom(code: string): Promise<Room | null> {
   try {
@@ -107,9 +108,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between p-4 border-b bg-card">
         <div className="flex items-center gap-4">
-          <h1 className="font-headline text-2xl font-bold text-primary">
-            codeyapp
-          </h1>
+          <Logo />
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Room:</span>
             <TooltipProvider>

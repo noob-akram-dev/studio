@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { createRoomAction, joinRoomAction } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import { Logo } from '@/components/logo';
 
 export default function Home({
   searchParams,
@@ -25,9 +26,7 @@ export default function Home({
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-background">
       <div className="text-center mb-12">
-        <h1 className="font-headline text-5xl font-bold text-primary">
-          codeyapp
-        </h1>
+        <Logo className="justify-center" />
         <p className="text-muted-foreground mt-2 text-lg">
           Share and discuss code in real-time. No login required.
         </p>
