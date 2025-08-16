@@ -13,8 +13,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createRoomAction, joinRoomAction } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { Download, Terminal } from 'lucide-react';
 import { Logo } from '@/components/logo';
+import { useEffect, useState } from 'react';
+
+// Based on https://web.dev/patterns/pwa/install-pwa
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: Array<string>;
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed',
+    platform: string,
+  }>;
+  prompt(): Promise<void>;
+}
 
 export default function Home({
   searchParams,
@@ -22,6 +33,31 @@ export default function Home({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const error = searchParams?.error;
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const beforeInstallPromptHandler = (e: Event) => {
+      e.preventDefault();
+      setInstallEvent(e as BeforeInstallPromptEvent);
+    };
+
+    window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', beforeInstallPromptHandler);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!installEvent) {
+      return;
+    }
+    await installEvent.prompt();
+    const { outcome } = await installEvent.userChoice;
+    if (outcome === 'accepted') {
+      setInstallEvent(null);
+    }
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 bg-background overflow-x-hidden">
@@ -31,6 +67,15 @@ export default function Home({
           Yapp about your code. Code about your yap.
         </p>
       </div>
+
+      {installEvent && (
+        <div className="mb-8 max-w-md w-full flex justify-center">
+          <Button onClick={handleInstallClick} variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            Install App
+          </Button>
+        </div>
+      )}
 
       {error === 'not_found' && (
         <Alert variant="destructive" className="mb-8 max-w-md">
@@ -84,7 +129,7 @@ export default function Home({
                 placeholder="e.g. 1234"
                 maxLength={4}
                 required
-                pattern="\d{4}"
+                pattern="\\d{4}"
                 title="Please enter a 4-digit code"
                 className="text-center text-lg tracking-widest"
               />
