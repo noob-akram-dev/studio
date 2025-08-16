@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -11,6 +13,67 @@ import { Input } from '@/components/ui/input';
 import { createRoomAction, joinRoomAction } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { useState, useEffect } from 'react';
+
+function SetNameDialog({
+  open,
+  onOpenChange,
+  onNameSet,
+  children,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onNameSet: (name: string) => void;
+  children: React.ReactNode;
+}) {
+  const [name, setName] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (name.trim()) {
+      onNameSet(name.trim());
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Enter your name</DialogTitle>
+            <DialogDescription>
+              Please enter your name to continue. This will be displayed to
+              others in the chat room.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              required
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button type="submit">Continue</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function Home({
   searchParams,
@@ -18,6 +81,31 @@ export default function Home({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const error = searchParams?.error;
+  const [userName, setUserName] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [roomCodeToJoin, setRoomCodeToJoin] = useState('');
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('codeshare-user');
+    if (storedUser) {
+      setUserName(storedUser);
+    }
+  }, []);
+
+  const handleNameSet = (name: string) => {
+    localStorage.setItem('codeshare-user', name);
+    setUserName(name);
+    // Now that the name is set, proceed with the action
+    if (isCreateModalOpen) {
+      document.getElementById('create-room-form')?.requestSubmit();
+      setIsCreateModalOpen(false);
+    }
+    if (isJoinModalOpen && roomCodeToJoin) {
+       document.getElementById('join-room-form')?.requestSubmit();
+      setIsJoinModalOpen(false);
+    }
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-background">
@@ -35,7 +123,8 @@ export default function Home({
           <Terminal className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>
-            The room code you entered was not found. Please check the code or create a new room.
+            The room code you entered was not found. Please check the code or
+            create a new room.
           </AlertDescription>
         </Alert>
       )}
@@ -55,8 +144,25 @@ export default function Home({
             </p>
           </CardContent>
           <CardFooter>
-            <form action={createRoomAction}>
-              <Button type="submit" className="w-full">Create Room</Button>
+            <form id="create-room-form" action={createRoomAction}>
+              {userName && <input type="hidden" name="userName" value={userName} />}
+              <SetNameDialog
+                open={isCreateModalOpen}
+                onOpenChange={setIsCreateModalOpen}
+                onNameSet={handleNameSet}
+              >
+                <Button
+                  type={userName ? 'submit' : 'button'}
+                  className="w-full"
+                  onClick={() => {
+                    if (!userName) {
+                      setIsCreateModalOpen(true);
+                    }
+                  }}
+                >
+                  Create Room
+                </Button>
+              </SetNameDialog>
             </form>
           </CardFooter>
         </Card>
@@ -68,22 +174,39 @@ export default function Home({
               Enter a 4-digit room code to join a session.
             </CardDescription>
           </CardHeader>
-          <form action={joinRoomAction}>
+          <form id="join-room-form" action={joinRoomAction}>
             <CardContent>
-                <Input
-                  name="code"
-                  placeholder="e.g. 1234"
-                  maxLength={4}
-                  required
-                  pattern="\d{4}"
-                  title="Please enter a 4-digit code"
-                  className="text-center text-lg tracking-widest"
-                />
+              <Input
+                name="code"
+                placeholder="e.g. 1234"
+                maxLength={4}
+                required
+                pattern="\d{4}"
+                title="Please enter a 4-digit code"
+                className="text-center text-lg tracking-widest"
+                onChange={(e) => setRoomCodeToJoin(e.target.value)}
+              />
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" variant="secondary">
-                Join Room
-              </Button>
+             {userName && <input type="hidden" name="userName" value={userName} />}
+              <SetNameDialog
+                open={isJoinModalOpen}
+                onOpenChange={setIsJoinModalOpen}
+                onNameSet={handleNameSet}
+              >
+                <Button
+                  type={userName ? 'submit' : 'button'}
+                  className="w-full"
+                  variant="secondary"
+                   onClick={() => {
+                    if (!userName) {
+                      setIsJoinModalOpen(true);
+                    }
+                  }}
+                >
+                  Join Room
+                </Button>
+              </SetNameDialog>
             </CardFooter>
           </form>
         </Card>
