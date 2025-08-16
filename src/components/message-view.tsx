@@ -31,7 +31,7 @@ export function MessageView({
   return (
     <div
       className={cn(
-        'flex items-start gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300',
+        'flex items-start gap-3 transition-all duration-500 ease-in-out animate-in fade-in slide-in-from-bottom-4',
         isCurrentUser ? 'flex-row-reverse' : 'flex-row'
       )}
     >
@@ -52,7 +52,7 @@ export function MessageView({
           className={cn(
             'rounded-2xl p-0 shadow-sm',
             isCurrentUser
-              ? 'bg-accent text-accent-foreground rounded-br-none'
+              ? 'bg-primary text-primary-foreground rounded-br-none'
               : 'bg-card text-card-foreground border-border bg-white rounded-bl-none'
           )}
         >
