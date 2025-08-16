@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'codeyapp',
-  description: 'Share and discuss code in real-time without logging in.',
+  title: 'Code Yapp',
+  description: 'Stop debugging alone.',
 };
 
 export default function RootLayout({

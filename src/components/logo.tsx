@@ -43,7 +43,7 @@ export function Logo({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
         />
       </svg>
       <span className="font-headline text-2xl font-bold text-primary">
-        codeyapp
+        Code Yapp
       </span>
     </div>
   );
