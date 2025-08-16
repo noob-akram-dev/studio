@@ -1,20 +1,26 @@
+
 import { cn } from '@/lib/utils';
 
-export function Logo({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+type LogoProps = React.HTMLAttributes<HTMLDivElement> & {
+  variant?: 'default' | 'small';
+};
+
+export function Logo({ className, variant = 'default', ...props }: LogoProps) {
+  const isSmall = variant === 'small';
   return (
-    <div className={cn("flex items-center gap-4", className)} {...props}>
+    <div className={cn("flex items-center gap-2 sm:gap-4", className)} {...props}>
       <svg
         width="48"
         height="48"
         viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="h-12 w-12"
+        className={cn(isSmall ? 'h-8 w-8 sm:h-10 sm:w-10' : 'h-12 w-12')}
       >
         <defs>
           <linearGradient id="logoGradient" x1="0" y1="0" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#A7F3D0' }} />
-            <stop offset="100%" style={{ stopColor: '#34D399' }} />
+            <stop offset="0%" style={{ stopColor: 'hsl(var(--primary))' }} />
+            <stop offset="100%" style={{ stopColor: 'hsl(var(--primary) / 0.6)' }} />
           </linearGradient>
         </defs>
         <path
@@ -29,20 +35,25 @@ export function Logo({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
         />
         <path
           d="M20 16L16 20L20 24"
-          stroke="#A7F3D0"
+          stroke="hsl(var(--primary))"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
           d="M28 16L32 20L28 24"
-          stroke="#A7F3D0"
+          stroke="hsl(var(--primary))"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
       </svg>
-      <span className="font-headline text-4xl font-bold text-primary">
+      <span
+        className={cn(
+          'font-headline font-bold text-primary',
+          isSmall ? 'text-2xl sm:text-3xl' : 'text-4xl'
+        )}
+      >
         Code Yapp
       </span>
     </div>

@@ -24,10 +24,10 @@ export default function Home({
   const error = searchParams?.error;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-background">
-      <div className="text-center mb-12">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 bg-background">
+      <div className="text-center mb-10 sm:mb-12">
         <Logo className="justify-center" />
-        <p className="text-muted-foreground mt-2 text-lg">
+        <p className="text-muted-foreground mt-2 text-md sm:text-lg">
           Yapp about your code. Code about your yap.
         </p>
       </div>
@@ -43,7 +43,7 @@ export default function Home({
         </Alert>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
         <Card className="w-full bg-card shadow-md">
           <CardHeader>
             <CardTitle>Create a New Room</CardTitle>

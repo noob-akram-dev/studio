@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Room } from '@/lib/types';
@@ -106,19 +107,19 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <header className="flex items-center justify-between p-4 border-b bg-card">
-        <div className="flex items-center gap-4">
-          <Logo />
+      <header className="flex items-center justify-between p-2 sm:p-4 border-b bg-card">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Logo variant="small" />
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Room:</span>
+            <span className="hidden sm:inline text-sm text-muted-foreground">Room:</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-secondary cursor-pointer"
+                    className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-md bg-secondary cursor-pointer"
                     onClick={handleCopyCode}
                   >
-                    <span className="font-mono text-lg font-bold tracking-widest text-primary">
+                    <span className="font-mono text-base sm:text-lg font-bold tracking-widest text-primary">
                       {room.code}
                     </span>
                     <Button
@@ -142,15 +143,15 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
             </TooltipProvider>
           </div>
         </div>
-        <Button variant="ghost" asChild>
+        <Button variant="ghost" asChild size="sm">
           <Link href="/">
-            <LogOut />
-            Leave Room
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">Leave Room</span>
           </Link>
         </Button>
       </header>
 
-      <ScrollArea className="flex-1 p-4" viewportRef={scrollAreaRef}>
+      <ScrollArea className="flex-1 p-2 sm:p-4" viewportRef={scrollAreaRef}>
         <div className="space-y-4 max-w-4xl mx-auto w-full">
           {room.messages.map((msg) => (
             <MessageView key={msg.id} message={msg} currentUser={userName} />
@@ -164,7 +165,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         </div>
       </ScrollArea>
 
-      <footer className="p-4 border-t bg-card">
+      <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
             <MessageForm roomCode={room.code} userName={userName} />

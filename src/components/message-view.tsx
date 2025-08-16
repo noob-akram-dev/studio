@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Message } from '@/lib/types';
@@ -31,14 +32,14 @@ export function MessageView({
   return (
     <div
       className={cn(
-        'flex items-start gap-3 transition-all duration-500 ease-in-out animate-in fade-in slide-in-from-bottom-4',
+        'flex items-start gap-2 sm:gap-3 transition-all duration-500 ease-in-out animate-in fade-in slide-in-from-bottom-4',
         isCurrentUser ? 'flex-row-reverse' : 'flex-row'
       )}
     >
-      <Avatar>
+      <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
         <AvatarFallback>{message.user.name.substring(0, 2)}</AvatarFallback>
       </Avatar>
-      <div className={cn('flex flex-col gap-1 w-full max-w-xl', isCurrentUser ? 'items-end' : 'items-start')}>
+      <div className={cn('flex flex-col gap-1 w-full max-w-[85%]', isCurrentUser ? 'items-end' : 'items-start')}>
         <div className="flex items-center gap-2">
            <span className="text-xs font-medium text-primary">
              {isCurrentUser ? 'You' : message.user.name}
@@ -56,7 +57,7 @@ export function MessageView({
               : 'bg-accent text-accent-foreground rounded-bl-none'
           )}
         >
-          <CardContent className="p-3 whitespace-pre-wrap font-body text-sm">
+          <CardContent className="p-3 whitespace-pre-wrap font-body text-sm break-words">
             {parts.map((part, i) => {
               if (part.startsWith('```') && part.endsWith('```')) {
                 const codeMatch = part.match(/```(\w*)\n?([\s\S]*)```/);
@@ -74,7 +75,7 @@ export function MessageView({
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 opacity-50 hover:opacity-100"
+        className="h-6 w-6 shrink-0 opacity-50 hover:opacity-100"
         onClick={handleCopy}
         aria-label="Copy message text"
       >
