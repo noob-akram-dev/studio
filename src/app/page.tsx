@@ -26,7 +26,7 @@ export default function Home({
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-background">
       <div className="text-center mb-12">
         <h1 className="font-headline text-5xl font-bold text-primary">
-          CodeyApp
+          code-yapp
         </h1>
         <p className="text-muted-foreground mt-2 text-lg">
           Share and discuss code in real-time. No login required.
