@@ -57,10 +57,10 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const isAtBottomRef = useRef(true);
 
   useEffect(() => {
-    let name = sessionStorage.getItem(`codeshare-user-${initialRoom.code}`);
+    let name = sessionStorage.getItem(`codeyapp-user-${initialRoom.code}`);
     if (!name) {
       name = generateAnonymousName();
-      sessionStorage.setItem(`codeshare-user-${initialRoom.code}`, name);
+      sessionStorage.setItem(`codeyapp-user-${initialRoom.code}`, name);
     }
     setUserName(name);
   }, [initialRoom.code]);
@@ -108,7 +108,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       <header className="flex items-center justify-between p-4 border-b bg-card">
         <div className="flex items-center gap-4">
           <h1 className="font-headline text-2xl font-bold text-primary">
-            CodeShare
+            CodeyApp
           </h1>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Room:</span>
