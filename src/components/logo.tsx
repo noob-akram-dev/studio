@@ -8,14 +8,14 @@ type LogoProps = React.HTMLAttributes<HTMLDivElement> & {
 export function Logo({ className, variant = 'default', ...props }: LogoProps) {
   const isSmall = variant === 'small';
   return (
-    <div className={cn("flex items-center gap-2 sm:gap-4", className)} {...props}>
+    <div className={cn("flex items-center gap-2 sm:gap-3", className)} {...props}>
       <svg
         width="48"
         height="48"
         viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={cn(isSmall ? 'h-8 w-8 sm:h-10 sm:w-10' : 'h-12 w-12')}
+        className={cn(isSmall ? 'h-8 w-8 sm:h-9 sm:w-9' : 'h-12 w-12')}
       >
         <defs>
           <linearGradient id="logoGradient" x1="0" y1="0" x2="100%" y2="100%">
@@ -51,7 +51,7 @@ export function Logo({ className, variant = 'default', ...props }: LogoProps) {
       <span
         className={cn(
           'font-headline font-bold text-primary',
-          isSmall ? 'text-2xl sm:text-3xl' : 'text-4xl'
+          isSmall ? 'text-2xl' : 'text-4xl'
         )}
       >
         Code Yapp

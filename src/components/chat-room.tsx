@@ -106,7 +106,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background overflow-x-hidden">
       <header className="flex items-center justify-between p-2 sm:p-4 border-b bg-card">
         <div className="flex items-center gap-2 sm:gap-4">
           <Logo variant="small" />
@@ -145,7 +145,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         </div>
         <Button variant="ghost" asChild size="sm">
           <Link href="/">
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4 mr-0 sm:mr-2" />
             <span className="hidden sm:inline">Leave Room</span>
           </Link>
         </Button>

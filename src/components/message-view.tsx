@@ -39,12 +39,12 @@ export function MessageView({
       <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
         <AvatarFallback>{message.user.name.substring(0, 2)}</AvatarFallback>
       </Avatar>
-      <div className={cn('flex flex-col gap-1 w-full max-w-[85%]', isCurrentUser ? 'items-end' : 'items-start')}>
+      <div className={cn('flex flex-col gap-1 w-full max-w-[80%] sm:max-w-[85%]', isCurrentUser ? 'items-end' : 'items-start')}>
         <div className="flex items-center gap-2">
-           <span className="text-xs font-medium text-primary">
+           <span className="text-xs font-medium text-primary truncate">
              {isCurrentUser ? 'You' : message.user.name}
            </span>
-           <span className="text-xs text-muted-foreground">
+           <span className="text-xs text-muted-foreground whitespace-nowrap">
              {formatRelative(new Date(message.timestamp), new Date())}
            </span>
          </div>
