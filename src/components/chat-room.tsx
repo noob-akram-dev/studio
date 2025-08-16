@@ -14,7 +14,6 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 
 async function fetchRoom(code: string): Promise<Room | null> {
   try {
@@ -29,30 +28,25 @@ async function fetchRoom(code: string): Promise<Room | null> {
   }
 }
 
+function generateAnonymousName() {
+    return `User-${Math.floor(1000 + Math.random() * 9000)}`;
+}
+
 export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [room, setRoom] = useState<Room>(initialRoom);
   const [userName, setUserName] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const nameFromUrl = searchParams.get('userName');
-    if (nameFromUrl) {
-      setUserName(nameFromUrl);
-      localStorage.setItem('codeshare-user', nameFromUrl);
-    } else {
-       const storedUser = localStorage.getItem('codeshare-user');
-       if (storedUser) {
-         setUserName(storedUser);
-       } else {
-        // This should not happen if the homepage logic is correct,
-        // but as a fallback, we can redirect or show an error.
-        window.location.href = '/?error=name_required';
-       }
+    let name = sessionStorage.getItem(`codeshare-user-${initialRoom.code}`);
+    if (!name) {
+      name = generateAnonymousName();
+      sessionStorage.setItem(`codeshare-user-${initialRoom.code}`, name);
     }
-  }, [searchParams]);
+    setUserName(name);
+  }, [initialRoom.code]);
 
   useEffect(() => {
     const scrollArea = scrollAreaRef.current;

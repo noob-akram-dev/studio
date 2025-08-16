@@ -5,26 +5,20 @@ import { addMessage, createRoom, getRoom } from '@/lib/chat-store';
 import type { User } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 
-export async function createRoomAction(formData: FormData) {
-  const userName = formData.get('userName') as string;
-  if (!userName) {
-    // This should ideally be handled on the client-side, but as a fallback
-    return { error: 'Username is required.' };
-  }
+export async function createRoomAction() {
   const code = createRoom();
-  redirect(`/room/${code}?userName=${encodeURIComponent(userName)}`);
+  redirect(`/room/${code}`);
 }
 
 export async function joinRoomAction(formData: FormData) {
   const code = formData.get('code') as string;
-  const userName = formData.get('userName') as string;
 
-  if (!code || !userName) {
-    return { error: 'Room code and username are required.' };
+  if (!code) {
+    return { error: 'Room code is required.' };
   }
 
   if (getRoom(code)) {
-    redirect(`/room/${code}?userName=${encodeURIComponent(userName)}`);
+    redirect(`/room/${code}`);
   } else {
     redirect('/?error=not_found');
   }
