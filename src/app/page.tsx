@@ -28,7 +28,7 @@ export default function Home({
       <div className="text-center mb-12">
         <Logo className="justify-center" />
         <p className="text-muted-foreground mt-2 text-lg">
-          Yap about your code. Code about your yapp.
+          Yapp about your code. Code about your yap.
         </p>
       </div>
 
