@@ -12,11 +12,11 @@ import { useToast } from '@/hooks/use-toast';
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} size="icon" variant="ghost" aria-label="Send message" className="group">
+    <Button type="submit" disabled={pending} size="icon" variant="ghost" aria-label="Send message" className="group text-primary">
       {pending ? (
         <Loader2 className="animate-spin" />
       ) : (
-        <Send className="text-primary transition-transform group-hover:scale-110 group-hover:translate-x-0.5" />
+        <Send className="transition-transform group-hover:scale-110 group-hover:translate-x-0.5" />
       )}
     </Button>
   );
