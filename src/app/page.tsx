@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -85,7 +86,6 @@ export default function Home({
   const error = searchParams?.error;
   const [userName, setUserName] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [roomCodeToJoin, setRoomCodeToJoin] = useState('');
   
   const createFormRef = useRef<HTMLFormElement>(null);
   const joinFormRef = useRef<HTMLFormElement>(null);
@@ -184,7 +184,7 @@ export default function Home({
               {userName && <input type="hidden" name="userName" value={userName} />}
               <Button
                 type="button"
-                className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                className="w-full"
                 onClick={handleCreateClick}
               >
                 Create Room
@@ -210,7 +210,6 @@ export default function Home({
                 pattern="\\d{4}"
                 title="Please enter a 4-digit code"
                 className="text-center text-lg tracking-widest"
-                onChange={(e) => setRoomCodeToJoin(e.target.value)}
               />
             </CardContent>
             <CardFooter>
