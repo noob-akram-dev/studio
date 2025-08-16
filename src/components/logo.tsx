@@ -2,14 +2,14 @@ import { cn } from '@/lib/utils';
 
 export function Logo({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("flex items-center gap-2", className)} {...props}>
+    <div className={cn("flex items-center gap-4", className)} {...props}>
       <svg
-        width="32"
-        height="32"
+        width="48"
+        height="48"
         viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="h-8 w-8"
+        className="h-12 w-12"
       >
         <defs>
           <linearGradient id="logoGradient" x1="0" y1="0" x2="100%" y2="100%">
@@ -42,7 +42,7 @@ export function Logo({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
           strokeLinejoin="round"
         />
       </svg>
-      <span className="font-headline text-2xl font-bold text-primary">
+      <span className="font-headline text-4xl font-bold text-primary">
         Code Yapp
       </span>
     </div>
