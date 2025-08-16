@@ -11,8 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} size="icon" aria-label="Send message">
-      {pending ? <Loader2 className="animate-spin" /> : <Send />}
+    <Button type="submit" disabled={pending} size="icon" variant="ghost" aria-label="Send message">
+      {pending ? <Loader2 className="animate-spin" /> : <Send className="text-accent"/>}
     </Button>
   );
 }
@@ -45,15 +45,15 @@ export function MessageForm({
     <form
       ref={formRef}
       action={formAction}
-      className="flex items-start gap-4"
+      className="flex items-center gap-2 bg-white rounded-lg p-2 border border-border"
     >
       <input type="hidden" name="roomCode" value={roomCode} />
       <input type="hidden" name="userName" value={userName} />
       <Textarea
         name="message"
-        placeholder="Type your message or code snippet here... Use ``` for code blocks."
+        placeholder="Type your message or code snippet here..."
         required
-        className="flex-1 resize-none"
+        className="flex-1 resize-none bg-transparent border-0 ring-0 focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();

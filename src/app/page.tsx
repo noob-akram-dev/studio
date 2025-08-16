@@ -41,7 +41,7 @@ export default function Home({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
-        <Card className="w-full">
+        <Card className="w-full bg-white shadow-md">
           <CardHeader>
             <CardTitle>Create a New Room</CardTitle>
             <CardDescription>
@@ -56,12 +56,12 @@ export default function Home({
           </CardContent>
           <CardFooter>
             <form action={createRoomAction}>
-              <Button type="submit" className="w-full">Create Room</Button>
+              <Button type="submit" className="w-full" variant="outline">Create Room</Button>
             </form>
           </CardFooter>
         </Card>
 
-        <Card className="w-full">
+        <Card className="w-full bg-white shadow-md">
           <CardHeader>
             <CardTitle>Join an Existing Room</CardTitle>
             <CardDescription>

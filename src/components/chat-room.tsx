@@ -6,13 +6,14 @@ import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, LogOut } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
+import Link from 'next/link';
 
 async function fetchRoom(code: string): Promise<Room | null> {
   try {
@@ -82,45 +83,53 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between p-4 border-b bg-card">
-        <h1 className="font-headline text-2xl font-bold text-primary">
-          CodeShare
-        </h1>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">Room Code:</span>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-secondary cursor-pointer"
-                  onClick={handleCopyCode}
-                >
-                  <span className="font-mono text-lg font-bold tracking-widest text-primary">
-                    {room.code}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6"
-                    aria-label="Copy room code"
+          <h1 className="font-headline text-2xl font-bold text-primary">
+            CodeShare
+          </h1>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Room:</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-secondary cursor-pointer"
+                    onClick={handleCopyCode}
                   >
-                    {codeCopied ? (
-                      <Check className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Click to copy room code</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                    <span className="font-mono text-lg font-bold tracking-widest text-primary">
+                      {room.code}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      aria-label="Copy room code"
+                    >
+                      {codeCopied ? (
+                        <Check className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Click to copy room code</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
+        <Button variant="ghost" asChild>
+          <Link href="/">
+            <LogOut />
+            Leave Room
+          </Link>
+        </Button>
       </header>
 
       <ScrollArea className="flex-1 p-4" viewportRef={scrollAreaRef}>
-        <div className="space-y-6 max-w-4xl mx-auto w-full">
+        <div className="space-y-4 max-w-4xl mx-auto w-full">
           {room.messages.map((msg) => (
             <MessageView key={msg.id} message={msg} currentUser={userName} />
           ))}
