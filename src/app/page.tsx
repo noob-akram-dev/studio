@@ -29,18 +29,20 @@ function SetNameDialog({
   onOpenChange,
   onNameSet,
   children,
+  action,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onNameSet: (name: string) => void;
+  onNameSet: (name: string, action: 'create' | 'join') => void;
   children: React.ReactNode;
+  action: 'create' | 'join';
 }) {
   const [name, setName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
-      onNameSet(name.trim());
+      onNameSet(name.trim(), action);
     }
   };
 
@@ -82,13 +84,12 @@ export default function Home({
 }) {
   const error = searchParams?.error;
   const [userName, setUserName] = useState<string | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [roomCodeToJoin, setRoomCodeToJoin] = useState('');
   
   const createFormRef = useRef<HTMLFormElement>(null);
   const joinFormRef = useRef<HTMLFormElement>(null);
-  const actionToPerformRef = useRef<'create' | 'join' | null>(null);
+  const [actionToPerform, setActionToPerform] = useState<'create' | 'join'>('create');
 
   useEffect(() => {
     const storedUser = localStorage.getItem('codeshare-user');
@@ -97,38 +98,38 @@ export default function Home({
     }
   }, []);
 
-  const handleNameSet = (name: string) => {
+  const handleNameSet = (name: string, action: 'create' | 'join') => {
     localStorage.setItem('codeshare-user', name);
     setUserName(name);
 
-    // Use a timeout to allow the state to update before submitting the form
     setTimeout(() => {
-        if (actionToPerformRef.current === 'create') {
+        if (action === 'create') {
             createFormRef.current?.submit();
-        } else if (actionToPerformRef.current === 'join') {
+        } else if (action === 'join') {
             joinFormRef.current?.submit();
         }
     }, 0);
 
-    setIsCreateModalOpen(false);
-    setIsJoinModalOpen(false);
+    setIsModalOpen(false);
   };
 
-  const handleCreateClick = () => {
+  const handleCreateClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (userName) {
         createFormRef.current?.submit();
     } else {
-        actionToPerformRef.current = 'create';
-        setIsCreateModalOpen(true);
+        setActionToPerform('create');
+        setIsModalOpen(true);
     }
   };
 
-  const handleJoinClick = () => {
+  const handleJoinClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (userName) {
         joinFormRef.current?.submit();
     } else {
-        actionToPerformRef.current = 'join';
-        setIsJoinModalOpen(true);
+        setActionToPerform('join');
+        setIsModalOpen(true);
     }
   };
 
@@ -155,6 +156,15 @@ export default function Home({
         </Alert>
       )}
 
+      <SetNameDialog
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onNameSet={handleNameSet}
+        action={actionToPerform}
+      >
+        <div />
+      </SetNameDialog>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
         <Card className="w-full bg-card shadow-md">
           <CardHeader>
@@ -170,21 +180,15 @@ export default function Home({
             </p>
           </CardContent>
           <CardFooter>
-            <form ref={createFormRef} action={createRoomAction}>
+            <form ref={createFormRef} action={createRoomAction} className="w-full">
               {userName && <input type="hidden" name="userName" value={userName} />}
-              <SetNameDialog
-                open={isCreateModalOpen}
-                onOpenChange={setIsCreateModalOpen}
-                onNameSet={handleNameSet}
+              <Button
+                type="button"
+                className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                onClick={handleCreateClick}
               >
-                <Button
-                  type="button"
-                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                  onClick={handleCreateClick}
-                >
-                  Create Room
-                </Button>
-              </SetNameDialog>
+                Create Room
+              </Button>
             </form>
           </CardFooter>
         </Card>
@@ -196,7 +200,7 @@ export default function Home({
               Enter a 4-digit room code to join a session.
             </CardDescription>
           </CardHeader>
-          <form ref={joinFormRef} action={joinRoomAction}>
+          <form ref={joinFormRef} action={joinRoomAction} className="w-full">
             <CardContent>
               <Input
                 name="code"
@@ -211,20 +215,14 @@ export default function Home({
             </CardContent>
             <CardFooter>
              {userName && <input type="hidden" name="userName" value={userName} />}
-              <SetNameDialog
-                open={isJoinModalOpen}
-                onOpenChange={setIsJoinModalOpen}
-                onNameSet={handleNameSet}
+             <Button
+                type="button"
+                className="w-full"
+                variant="secondary"
+                onClick={handleJoinClick}
               >
-                <Button
-                  type="button"
-                  className="w-full"
-                  variant="secondary"
-                  onClick={handleJoinClick}
-                >
-                  Join Room
-                </Button>
-              </SetNameDialog>
+                Join Room
+              </Button>
             </CardFooter>
           </form>
         </Card>
