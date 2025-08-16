@@ -49,7 +49,7 @@ export function MessageView({
           <CardTitle
             className={cn(
               'text-sm font-semibold',
-              isCurrentUser ? 'text-primary' : 'text-accent-foreground'
+              isCurrentUser ? 'text-primary' : 'text-card-foreground'
             )}
           >
             {isCurrentUser ? 'You' : message.user.name}
