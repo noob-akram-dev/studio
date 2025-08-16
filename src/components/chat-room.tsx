@@ -14,6 +14,15 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 import Link from 'next/link';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 async function fetchRoom(code: string): Promise<Room | null> {
   try {
@@ -28,21 +37,73 @@ async function fetchRoom(code: string): Promise<Room | null> {
   }
 }
 
+function SetNameDialog({
+  open,
+  onNameSet,
+}: {
+  open: boolean;
+  onNameSet: (name: string) => void;
+}) {
+  const [name, setName] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (name.trim()) {
+      onNameSet(name.trim());
+    }
+  };
+
+  return (
+    <Dialog open={open}>
+      <DialogContent className="sm:max-w-[425px]" onInteractOutside={(e) => e.preventDefault()} hideCloseButton={true}>
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Welcome!</DialogTitle>
+            <DialogDescription>
+              Please enter your name to join the chat.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              required
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button type="submit">Join Chat</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [room, setRoom] = useState<Room>(initialRoom);
   const [userName, setUserName] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
 
   useEffect(() => {
-    let user = localStorage.getItem('codeshare-user');
-    if (!user) {
-      user = `User-${Math.floor(1000 + Math.random() * 9000)}`;
-      localStorage.setItem('codeshare-user', user);
+    const user = localStorage.getItem('codeshare-user');
+    if (user) {
+      setUserName(user);
+    } else {
+      setIsNameModalOpen(true);
     }
-    setUserName(user);
   }, []);
+
+  const handleNameSet = (name: string) => {
+    localStorage.setItem('codeshare-user', name);
+    setUserName(name);
+    setIsNameModalOpen(false);
+  };
 
   useEffect(() => {
     const scrollArea = scrollAreaRef.current;
@@ -63,6 +124,8 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [room.messages]);
   
   useEffect(() => {
+    if (!userName) return; // Don't start polling until we have a username
+
     const interval = setInterval(async () => {
       const updatedRoom = await fetchRoom(initialRoom.code);
       if (updatedRoom) {
@@ -71,7 +134,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     }, 2000); // Poll every 2 seconds
 
     return () => clearInterval(interval);
-  }, [initialRoom.code]);
+  }, [initialRoom.code, userName]);
 
 
   const handleCopyCode = () => {
@@ -147,10 +210,11 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           {userName ? (
             <MessageForm roomCode={room.code} userName={userName} />
           ) : (
-            <p className="text-center text-muted-foreground">Loading...</p>
+            <p className="text-center text-muted-foreground">Joining room...</p>
           )}
         </div>
       </footer>
+      <SetNameDialog open={isNameModalOpen} onNameSet={handleNameSet} />
     </div>
   );
 }
