@@ -85,7 +85,7 @@ export default function Home({
                 placeholder="e.g. 1234"
                 maxLength={4}
                 required
-                pattern="\\d{4}"
+                pattern="\d{4}"
                 title="Please enter a 4-digit code"
                 className="text-center text-lg tracking-widest"
               />
