@@ -109,7 +109,9 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     <div className="flex flex-col h-screen bg-background overflow-x-hidden">
       <header className="flex items-center justify-between p-2 sm:p-4 border-b bg-card">
         <div className="flex items-center gap-2 sm:gap-4">
-          <Logo variant="small" />
+          <Link href="/">
+            <Logo variant="small" />
+          </Link>
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline text-sm text-muted-foreground">Room:</span>
             <TooltipProvider>
