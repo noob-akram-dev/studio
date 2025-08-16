@@ -40,7 +40,7 @@ export function MessageView({
       </Avatar>
       <div className={cn('flex flex-col gap-1 w-full max-w-xl', isCurrentUser ? 'items-end' : 'items-start')}>
         <div className="flex items-center gap-2">
-           <span className="text-xs font-medium text-muted-foreground">
+           <span className="text-xs font-medium text-primary">
              {isCurrentUser ? 'You' : message.user.name}
            </span>
            <span className="text-xs text-muted-foreground">
@@ -53,7 +53,7 @@ export function MessageView({
             'rounded-2xl p-0 shadow-sm',
             isCurrentUser
               ? 'bg-primary text-primary-foreground rounded-br-none'
-              : 'bg-card text-card-foreground border-border bg-white rounded-bl-none'
+              : 'bg-accent text-accent-foreground rounded-bl-none'
           )}
         >
           <CardContent className="p-3 whitespace-pre-wrap font-body text-sm">
