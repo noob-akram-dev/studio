@@ -1,7 +1,6 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
 import { addMessage, createRoom, getRoom } from '@/lib/chat-store';
 import type { User } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
@@ -49,7 +48,6 @@ export async function sendMessageAction(
       language,
     });
   
-    revalidatePath(`/room/${roomCode}`);
     return { success: true };
 
   } catch (error) {

@@ -14,10 +14,25 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 
-export function ChatRoom({ room }: { room: Room }) {
+async function fetchRoom(code: string): Promise<Room | null> {
+  try {
+    const response = await fetch(`/api/room/${code}`);
+    if (!response.ok) {
+      return null;
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch room:', error);
+    return null;
+  }
+}
+
+export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
+  const [room, setRoom] = useState<Room>(initialRoom);
   const [userName, setUserName] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const isAtBottomRef = useRef(true);
 
   useEffect(() => {
     let user = localStorage.getItem('codeshare-user');
@@ -29,10 +44,34 @@ export function ChatRoom({ room }: { room: Room }) {
   }, []);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
+    const scrollArea = scrollAreaRef.current;
+    if (scrollArea) {
+      const handleScroll = () => {
+        const { scrollTop, scrollHeight, clientHeight } = scrollArea;
+        isAtBottomRef.current = scrollHeight - scrollTop - clientHeight < 1;
+      };
+      scrollArea.addEventListener('scroll', handleScroll, { passive: true });
+      return () => scrollArea.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottomRef.current && scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [room.messages]);
+  
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const updatedRoom = await fetchRoom(initialRoom.code);
+      if (updatedRoom) {
+        setRoom(updatedRoom);
+      }
+    }, 2000); // Poll every 2 seconds
+
+    return () => clearInterval(interval);
+  }, [initialRoom.code]);
+
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(room.code);
