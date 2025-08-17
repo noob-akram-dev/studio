@@ -72,6 +72,22 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     }
   }, [room.messages]);
   
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/room/${initialRoom.code}`);
+        if (response.ok) {
+          const updatedRoom = await response.json();
+          setRoom(updatedRoom);
+        }
+      } catch (error) {
+        console.error('Failed to fetch room data:', error);
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [initialRoom.code]);
+
   const handleCopyCode = () => {
     navigator.clipboard.writeText(room.code);
     setCodeCopied(true);

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { addMessage, createRoom, getRoom } from '@/lib/chat-store';
 import type { User } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
+import { revalidatePath } from 'next/cache';
 
 export async function createRoomAction() {
   const code = createRoom();
@@ -53,6 +54,7 @@ export async function sendMessageAction(
       language,
     });
   
+    revalidatePath(`/api/room/${roomCode}`);
     return { success: true };
 
   } catch (error) {
