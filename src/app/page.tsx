@@ -38,7 +38,7 @@ export default function Home({
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstallPromptEvent);
+      setInstallEvent(e as BeforeInstalltoPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -129,7 +129,7 @@ export default function Home({
                 placeholder="e.g. 1234"
                 maxLength={4}
                 required
-                pattern="\\d{4}"
+                pattern="\d{4}"
                 title="Please enter a 4-digit code"
                 className="text-center text-lg tracking-widest"
               />
