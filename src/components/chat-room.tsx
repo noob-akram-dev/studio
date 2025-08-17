@@ -17,19 +17,6 @@ import {
 import Link from 'next/link';
 import { Logo } from './logo';
 
-async function fetchRoom(code: string): Promise<Room | null> {
-  try {
-    const response = await fetch(`/api/room/${code}`);
-    if (!response.ok) {
-      return null;
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch room:', error);
-    return null;
-  }
-}
-
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
   'Nimble', 'Proud', 'Quiet', 'Swift', 'Tricky', 'Vast', 'Witty', 'Zany'
@@ -85,20 +72,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     }
   }, [room.messages]);
   
-  useEffect(() => {
-    if (!userName) return; // Don't start polling until we have a username
-
-    const interval = setInterval(async () => {
-      const updatedRoom = await fetchRoom(initialRoom.code);
-      if (updatedRoom) {
-        setRoom(updatedRoom);
-      }
-    }, 2000); // Poll every 2 seconds
-
-    return () => clearInterval(interval);
-  }, [initialRoom.code, userName]);
-
-
   const handleCopyCode = () => {
     navigator.clipboard.writeText(room.code);
     setCodeCopied(true);
