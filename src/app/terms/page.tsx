@@ -43,7 +43,19 @@ export default function TermsOfServicePage() {
             In no event shall Code Yapp or its creators be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of data, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.
           </p>
 
-          <h2 className="text-2xl font-semibold text-foreground pt-4">6. Changes to Terms</h2>
+          <h2 className="text-2xl font-semibold text-foreground pt-4">6. Grievance Officer</h2>
+          <p>
+            In accordance with the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, the details of the Grievance Officer are provided below. For any user complaints or to receive legal notices, please contact:
+          </p>
+          <ul className="list-disc list-inside pl-4 space-y-2">
+            <li><strong>Name:</strong> Akram Shakil</li>
+            <li><strong>Email:</strong> shaikhakramshakil@gmail.com</li>
+          </ul>
+          <p>
+            We will endeavor to acknowledge and resolve all complaints within the timeframes stipulated by the applicable law.
+          </p>
+          
+          <h2 className="text-2xl font-semibold text-foreground pt-4">7. Changes to Terms</h2>
           <p>
             We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will provide notice of any changes by posting the new Terms on this page. Your continued use of the Service after any such changes constitutes your acceptance of the new Terms.
           </p>
