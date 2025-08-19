@@ -14,4 +14,5 @@ export interface Message {
 export interface Room {
   code: string;
   messages: Message[];
+  createdAt: number;
 }
