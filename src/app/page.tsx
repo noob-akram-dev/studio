@@ -39,7 +39,7 @@ export default function Home({
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstallPromptEvent);
+      setInstallEvent(e as BeforeInstallEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -126,15 +126,16 @@ export default function Home({
             </CardHeader>
             <form action={joinRoomAction} className="w-full">
               <CardContent>
-                <Input
-                  name="code"
-                  placeholder="e.g. 1234"
-                  maxLength={4}
-                  required
-                  pattern="\\d{4}"
-                  title="Please enter a 4-digit code"
-                  className="text-center text-lg tracking-widest"
-                />
+                <div title="Please enter a 4-digit code">
+                  <Input
+                    name="code"
+                    placeholder="e.g. 1234"
+                    maxLength={4}
+                    required
+                    pattern="\d{4}"
+                    className="text-center text-lg tracking-widest"
+                  />
+                </div>
               </CardContent>
               <CardFooter>
                <Button
