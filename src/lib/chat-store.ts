@@ -1,4 +1,4 @@
-import type { Room, Message } from './types';
+import type { Room, Message, User } from './types';
 import fs from 'fs';
 import path from 'path';
 
@@ -175,7 +175,7 @@ export function updateUserTypingStatus(roomCode: string, userName: string) {
   fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
 }
 
-export function joinRoom(roomCode: string, userName: string) {
+export function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'joinedAt'>) {
   const room = getRoom(roomCode);
   if (!room) {
     return;
@@ -183,11 +183,11 @@ export function joinRoom(roomCode: string, userName: string) {
   if (!room.users) {
     room.users = [];
   }
-  const userIndex = room.users.findIndex(u => u.name === userName);
+  const userIndex = room.users.findIndex(u => u.name === user.name);
   if (userIndex !== -1) {
     room.users[userIndex].joinedAt = Date.now();
   } else {
-    room.users.push({ name: userName, joinedAt: Date.now() });
+    room.users.push({ ...user, joinedAt: Date.now() });
   }
 
   const filePath = getRoomFilePath(roomCode);

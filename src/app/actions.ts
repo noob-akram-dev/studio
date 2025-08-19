@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom } from '@/lib/chat-store';
-import type { User } from '@/lib/types';
+import type { User, Room } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 import { revalidatePath } from 'next/cache';
 
@@ -34,12 +34,13 @@ export async function sendMessageAction(
   const text = formData.get('message') as string;
   const roomCode = formData.get('roomCode') as string;
   const userName = formData.get('userName') as string;
+  const userAvatarUrl = formData.get('userAvatarUrl') as string;
 
   if (!text || !roomCode || !userName) {
     return { error: 'Missing required fields.' };
   }
 
-  const user: User = { id: userName, name: userName };
+  const user: User = { id: userName, name: userName, avatarUrl: userAvatarUrl };
   let language: string | undefined = undefined;
 
   try {
@@ -78,10 +79,11 @@ export async function userTypingAction(formData: FormData) {
 export async function joinRoomAndAddUserAction(formData: FormData) {
     const roomCode = formData.get('roomCode') as string;
     const userName = formData.get('userName') as string;
+    const userAvatarUrl = formData.get('userAvatarUrl') as string;
 
-    if (!roomCode || !userName) {
+    if (!roomCode || !userName || !userAvatarUrl) {
         return;
     }
 
-    joinRoom(roomCode, userName);
+    joinRoom(roomCode, { name: userName, avatarUrl: userAvatarUrl });
 }

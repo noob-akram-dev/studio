@@ -41,9 +41,12 @@ function generateAnonymousName() {
   return `${adjective} ${noun}`;
 }
 
+const getAvatarUrl = (name: string) => `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${encodeURIComponent(name)}`;
+
 export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [room, setRoom] = useState<Room>(initialRoom);
   const [userName, setUserName] = useState<string>('');
+  const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
@@ -55,11 +58,14 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       sessionStorage.setItem(`codeyapp-user-${initialRoom.code}`, name);
     }
     setUserName(name);
+    const avatarUrl = getAvatarUrl(name);
+    setUserAvatarUrl(avatarUrl);
 
     if (name) {
         const formData = new FormData();
         formData.append('roomCode', initialRoom.code);
         formData.append('userName', name);
+        formData.append('userAvatarUrl', avatarUrl);
         joinRoomAndAddUserAction(formData);
     }
 
@@ -68,8 +74,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   useEffect(() => {
     const scrollArea = scrollAreaRef.current;
     if (scrollArea) {
-      const isAtBottom = scrollArea.scrollHeight - scrollArea.scrollTop <= scrollArea.clientHeight + 200;
-      if (isAtBottom) {
         setTimeout(() => {
            if (scrollAreaRef.current) {
             scrollAreaRef.current.scrollTo({
@@ -78,7 +82,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
             });
           }
         }, 100)
-      }
     }
   }, [lastMessageId]);
   
@@ -185,7 +188,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
-            <MessageForm roomCode={room.code} userName={userName} users={activeUsers} />
+            <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} users={activeUsers} />
           ) : (
             <p className="text-center text-muted-foreground">Joining room...</p>
           )}

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Copy, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CodeBlock } from './code-block';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 
 export function MessageView({
@@ -37,6 +37,7 @@ export function MessageView({
       )}
     >
       <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+        <AvatarImage src={message.user.avatarUrl} alt={message.user.name} />
         <AvatarFallback>{message.user.name.substring(0, 2)}</AvatarFallback>
       </Avatar>
       <div className={cn('flex flex-col gap-1 w-full max-w-[80%] sm:max-w-[85%]', isCurrentUser ? 'items-end' : 'items-start')}>

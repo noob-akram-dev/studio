@@ -15,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 
 function SubmitButton() {
@@ -34,10 +34,12 @@ function SubmitButton() {
 export function MessageForm({
   roomCode,
   userName,
+  userAvatarUrl,
   users,
 }: {
   roomCode: string;
   userName: string;
+  userAvatarUrl: string;
   users: Room['users'];
 }) {
   const [state, formAction] = useActionState(sendMessageAction, null);
@@ -75,6 +77,7 @@ export function MessageForm({
         >
         <input type="hidden" name="roomCode" value={roomCode} />
         <input type="hidden" name="userName" value={userName} />
+        <input type="hidden" name="userAvatarUrl" value={userAvatarUrl} />
         <Textarea
             name="message"
             placeholder="Type your message or code snippet here..."
@@ -105,6 +108,7 @@ export function MessageForm({
                         {users.map(user => (
                             <li key={user.name} className="flex items-center gap-2">
                                 <Avatar className="h-6 w-6 text-xs">
+                                    <AvatarImage src={user.avatarUrl} alt={user.name} />
                                     <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                                 </Avatar>
                                 <span className="text-sm text-muted-foreground">{user.name}</span>

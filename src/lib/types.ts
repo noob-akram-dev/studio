@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   name: string;
+  avatarUrl: string;
 }
 
 export interface Message {
@@ -16,5 +17,5 @@ export interface Room {
   messages: Message[];
   createdAt: number;
   typing?: { [userName: string]: number };
-  users: { name: string; joinedAt: number }[];
+  users: { name: string; joinedAt: number; avatarUrl: string; }[];
 }
