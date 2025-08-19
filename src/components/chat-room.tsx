@@ -16,6 +16,7 @@ import {
 } from './ui/tooltip';
 import Link from 'next/link';
 import { Logo } from './logo';
+import { CountdownTimer } from './countdown-timer';
 
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
@@ -79,11 +80,14 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         if (response.ok) {
           const updatedRoom = await response.json();
           setRoom(updatedRoom);
+        } else if (response.status === 404) {
+          // Room expired or was deleted, redirect home.
+          window.location.href = '/?error=expired';
         }
       } catch (error) {
         console.error('Failed to fetch room data:', error);
       }
-    }, 200);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [initialRoom.code]);
@@ -133,6 +137,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
               </Tooltip>
             </TooltipProvider>
           </div>
+           <CountdownTimer createdAt={room.createdAt} />
         </div>
         <Button variant="ghost" asChild size="sm">
           <Link href="/">
