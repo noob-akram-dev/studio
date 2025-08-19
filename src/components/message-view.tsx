@@ -2,7 +2,7 @@
 'use client';
 
 import type { Message } from '@/lib/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { formatRelative } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Copy, Check } from 'lucide-react';
@@ -19,7 +19,15 @@ export function MessageView({
   currentUser: string;
 }) {
   const [copied, setCopied] = useState(false);
+  const [formattedTimestamp, setFormattedTimestamp] = useState('');
   const isCurrentUser = message.user.name === currentUser;
+
+  useEffect(() => {
+    // This code runs only on the client, after the component has mounted.
+    // This avoids the hydration mismatch between server and client.
+    setFormattedTimestamp(formatRelative(new Date(message.timestamp), new Date()));
+  }, [message.timestamp]);
+
 
   const handleCopy = () => {
     navigator.clipboard.writeText(message.text);
@@ -46,7 +54,7 @@ export function MessageView({
              {isCurrentUser ? 'You' : message.user.name}
            </span>
            <span className="text-xs text-muted-foreground whitespace-nowrap">
-             {formatRelative(new Date(message.timestamp), new Date())}
+             {formattedTimestamp}
            </span>
          </div>
 
