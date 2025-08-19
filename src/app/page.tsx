@@ -39,7 +39,7 @@ export default function Home({
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstallPromptEvent);
+      setInstallEvent(e as BeforeInstalltPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -150,8 +150,8 @@ export default function Home({
         </div>
       </main>
       <footer className="w-full p-4 border-t border-border">
-          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between">
-            <p className="text-sm text-muted-foreground mb-2 sm:mb-0">Connect with me</p>
+          <div className="max-w-4xl mx-auto flex flex-col items-center justify-center space-y-2">
+            <p className="text-sm text-muted-foreground">Connect with me</p>
             <div className="flex items-center space-x-4">
               <Link href="https://www.linkedin.com/in/akramshakil/" target="_blank" rel="noopener noreferrer">
                 <Linkedin className="h-6 w-6 text-muted-foreground hover:text-primary transition-colors" />
