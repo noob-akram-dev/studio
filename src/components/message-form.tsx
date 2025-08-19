@@ -59,11 +59,11 @@ export function MessageForm({
   }, [state, toast]);
 
   return (
-    <div className="flex items-start gap-2 rounded-lg p-1 sm:p-2 border border-border bg-card">
+    <div className="flex items-center gap-2 rounded-lg p-1 sm:p-2 border border-border bg-card">
         <form
         ref={formRef}
         action={formAction}
-        className="flex-1 flex items-start gap-2"
+        className="flex-1 flex items-center gap-2"
         onChange={debouncedTypingAction}
         >
         <input type="hidden" name="roomCode" value={roomCode} />
