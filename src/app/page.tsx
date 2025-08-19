@@ -92,7 +92,7 @@ export default function Home({
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
-          <Card className="w-full bg-card shadow-md">
+          <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
             <CardHeader>
               <CardTitle>Create a New Room</CardTitle>
               <CardDescription>
@@ -118,7 +118,7 @@ export default function Home({
             </CardFooter>
           </Card>
 
-          <Card className="w-full bg-card shadow-md">
+          <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
             <CardHeader>
               <CardTitle>Join an Existing Room</CardTitle>
               <CardDescription>
