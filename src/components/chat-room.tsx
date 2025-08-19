@@ -57,12 +57,16 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [initialRoom.code]);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      const isAtBottom = scrollAreaRef.current.scrollHeight - scrollAreaRef.current.scrollTop <= scrollAreaRef.current.clientHeight + 10;
+    const scrollArea = scrollAreaRef.current;
+    if (scrollArea) {
+      const isAtBottom = scrollArea.scrollHeight - scrollArea.scrollTop <= scrollArea.clientHeight + 200;
       if (isAtBottom) {
         setTimeout(() => {
            if (scrollAreaRef.current) {
-            scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+            scrollAreaRef.current.scrollTo({
+              top: scrollAreaRef.current.scrollHeight,
+              behavior: 'smooth'
+            });
           }
         }, 100)
       }
