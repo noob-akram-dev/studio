@@ -168,6 +168,14 @@ export default function Home({
              <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy
             </Link>
+            {installEvent && (
+              <>
+                <Separator orientation="vertical" className="h-5" />
+                <button onClick={handleInstallClick} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Install App
+                </button>
+              </>
+            )}
           </div>
         </footer>
     </div>
