@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
   title: 'Code Yapp',
-  description: 'Yapp about your code. Code about your yap.',
+  description: 'Yapp about your code. Code about your yapp.',
   manifest: '/manifest.json',
 };
 

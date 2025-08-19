@@ -69,7 +69,7 @@ export default function Home({
              <Logo className="justify-center" />
           </div>
           <p className="text-muted-foreground mt-2 text-md sm:text-lg">
-            Yapp about your code. Code about your yap.
+            Yapp about your code. Code about your yapp.
           </p>
         </div>
 
