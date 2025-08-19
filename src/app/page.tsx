@@ -40,7 +40,7 @@ export default function Home({
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstallGlowEffect);
+      setInstallEvent(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -157,23 +157,23 @@ export default function Home({
           <div className="max-w-4xl mx-auto flex items-center justify-center space-x-4">
             <p className="text-sm text-muted-foreground">Connect with me</p>
             <Link href="https://www.linkedin.com/in/akramshakil/" target="_blank" rel="noopener noreferrer">
-              <Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+              <Linkedin className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
             </Link>
             <Link href="https://github.com/shaikhakramshakil" target="_blank" rel="noopener noreferrer">
-              <Github className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+              <Github className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
             </Link>
             <Separator orientation="vertical" className="h-5" />
-             <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+             <Link href="/terms" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
               Terms of Service
             </Link>
             <Separator orientation="vertical" className="h-5" />
-             <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+             <Link href="/privacy" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
               Privacy Policy
             </Link>
             {installEvent && (
               <>
                 <Separator orientation="vertical" className="h-5" />
-                <button onClick={handleInstallClick} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <button onClick={handleInstallClick} className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
                   Install App
                 </button>
               </>
