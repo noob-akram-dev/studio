@@ -166,11 +166,9 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
               <p>Be the first to say something!</p>
             </div>
           )}
+           <TypingIndicator users={typingUsers} />
         </div>
       </ScrollArea>
-       <div className="h-6 px-4">
-          <TypingIndicator users={typingUsers} />
-       </div>
       <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (

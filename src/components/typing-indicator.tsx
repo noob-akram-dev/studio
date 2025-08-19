@@ -1,10 +1,12 @@
+
 'use client';
 
 import { cn } from "@/lib/utils";
+import { MessageSquareText } from "lucide-react";
 
 export function TypingIndicator({ users }: { users: string[] }) {
   if (users.length === 0) {
-    return null;
+    return <div className="h-6" />;
   }
 
   const typingText = () => {
@@ -18,8 +20,9 @@ export function TypingIndicator({ users }: { users: string[] }) {
   };
 
   return (
-    <div className={cn("text-xs text-muted-foreground animate-pulse")}>
-      {typingText()}
+    <div className={cn("flex items-center gap-2 h-6 text-xs text-muted-foreground animate-pulse pl-12")}>
+       <MessageSquareText className="w-4 h-4" />
+      <span>{typingText()}</span>
     </div>
   );
 }
