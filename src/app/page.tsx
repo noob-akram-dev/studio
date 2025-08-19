@@ -39,7 +39,7 @@ export default function Home({
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstalltPromptEvent);
+      setInstallEvent(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -150,16 +150,14 @@ export default function Home({
         </div>
       </main>
       <footer className="w-full p-4 border-t border-border">
-          <div className="max-w-4xl mx-auto flex flex-col items-center justify-center space-y-2">
+          <div className="max-w-4xl mx-auto flex items-center justify-center space-x-4">
             <p className="text-sm text-muted-foreground">Connect with me</p>
-            <div className="flex items-center space-x-4">
-              <Link href="https://www.linkedin.com/in/akramshakil/" target="_blank" rel="noopener noreferrer">
-                <Linkedin className="h-6 w-6 text-muted-foreground hover:text-primary transition-colors" />
-              </Link>
-              <Link href="https://github.com/shaikhakramshakil" target="_blank" rel="noopener noreferrer">
-                <Github className="h-6 w-6 text-muted-foreground hover:text-primary transition-colors" />
-              </Link>
-            </div>
+            <Link href="https://www.linkedin.com/in/akramshakil/" target="_blank" rel="noopener noreferrer">
+              <Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+            </Link>
+            <Link href="https://github.com/shaikhakramshakil" target="_blank" rel="noopener noreferrer">
+              <Github className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+            </Link>
           </div>
         </footer>
     </div>
