@@ -17,6 +17,7 @@ import { Download, Terminal, Github, Linkedin } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Separator } from '@/components/ui/separator';
 
 // Based on https://web.dev/patterns/pwa/install-pwa
 interface BeforeInstallPromptEvent extends Event {
@@ -39,7 +40,7 @@ export default function Home({
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstallEvent);
+      setInstallEvent(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -158,6 +159,10 @@ export default function Home({
             </Link>
             <Link href="https://github.com/shaikhakramshakil" target="_blank" rel="noopener noreferrer">
               <Github className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+            </Link>
+            <Separator orientation="vertical" className="h-5" />
+             <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Terms of Service
             </Link>
           </div>
         </footer>
