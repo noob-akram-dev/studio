@@ -159,10 +159,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
             </TooltipProvider>
           </div>
            <CountdownTimer createdAt={room.createdAt} />
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="w-4 h-4" />
-                <span>{activeUsers}</span>
-            </div>
         </div>
         <Button variant="ghost" asChild size="sm">
           <Link href="/">
@@ -189,7 +185,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
-            <MessageForm roomCode={room.code} userName={userName} />
+            <MessageForm roomCode={room.code} userName={userName} activeUsers={activeUsers} />
           ) : (
             <p className="text-center text-muted-foreground">Joining room...</p>
           )}

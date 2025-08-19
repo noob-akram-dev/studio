@@ -6,7 +6,7 @@ import { useFormStatus } from 'react-dom';
 import { sendMessageAction, userTypingAction } from '@/app/actions';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -27,9 +27,11 @@ function SubmitButton() {
 export function MessageForm({
   roomCode,
   userName,
+  activeUsers,
 }: {
   roomCode: string;
   userName: string;
+  activeUsers: number;
 }) {
   const [state, formAction] = useActionState(sendMessageAction, null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -57,28 +59,34 @@ export function MessageForm({
   }, [state, toast]);
 
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      className="flex items-start gap-2 rounded-lg p-1 sm:p-2 border border-border bg-card"
-      onChange={debouncedTypingAction}
-    >
-      <input type="hidden" name="roomCode" value={roomCode} />
-      <input type="hidden" name="userName" value={userName} />
-      <Textarea
-        name="message"
-        placeholder="Type your message or code snippet here..."
-        required
-        className="flex-1 resize-none bg-transparent border-0 ring-0 focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
-        rows={1}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            formRef.current?.requestSubmit();
-          }
-        }}
-      />
-      <SubmitButton />
-    </form>
+    <div className="flex items-start gap-2 rounded-lg p-1 sm:p-2 border border-border bg-card">
+        <form
+        ref={formRef}
+        action={formAction}
+        className="flex-1 flex items-start gap-2"
+        onChange={debouncedTypingAction}
+        >
+        <input type="hidden" name="roomCode" value={roomCode} />
+        <input type="hidden" name="userName" value={userName} />
+        <Textarea
+            name="message"
+            placeholder="Type your message or code snippet here..."
+            required
+            className="flex-1 resize-none bg-transparent border-0 ring-0 focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
+            rows={1}
+            onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                formRef.current?.requestSubmit();
+            }
+            }}
+        />
+        <SubmitButton />
+        </form>
+         <div className="flex items-center gap-2 text-sm text-muted-foreground pr-2">
+            <Users className="w-4 h-4" />
+            <span>{activeUsers}</span>
+        </div>
+    </div>
   );
 }
