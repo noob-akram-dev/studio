@@ -3,11 +3,13 @@
 
 import { useEffect, useRef, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { sendMessageAction } from '@/app/actions';
+import { sendMessageAction, userTypingAction } from '@/app/actions';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { Send, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useDebouncedCallback } from 'use-debounce';
+
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -32,6 +34,14 @@ export function MessageForm({
   const [state, formAction] = useActionState(sendMessageAction, null);
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
+  
+  const debouncedTypingAction = useDebouncedCallback(() => {
+    const formData = new FormData();
+    formData.append('roomCode', roomCode);
+    formData.append('userName', userName);
+    userTypingAction(formData);
+  }, 500, { leading: true, trailing: false });
+
 
   useEffect(() => {
     if (state?.success) {
@@ -51,6 +61,7 @@ export function MessageForm({
       ref={formRef}
       action={formAction}
       className="flex items-start gap-2 rounded-lg p-1 sm:p-2 border border-border bg-card"
+      onChange={debouncedTypingAction}
     >
       <input type="hidden" name="roomCode" value={roomCode} />
       <input type="hidden" name="userName" value={userName} />

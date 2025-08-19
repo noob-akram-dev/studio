@@ -2,7 +2,7 @@
 'use client';
 
 import type { Room } from '@/lib/types';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,6 +17,7 @@ import {
 import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
+import { TypingIndicator } from './typing-indicator';
 
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
@@ -44,6 +45,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userName, setUserName] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
 
   useEffect(() => {
     let name = sessionStorage.getItem(`codeyapp-user-${initialRoom.code}`);
@@ -56,9 +58,16 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   useEffect(() => {
     if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+      const isAtBottom = scrollAreaRef.current.scrollHeight - scrollAreaRef.current.scrollTop <= scrollAreaRef.current.clientHeight + 10;
+      if (isAtBottom) {
+        setTimeout(() => {
+           if (scrollAreaRef.current) {
+            scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+          }
+        }, 100)
+      }
     }
-  }, [room.messages]);
+  }, [lastMessageId]);
   
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -84,6 +93,14 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     setCodeCopied(true);
     setTimeout(() => setCodeCopied(false), 2000);
   };
+  
+  const typingUsers = useMemo(() => {
+    if (!room.typing || !userName) {
+      return [];
+    }
+    return Object.keys(room.typing).filter(name => name !== userName);
+  }, [room.typing, userName]);
+
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-x-hidden">
@@ -147,7 +164,9 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           )}
         </div>
       </ScrollArea>
-
+       <div className="h-6 px-4">
+          <TypingIndicator users={typingUsers} />
+       </div>
       <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (

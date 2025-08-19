@@ -7,6 +7,7 @@ import path from 'path';
 const dataDir = path.join(process.cwd(), 'data');
 const roomsDir = path.join(dataDir, 'rooms');
 const ROOM_TTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+const TYPING_TIMEOUT = 3000; // 3 seconds
 
 if (!fs.existsSync(roomsDir)) {
   fs.mkdirSync(roomsDir, { recursive: true });
@@ -63,6 +64,7 @@ export function createRoom(): string {
     code,
     messages: [],
     createdAt: Date.now(),
+    typing: {},
   };
   fs.writeFileSync(filePath, JSON.stringify(newRoom, null, 2));
   console.log(`Room created: ${code}`);
@@ -75,8 +77,8 @@ export function getRoom(code: string): Room | undefined {
         return undefined;
     }
     try {
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
-        const room: Room = JSON.parse(fileContent);
+        let fileContent = fs.readFileSync(filePath, 'utf-8');
+        let room: Room = JSON.parse(fileContent);
 
         // Check if the room has expired
         if (Date.now() - room.createdAt > ROOM_TTL) {
@@ -84,6 +86,23 @@ export function getRoom(code: string): Room | undefined {
             console.log(`Lazily deleted expired room: ${code}`);
             return undefined;
         }
+
+        // Clean up stale typing indicators
+        let typingModified = false;
+        if (room.typing) {
+            const now = Date.now();
+            for (const user in room.typing) {
+                if (now - room.typing[user] > TYPING_TIMEOUT) {
+                    delete room.typing[user];
+                    typingModified = true;
+                }
+            }
+        }
+
+        if (typingModified) {
+             fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
+        }
+
 
         return room;
     } catch (error) {
@@ -105,7 +124,27 @@ export function addMessage(code: string, message: Omit<Message, 'id' | 'timestam
   };
 
   room.messages.push(newMessage);
+  // Remove the user from the typing list when they send a message
+  if (room.typing && room.typing[message.user.name]) {
+    delete room.typing[message.user.name];
+  }
+  
   const filePath = getRoomFilePath(code);
   fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
   return newMessage;
+}
+
+export function updateUserTypingStatus(roomCode: string, userName: string) {
+  const room = getRoom(roomCode);
+  if (!room) {
+    return;
+  }
+  
+  if (!room.typing) {
+    room.typing = {};
+  }
+  room.typing[userName] = Date.now();
+
+  const filePath = getRoomFilePath(roomCode);
+  fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
 }
