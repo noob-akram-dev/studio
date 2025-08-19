@@ -2,10 +2,10 @@
 'use client';
 
 import type { Room } from '@/lib/types';
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, ElementRef } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea, ScrollAreaViewport } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, LogOut, Users } from 'lucide-react';
 import {
@@ -48,7 +48,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userName, setUserName] = useState<string>('');
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<ElementRef<typeof ScrollAreaViewport>>(null);
   const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
 
   useEffect(() => {
@@ -171,19 +171,21 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         </Button>
       </header>
 
-      <ScrollArea className="flex-1 p-2 sm:p-4" viewportRef={scrollAreaRef}>
-        <div className="space-y-4 max-w-4xl mx-auto w-full">
-          {room.messages.map((msg) => (
-            <MessageView key={msg.id} message={msg} currentUser={userName} />
-          ))}
-          {room.messages.length === 0 && (
-            <div className="text-center text-muted-foreground py-16">
-              <p>No messages yet.</p>
-              <p>Be the first to say something!</p>
-            </div>
-          )}
-           <TypingIndicator users={typingUsers} />
-        </div>
+      <ScrollArea className="flex-1 p-2 sm:p-4">
+        <ScrollAreaViewport ref={scrollAreaRef}>
+          <div className="space-y-4 max-w-4xl mx-auto w-full">
+            {room.messages.map((msg) => (
+              <MessageView key={msg.id} message={msg} currentUser={userName} />
+            ))}
+            {room.messages.length === 0 && (
+              <div className="text-center text-muted-foreground py-16">
+                <p>No messages yet.</p>
+                <p>Be the first to say something!</p>
+              </div>
+            )}
+            <TypingIndicator users={typingUsers} />
+          </div>
+        </ScrollAreaViewport>
       </ScrollArea>
       <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
