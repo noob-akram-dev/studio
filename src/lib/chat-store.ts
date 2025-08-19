@@ -1,3 +1,4 @@
+
 import type { Room, Message, User } from './types';
 import fs from 'fs';
 import path from 'path';
@@ -9,6 +10,7 @@ const roomsDir = path.join(dataDir, 'rooms');
 const ROOM_TTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 const TYPING_TIMEOUT = 3000; // 3 seconds
 const USER_INACTIVE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+const MAX_MESSAGES_PER_ROOM = 100; // Cap the number of messages to prevent performance issues.
 
 if (!fs.existsSync(roomsDir)) {
   fs.mkdirSync(roomsDir, { recursive: true });
@@ -138,6 +140,12 @@ export function addMessage(code: string, message: Omit<Message, 'id' | 'timestam
   };
 
   room.messages.push(newMessage);
+
+  // If messages exceed the limit, truncate the oldest ones.
+  if (room.messages.length > MAX_MESSAGES_PER_ROOM) {
+    room.messages = room.messages.slice(room.messages.length - MAX_MESSAGES_PER_ROOM);
+  }
+
   // Remove the user from the typing list when they send a message
   if (room.typing && room.typing[message.user.name]) {
     delete room.typing[message.user.name];
