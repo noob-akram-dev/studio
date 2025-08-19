@@ -44,7 +44,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userName, setUserName] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const isAtBottomRef = useRef(true);
 
   useEffect(() => {
     let name = sessionStorage.getItem(`codeyapp-user-${initialRoom.code}`);
@@ -56,19 +55,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [initialRoom.code]);
 
   useEffect(() => {
-    const scrollArea = scrollAreaRef.current;
-    if (scrollArea) {
-      const handleScroll = () => {
-        const { scrollTop, scrollHeight, clientHeight } = scrollArea;
-        isAtBottomRef.current = scrollHeight - scrollTop - clientHeight < 1;
-      };
-      scrollArea.addEventListener('scroll', handleScroll, { passive: true });
-      return () => scrollArea.removeEventListener('scroll', handleScroll);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isAtBottomRef.current && scrollAreaRef.current) {
+    if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [room.messages]);
