@@ -164,6 +164,10 @@ export default function Home({
              <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Terms of Service
             </Link>
+            <Separator orientation="vertical" className="h-5" />
+             <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
           </div>
         </footer>
     </div>
