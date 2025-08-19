@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useEffect, useRef, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { sendMessageAction } from '@/app/actions';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -29,7 +29,7 @@ export function MessageForm({
   roomCode: string;
   userName: string;
 }) {
-  const [state, formAction] = useFormState(sendMessageAction, null);
+  const [state, formAction] = useActionState(sendMessageAction, null);
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
