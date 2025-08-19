@@ -16,4 +16,5 @@ export interface Room {
   messages: Message[];
   createdAt: number;
   typing?: { [userName: string]: number };
+  users: { name: string; joinedAt: number }[];
 }

@@ -8,6 +8,7 @@ const dataDir = path.join(process.cwd(), 'data');
 const roomsDir = path.join(dataDir, 'rooms');
 const ROOM_TTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 const TYPING_TIMEOUT = 3000; // 3 seconds
+const USER_INACTIVE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
 if (!fs.existsSync(roomsDir)) {
   fs.mkdirSync(roomsDir, { recursive: true });
@@ -65,6 +66,7 @@ export function createRoom(): string {
     messages: [],
     createdAt: Date.now(),
     typing: {},
+    users: [],
   };
   fs.writeFileSync(filePath, JSON.stringify(newRoom, null, 2));
   console.log(`Room created: ${code}`);
@@ -87,19 +89,31 @@ export function getRoom(code: string): Room | undefined {
             return undefined;
         }
 
+        let modified = false;
+
         // Clean up stale typing indicators
-        let typingModified = false;
         if (room.typing) {
             const now = Date.now();
             for (const user in room.typing) {
                 if (now - room.typing[user] > TYPING_TIMEOUT) {
                     delete room.typing[user];
-                    typingModified = true;
+                    modified = true;
                 }
             }
         }
+        
+        // Clean up inactive users
+        if (room.users) {
+            const now = Date.now();
+            const initialUserCount = room.users.length;
+            room.users = room.users.filter(user => (now - user.joinedAt) < USER_INACTIVE_TIMEOUT);
+            if(room.users.length !== initialUserCount) {
+                modified = true;
+            }
+        }
 
-        if (typingModified) {
+
+        if (modified) {
              fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
         }
 
@@ -128,6 +142,12 @@ export function addMessage(code: string, message: Omit<Message, 'id' | 'timestam
   if (room.typing && room.typing[message.user.name]) {
     delete room.typing[message.user.name];
   }
+
+  // Update user's last seen time
+  const userIndex = room.users.findIndex(u => u.name === message.user.name);
+  if (userIndex !== -1) {
+    room.users[userIndex].joinedAt = Date.now();
+  }
   
   const filePath = getRoomFilePath(code);
   fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
@@ -144,6 +164,31 @@ export function updateUserTypingStatus(roomCode: string, userName: string) {
     room.typing = {};
   }
   room.typing[userName] = Date.now();
+  
+  // Update user's last seen time
+  const userIndex = room.users.findIndex(u => u.name === userName);
+  if (userIndex !== -1) {
+    room.users[userIndex].joinedAt = Date.now();
+  }
+
+  const filePath = getRoomFilePath(roomCode);
+  fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
+}
+
+export function joinRoom(roomCode: string, userName: string) {
+  const room = getRoom(roomCode);
+  if (!room) {
+    return;
+  }
+  if (!room.users) {
+    room.users = [];
+  }
+  const userIndex = room.users.findIndex(u => u.name === userName);
+  if (userIndex !== -1) {
+    room.users[userIndex].joinedAt = Date.now();
+  } else {
+    room.users.push({ name: userName, joinedAt: Date.now() });
+  }
 
   const filePath = getRoomFilePath(roomCode);
   fs.writeFileSync(filePath, JSON.stringify(room, null, 2));

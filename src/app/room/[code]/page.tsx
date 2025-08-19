@@ -4,7 +4,7 @@ import { ChatRoom } from '@/components/chat-room';
 
 export const dynamic = 'force-dynamic';
 
-export default async function RoomPage({ params }: { params: { code: string } }) {
+export default async function RoomPage({ params, searchParams }: { params: { code: string }, searchParams: { [key: string]: string | string[] | undefined }}) {
   const room = getRoom(params.code);
 
   if (!room) {

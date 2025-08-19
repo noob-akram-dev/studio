@@ -7,7 +7,7 @@ import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut } from 'lucide-react';
+import { Copy, Check, LogOut, Users } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
+import { joinRoomAndAddUserAction } from '@/app/actions';
 
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
@@ -54,6 +55,14 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       sessionStorage.setItem(`codeyapp-user-${initialRoom.code}`, name);
     }
     setUserName(name);
+
+    if (name) {
+        const formData = new FormData();
+        formData.append('roomCode', initialRoom.code);
+        formData.append('userName', name);
+        joinRoomAndAddUserAction(formData);
+    }
+
   }, [initialRoom.code]);
 
   useEffect(() => {
@@ -105,6 +114,10 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     return Object.keys(room.typing).filter(name => name !== userName);
   }, [room.typing, userName]);
 
+  const activeUsers = useMemo(() => {
+      return room.users?.length || 0;
+  }, [room.users]);
+
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-x-hidden">
@@ -146,6 +159,10 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
             </TooltipProvider>
           </div>
            <CountdownTimer createdAt={room.createdAt} />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Users className="w-4 h-4" />
+                <span>{activeUsers}</span>
+            </div>
         </div>
         <Button variant="ghost" asChild size="sm">
           <Link href="/">

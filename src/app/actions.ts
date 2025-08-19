@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus } from '@/lib/chat-store';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom } from '@/lib/chat-store';
 import type { User } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 import { revalidatePath } from 'next/cache';
@@ -73,4 +73,15 @@ export async function userTypingAction(formData: FormData) {
   
   updateUserTypingStatus(roomCode, userName);
   // We don't need to revalidate here as the client is already polling for updates.
+}
+
+export async function joinRoomAndAddUserAction(formData: FormData) {
+    const roomCode = formData.get('roomCode') as string;
+    const userName = formData.get('userName') as string;
+
+    if (!roomCode || !userName) {
+        return;
+    }
+
+    joinRoom(roomCode, userName);
 }
