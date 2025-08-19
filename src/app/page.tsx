@@ -40,7 +40,7 @@ export default function Home({
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstallPromptEvent);
+      setInstallEvent(e as BeforeInstallGlowEffect);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -65,7 +65,9 @@ export default function Home({
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 overflow-x-hidden">
         <div className="text-center mb-10 sm:mb-12">
-          <Logo className="justify-center" />
+            <div className="inline-block p-4 rounded-full transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
+             <Logo className="justify-center" />
+          </div>
           <p className="text-muted-foreground mt-2 text-md sm:text-lg">
             Yapp about your code. Code about your yap.
           </p>
