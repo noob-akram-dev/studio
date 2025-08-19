@@ -115,7 +115,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [room.typing, userName]);
 
   const activeUsers = useMemo(() => {
-      return room.users?.length || 0;
+      return room.users || [];
   }, [room.users]);
 
 
@@ -185,7 +185,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
-            <MessageForm roomCode={room.code} userName={userName} activeUsers={activeUsers} />
+            <MessageForm roomCode={room.code} userName={userName} users={activeUsers} />
           ) : (
             <p className="text-center text-muted-foreground">Joining room...</p>
           )}

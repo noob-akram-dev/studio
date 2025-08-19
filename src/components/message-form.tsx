@@ -9,6 +9,13 @@ import { Button } from './ui/button';
 import { Send, Loader2, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useDebouncedCallback } from 'use-debounce';
+import type { Room } from '@/lib/types';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Avatar, AvatarFallback } from './ui/avatar';
 
 
 function SubmitButton() {
@@ -27,11 +34,11 @@ function SubmitButton() {
 export function MessageForm({
   roomCode,
   userName,
-  activeUsers,
+  users,
 }: {
   roomCode: string;
   userName: string;
-  activeUsers: number;
+  users: Room['users'];
 }) {
   const [state, formAction] = useActionState(sendMessageAction, null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -83,10 +90,33 @@ export function MessageForm({
         />
         <SubmitButton />
         </form>
-         <div className="flex items-center gap-2 text-sm text-muted-foreground pr-2">
-            <Users className="w-4 h-4" />
-            <span>{activeUsers}</span>
-        </div>
+         <Popover>
+            <PopoverTrigger asChild>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground pr-2 cursor-pointer hover:text-primary transition-colors">
+                    <Users className="w-4 h-4" />
+                    <span>{users.length}</span>
+                </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-64">
+                <div className="space-y-4">
+                    <h4 className="font-medium leading-none">Active Users</h4>
+                     {users.length > 0 ? (
+                        <ul className="space-y-2">
+                        {users.map(user => (
+                            <li key={user.name} className="flex items-center gap-2">
+                                <Avatar className="h-6 w-6 text-xs">
+                                    <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm text-muted-foreground">{user.name}</span>
+                            </li>
+                        ))}
+                        </ul>
+                    ) : (
+                        <p className="text-sm text-muted-foreground">No one else is here.</p>
+                    )}
+                </div>
+            </PopoverContent>
+        </Popover>
     </div>
   );
 }
