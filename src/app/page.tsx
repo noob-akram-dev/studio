@@ -64,7 +64,7 @@ function HomeComponent() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 overflow-x-hidden">
-        <div className="text-center mb-10 sm:mb-12">
+        <div className="text-center mb-10 sm:mb-12 animate-in fade-in slide-in-from-top-12 duration-1000 ease-in-out">
             <div className="inline-block p-4 rounded-full transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
              <Logo className="justify-center" />
           </div>
@@ -95,98 +95,102 @@ function HomeComponent() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
-          <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
-            <CardHeader>
-              <CardTitle>Create a Room</CardTitle>
-              <CardDescription>
-                Start a new session and get a unique room code to share.
-              </CardDescription>
-            </CardHeader>
-            <form action={createRoomAction}>
-              <CardContent>
-                <Tabs defaultValue="public" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="public">Public</TabsTrigger>
-                    <TabsTrigger value="private"><Lock className="mr-2 h-4 w-4" />Private</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="public" className="pt-4">
-                    <p className="text-sm text-muted-foreground">
-                      Anyone with the room code can join.
-                    </p>
-                    <input type="hidden" name="private" value="false" />
-                  </TabsContent>
-                  <TabsContent value="private" className="pt-4 space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                        Only people with the password can join this room.
-                    </p>
-                    <div className="relative">
-                        <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            name="password"
-                            type="password"
-                            placeholder="Enter a password (min 4 chars)"
-                            minLength={4}
-                            required
-                            className="pl-10"
-                        />
-                    </div>
-                    <input type="hidden" name="private" value="true" />
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-              <CardFooter>
-                  <Button
+          <div className="animate-in fade-in slide-in-from-left-12 duration-1000 ease-in-out">
+            <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
+              <CardHeader>
+                <CardTitle>Create a Room</CardTitle>
+                <CardDescription>
+                  Start a new session and get a unique room code to share.
+                </CardDescription>
+              </CardHeader>
+              <form action={createRoomAction}>
+                <CardContent>
+                  <Tabs defaultValue="public" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="public">Public</TabsTrigger>
+                      <TabsTrigger value="private"><Lock className="mr-2 h-4 w-4" />Private</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="public" className="pt-4">
+                      <p className="text-sm text-muted-foreground">
+                        Anyone with the room code can join.
+                      </p>
+                      <input type="hidden" name="private" value="false" />
+                    </TabsContent>
+                    <TabsContent value="private" className="pt-4 space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                          Only people with the password can join this room.
+                      </p>
+                      <div className="relative">
+                          <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                              name="password"
+                              type="password"
+                              placeholder="Enter a password (min 4 chars)"
+                              minLength={4}
+                              required
+                              className="pl-10"
+                          />
+                      </div>
+                      <input type="hidden" name="private" value="true" />
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+                <CardFooter>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      variant="default"
+                    >
+                      Create Room
+                    </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </div>
+
+          <div className="animate-in fade-in slide-in-from-right-12 duration-1000 ease-in-out">
+            <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
+              <CardHeader>
+                <CardTitle>Join an Existing Room</CardTitle>
+                <CardDescription>
+                  Enter a room code and password if required.
+                </CardDescription>
+              </CardHeader>
+              <form action={joinRoomAction} className="w-full">
+                <CardContent className="space-y-4">
+                  <div title="Please enter a 4-digit code">
+                    <Input
+                      name="code"
+                      placeholder="e.g. 1234"
+                      maxLength={4}
+                      required
+                      pattern="\d{4}"
+                      className="text-center text-lg tracking-widest"
+                      defaultValue={code ?? ''}
+                    />
+                  </div>
+                   <div className="relative">
+                      <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                          name="password"
+                          type="password"
+                          placeholder="Enter password (if required)"
+                          className="pl-10"
+                      />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                 <Button
                     type="submit"
                     className="w-full"
-                    variant="default"
+                    variant="secondary"
                   >
-                    Create Room
+                    Join Room
                   </Button>
-              </CardFooter>
-            </form>
-          </Card>
-
-          <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
-            <CardHeader>
-              <CardTitle>Join an Existing Room</CardTitle>
-              <CardDescription>
-                Enter a room code and password if required.
-              </CardDescription>
-            </CardHeader>
-            <form action={joinRoomAction} className="w-full">
-              <CardContent className="space-y-4">
-                <div title="Please enter a 4-digit code">
-                  <Input
-                    name="code"
-                    placeholder="e.g. 1234"
-                    maxLength={4}
-                    required
-                    pattern="\d{4}"
-                    className="text-center text-lg tracking-widest"
-                    defaultValue={code ?? ''}
-                  />
-                </div>
-                 <div className="relative">
-                    <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        name="password"
-                        type="password"
-                        placeholder="Enter password (if required)"
-                        className="pl-10"
-                    />
-                </div>
-              </CardContent>
-              <CardFooter>
-               <Button
-                  type="submit"
-                  className="w-full"
-                  variant="secondary"
-                >
-                  Join Room
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
+                </CardFooter>
+              </form>
+            </Card>
+          </div>
         </div>
       </main>
       <footer className="w-full p-4 border-t border-border">
