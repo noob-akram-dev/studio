@@ -15,9 +15,10 @@ import { createRoomAction, joinRoomAction } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Download, Terminal, Github, Linkedin } from 'lucide-react';
 import { Logo } from '@/components/logo';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { useSearchParams } from 'next/navigation';
 
 // Based on https://web.dev/patterns/pwa/install-pwa
 interface BeforeInstallPromptEvent extends Event {
@@ -29,12 +30,9 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-export default function Home({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const error = searchParams?.error;
+function HomeComponent() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
@@ -181,5 +179,14 @@ export default function Home({
           </div>
         </footer>
     </div>
+  );
+}
+
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeComponent />
+    </Suspense>
   );
 }
