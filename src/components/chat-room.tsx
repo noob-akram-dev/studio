@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useMemo, ElementRef } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Users } from 'lucide-react';
+import { Copy, Check, LogOut, Users, Share2 } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +19,7 @@ import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
 import { joinRoomAndAddUserAction } from '@/app/actions';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import { useToast } from '@/hooks/use-toast';
 
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
@@ -49,6 +50,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const { toast } = useToast();
   
   const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
 
@@ -107,6 +109,15 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     setTimeout(() => setCodeCopied(false), 2000);
   };
   
+  const handleShareLink = () => {
+      const url = `${window.location.origin}/?code=${room.code}`;
+      navigator.clipboard.writeText(url);
+      toast({
+          title: "Link Copied!",
+          description: "A shareable link has been copied to your clipboard.",
+      });
+  }
+
   const typingUsers = useMemo(() => {
     if (!room.typing || !userName) {
       return [];
@@ -157,6 +168,18 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+             <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button onClick={handleShareLink} variant="ghost" size="icon" className="h-8 w-8">
+                            <Share2 className="w-4 h-4" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Copy Share Link</p>
+                    </TooltipContent>
+                </Tooltip>
+             </TooltipProvider>
           </div>
            <CountdownTimer createdAt={room.createdAt} />
         </div>

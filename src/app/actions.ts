@@ -1,28 +1,46 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom } from '@/lib/chat-store';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword } from '@/lib/chat-store';
 import type { User, Room } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 import { revalidatePath } from 'next/cache';
 
-export async function createRoomAction() {
-  const code = createRoom();
+export async function createRoomAction(formData: FormData) {
+  const isPrivate = formData.get('private') === 'true';
+  const password = formData.get('password') as string | undefined;
+
+  if (isPrivate && (!password || password.length < 4)) {
+      redirect('/?error=password_too_short');
+      return;
+  }
+  
+  const code = createRoom(isPrivate, password);
   redirect(`/room/${code}`);
 }
 
 export async function joinRoomAction(formData: FormData) {
   const code = formData.get('code') as string;
+  const password = formData.get('password') as string | undefined;
 
   if (!code) {
     return { error: 'Room code is required.' };
   }
 
-  if (getRoom(code)) {
-    redirect(`/room/${code}`);
-  } else {
+  const room = getRoom(code);
+  if (!room) {
     redirect('/?error=not_found');
+    return;
   }
+
+  if (room.isPrivate) {
+    if (!verifyPassword(code, password)) {
+        redirect(`/?error=invalid_password&code=${code}`);
+        return;
+    }
+  }
+  
+  redirect(`/room/${code}`);
 }
 
 const isCodeBlock = (text: string) => text.trim().startsWith('```');

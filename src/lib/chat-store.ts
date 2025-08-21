@@ -2,6 +2,8 @@
 import type { Room, Message, User } from './types';
 import fs from 'fs';
 import path from 'path';
+import { createHash } from 'crypto';
+
 
 // This is a simple file-based store.
 // In a real-world serverless environment, you'd use a database like Firestore or Redis.
@@ -22,6 +24,10 @@ function getRoomFilePath(code: string): string {
 
 function generateRoomCode(): string {
   return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+function hashPassword(password: string): string {
+    return createHash('sha256').update(password).digest('hex');
 }
 
 function cleanupExpiredRooms() {
@@ -53,7 +59,7 @@ function cleanupExpiredRooms() {
   }
 }
 
-export function createRoom(): string {
+export function createRoom(isPrivate = false, password?: string): string {
   cleanupExpiredRooms(); // Run cleanup every time a new room is requested.
 
   let code: string;
@@ -69,7 +75,13 @@ export function createRoom(): string {
     createdAt: Date.now(),
     typing: {},
     users: [],
+    isPrivate,
   };
+
+  if (isPrivate && password) {
+    newRoom.password = hashPassword(password);
+  }
+
   fs.writeFileSync(filePath, JSON.stringify(newRoom, null, 2));
   console.log(`Room created: ${code}`);
   return code;
@@ -126,6 +138,18 @@ export function getRoom(code: string): Room | undefined {
         return undefined;
     }
 }
+
+export function verifyPassword(code: string, password?: string): boolean {
+    const room = getRoom(code);
+    if (!room || !room.isPrivate) {
+        return true; // Not a private room, or doesn't exist
+    }
+    if (!password) {
+        return false; // Private room but no password provided
+    }
+    return room.password === hashPassword(password);
+}
+
 
 export function addMessage(code: string, message: Omit<Message, 'id' | 'timestamp'>): Message {
   const room = getRoom(code);

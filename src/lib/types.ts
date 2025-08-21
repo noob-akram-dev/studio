@@ -18,4 +18,6 @@ export interface Room {
   createdAt: number;
   typing?: { [userName: string]: number };
   users: { name: string; joinedAt: number; avatarUrl: string; }[];
+  isPrivate?: boolean;
+  password?: string;
 }
