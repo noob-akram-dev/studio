@@ -5,7 +5,6 @@ import type { Room } from '@/lib/types';
 import { useEffect, useState, useRef, useMemo, ElementRef } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
-import { ScrollArea, ScrollAreaViewport } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, LogOut, Users } from 'lucide-react';
 import {
@@ -19,6 +18,7 @@ import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
 import { joinRoomAndAddUserAction } from '@/app/actions';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
@@ -48,7 +48,8 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userName, setUserName] = useState<string>('');
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
-  const scrollAreaRef = useRef<ElementRef<typeof ScrollAreaViewport>>(null);
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
+  
   const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
 
   useEffect(() => {
@@ -70,20 +71,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     }
 
   }, [initialRoom.code]);
-
-  useEffect(() => {
-    const scrollArea = scrollAreaRef.current;
-    if (scrollArea) {
-        setTimeout(() => {
-           if (scrollAreaRef.current) {
-            scrollAreaRef.current.scrollTo({
-              top: scrollAreaRef.current.scrollHeight,
-              behavior: 'smooth'
-            });
-          }
-        }, 100)
-    }
-  }, [lastMessageId]);
   
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -103,6 +90,16 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
     return () => clearInterval(interval);
   }, [initialRoom.code]);
+
+  useEffect(() => {
+    if (virtuosoRef.current) {
+      virtuosoRef.current.scrollToIndex({
+        index: room.messages.length - 1,
+        align: 'end',
+        behavior: 'smooth',
+      });
+    }
+  }, [lastMessageId]);
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(room.code);
@@ -171,22 +168,37 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         </Button>
       </header>
 
-      <ScrollArea className="flex-1 p-2 sm:p-4">
-        <ScrollAreaViewport ref={scrollAreaRef}>
-          <div className="space-y-4 max-w-4xl mx-auto w-full">
-            {room.messages.map((msg) => (
-              <MessageView key={msg.id} message={msg} currentUser={userName} />
-            ))}
-            {room.messages.length === 0 && (
-              <div className="text-center text-muted-foreground py-16">
-                <p>No messages yet.</p>
-                <p>Be the first to say something!</p>
-              </div>
-            )}
-            <TypingIndicator users={typingUsers} />
-          </div>
-        </ScrollAreaViewport>
-      </ScrollArea>
+      <main className="flex-1 overflow-y-auto">
+        <Virtuoso
+            ref={virtuosoRef}
+            className="h-full w-full"
+            totalCount={room.messages.length}
+            initialTopMostItemIndex={room.messages.length - 1}
+            followOutput={'auto'}
+            itemContent={index => {
+              const msg = room.messages[index];
+              return (
+                <div className="p-2 sm:p-4 max-w-4xl mx-auto w-full">
+                  <MessageView key={msg.id} message={msg} currentUser={userName} />
+                </div>
+              );
+            }}
+            components={{
+              Footer: () => (
+                <div className="p-2 sm:p-4 max-w-4xl mx-auto w-full">
+                   <TypingIndicator users={typingUsers} />
+                </div>
+              ),
+              EmptyPlaceholder: () => (
+                  <div className="text-center text-muted-foreground py-16">
+                    <p>No messages yet.</p>
+                    <p>Be the first to say something!</p>
+                  </div>
+              )
+            }}
+          />
+      </main>
+
       <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
