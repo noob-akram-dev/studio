@@ -64,7 +64,7 @@ function HomeComponent() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 overflow-x-hidden">
-        <div className="text-center mb-10 sm:mb-12 animate-in fade-in slide-in-from-top-12 duration-1000 ease-in-out">
+        <div className="text-center mb-10 sm:mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-in-out">
             <div className="inline-block p-4 rounded-full transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
              <Logo className="justify-center" />
           </div>
