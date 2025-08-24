@@ -21,7 +21,7 @@ export default function Icon() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#18181b', // Corresponds to zinc-900 or dark background
+                backgroundColor: '#18181b',
             }}
         >
             <svg
@@ -55,10 +55,7 @@ export default function Icon() {
             </svg>
       </div>
     ),
-    // ImageResponse options
     {
-      // For convenience, we can re-use the exported icons size metadata
-      // config to also set the ImageResponse's width and height.
       ...size,
     }
   )
