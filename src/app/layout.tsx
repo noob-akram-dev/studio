@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   description: 'Yapp about your code. Code about your yapp.',
   manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.ico',
     apple: '/apple-icon.png',
   },
 };
