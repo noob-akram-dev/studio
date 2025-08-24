@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   title: 'Code Yapp',
   description: 'Yapp about your code. Code about your yapp.',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({
