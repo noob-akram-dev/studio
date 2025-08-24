@@ -30,38 +30,7 @@ function hashPassword(password: string): string {
     return createHash('sha256').update(password).digest('hex');
 }
 
-function cleanupExpiredRooms() {
-  console.log('Running cleanup for expired rooms...');
-  try {
-    const files = fs.readdirSync(roomsDir);
-    files.forEach(file => {
-      if (file.endsWith('.json')) {
-        const filePath = path.join(roomsDir, file);
-        try {
-          const fileContent = fs.readFileSync(filePath, 'utf-8');
-          const room = JSON.parse(fileContent);
-          if (room.createdAt && (Date.now() - room.createdAt > ROOM_TTL)) {
-            fs.unlinkSync(filePath);
-            console.log(`Deleted expired room: ${room.code}`);
-          }
-        } catch (error) {
-          console.error(`Error processing or deleting room file ${file}:`, error);
-          // If file is corrupt, delete it.
-          if (error instanceof SyntaxError) {
-            fs.unlinkSync(filePath);
-            console.log(`Deleted corrupt room file: ${file}`);
-          }
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Failed to cleanup expired rooms:', error);
-  }
-}
-
 export function createRoom(isPrivate = false, password?: string): string {
-  cleanupExpiredRooms(); // Run cleanup every time a new room is requested.
-
   let code: string;
   let filePath: string;
   do {
@@ -135,6 +104,11 @@ export function getRoom(code: string): Room | undefined {
         return room;
     } catch (error) {
         console.error(`Error reading room ${code}:`, error);
+        // If file is corrupt, delete it.
+        if (error instanceof SyntaxError) {
+          fs.unlinkSync(filePath);
+          console.log(`Deleted corrupt room file: ${code}`);
+        }
         return undefined;
     }
 }
