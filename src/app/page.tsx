@@ -246,6 +246,10 @@ function HomeComponent() {
               <Github className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
             </Link>
             <Separator orientation="vertical" className="h-5" />
+             <Link href="/blog" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
+              Blog
+            </Link>
+            <Separator orientation="vertical" className="h-5" />
              <Link href="/terms" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
               Terms of Service
             </Link>
