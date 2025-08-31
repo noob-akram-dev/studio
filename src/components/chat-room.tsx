@@ -73,26 +73,11 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     }
 
   }, [initialRoom.code]);
-  
+
   useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/room/${initialRoom.code}`);
-        if (response.ok) {
-          const updatedRoom = await response.json();
-          setRoom(updatedRoom);
-        } else if (response.status === 404) {
-          // Room expired or was deleted, redirect home.
-          window.location.href = '/?error=expired';
-        }
-      } catch (error) {
-        console.error('Failed to fetch room data:', error);
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [initialRoom.code]);
-
+    setRoom(initialRoom);
+  }, [initialRoom]);
+  
   useEffect(() => {
     if (virtuosoRef.current) {
       virtuosoRef.current.scrollToIndex({

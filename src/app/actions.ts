@@ -51,8 +51,8 @@ async function detectAndSetLanguage(roomCode: string, messageId: string, text: s
             const result = await detectProgrammingLanguage({ code: text });
             if (result.language && result.language !== 'Unknown') {
                  await updateMessageLanguage(roomCode, messageId, result.language);
-                 // We can revalidate here to push the updated language to clients
-                 revalidatePath(`/api/room/${roomCode}`);
+                 // Revalidate the room page to show the new language
+                 revalidatePath(`/room/${roomCode}`);
             }
         }
     } catch (error) {
@@ -86,7 +86,7 @@ export async function sendMessageAction(
     // Don't await this. Let it run in the background.
     detectAndSetLanguage(roomCode, newMessage.id, text);
   
-    revalidatePath(`/api/room/${roomCode}`);
+    revalidatePath(`/room/${roomCode}`);
     return { success: true };
 
   } catch (error) {
@@ -104,7 +104,8 @@ export async function userTypingAction(formData: FormData) {
   }
   
   await updateUserTypingStatus(roomCode, userName);
-  // No revalidation needed, client polls for this.
+  // Revalidate to show typing indicators
+  revalidatePath(`/room/${roomCode}`);
 }
 
 export async function joinRoomAndAddUserAction(formData: FormData) {
@@ -117,4 +118,5 @@ export async function joinRoomAndAddUserAction(formData: FormData) {
     }
 
     await joinRoom(roomCode, { name: userName, avatarUrl: userAvatarUrl });
+    revalidatePath(`/room/${roomCode}`);
 }
