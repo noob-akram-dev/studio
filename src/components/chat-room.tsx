@@ -52,7 +52,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const { toast } = useToast();
   
-  const lastMessageId = room.messages.length > 0 ? room.messages[0].id : null;
+  const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
 
   useEffect(() => {
     let name = sessionStorage.getItem(`codeyapp-user-${initialRoom.code}`);
@@ -75,8 +75,23 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [initialRoom.code]);
 
   useEffect(() => {
-    setRoom(initialRoom);
-  }, [initialRoom]);
+    const fetchRoom = async () => {
+      try {
+        const response = await fetch(`/api/room/${initialRoom.code}`);
+        if (response.ok) {
+          const updatedRoom = await response.json();
+          setRoom(updatedRoom);
+        }
+      } catch (error) {
+        console.error('Failed to fetch room data:', error);
+      }
+    };
+
+    const intervalId = setInterval(fetchRoom, 2000); // Poll every 2 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [initialRoom.code]);
   
   useEffect(() => {
     if (virtuosoRef.current) {

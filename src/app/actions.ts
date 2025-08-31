@@ -86,7 +86,8 @@ export async function sendMessageAction(
     // Don't await this. Let it run in the background.
     detectAndSetLanguage(roomCode, newMessage.id, text);
   
-    revalidatePath(`/room/${roomCode}`);
+    // No longer needed with client-side polling
+    // revalidatePath(`/room/${roomCode}`);
     return { success: true };
 
   } catch (error) {
@@ -104,8 +105,8 @@ export async function userTypingAction(formData: FormData) {
   }
   
   await updateUserTypingStatus(roomCode, userName);
-  // Revalidate to show typing indicators
-  revalidatePath(`/room/${roomCode}`);
+  // No longer needed with client-side polling
+  // revalidatePath(`/room/${roomCode}`);
 }
 
 export async function joinRoomAndAddUserAction(formData: FormData) {
@@ -118,5 +119,6 @@ export async function joinRoomAndAddUserAction(formData: FormData) {
     }
 
     await joinRoom(roomCode, { name: userName, avatarUrl: userAvatarUrl });
-    revalidatePath(`/room/${roomCode}`);
+    // No longer needed with client-side polling
+    // revalidatePath(`/room/${roomCode}`);
 }
