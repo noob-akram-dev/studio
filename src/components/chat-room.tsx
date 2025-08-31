@@ -52,7 +52,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const { toast } = useToast();
   
-  const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
+  const lastMessageId = room.messages.length > 0 ? room.messages[0].id : null;
 
   useEffect(() => {
     let name = sessionStorage.getItem(`codeyapp-user-${initialRoom.code}`);

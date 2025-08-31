@@ -1,0 +1,39 @@
+{
+  "code": "4378",
+  "messages": [
+    {
+      "text": "hi",
+      "user": {
+        "id": "Quiet Harpy",
+        "name": "Quiet Harpy",
+        "avatarUrl": "https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Quiet%20Harpy"
+      },
+      "id": "9f3u2rzsk28",
+      "timestamp": 1756624765403
+    },
+    {
+      "text": "hello",
+      "user": {
+        "id": "Quiet Harpy",
+        "name": "Quiet Harpy",
+        "avatarUrl": "https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Quiet%20Harpy"
+      },
+      "id": "ixh08ng82k",
+      "timestamp": 1756624769521
+    },
+    {
+      "text": "what do you thinlk",
+      "user": {
+        "id": "Vast Walrus",
+        "name": "Vast Walrus",
+        "avatarUrl": "https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Vast%20Walrus"
+      },
+      "id": "rdfnmz09ctj",
+      "timestamp": 1756624808652
+    }
+  ],
+  "createdAt": 1756624757987,
+  "typing": {},
+  "users": [],
+  "isPrivate": false
+}
