@@ -159,7 +159,7 @@ function HomeComponent() {
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstallGPromptEvent);
+      setInstallEvent(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -254,13 +254,13 @@ function HomeComponent() {
               Blog
             </Link>
              <Link href="/terms" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
-              Terms
+              Terms and Conditions
             </Link>
              <Link href="/faq" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
               FAQ
             </Link>
              <Link href="/privacy" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
-              Privacy
+              Privacy Policy
             </Link>
             {installEvent && (
               <button onClick={handleInstallClick} className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
