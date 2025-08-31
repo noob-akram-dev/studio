@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createRoomAction, joinRoomAction } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Download, Terminal, Github, Linkedin, Lock, Key, Code, Zap, ShieldCheck, Timer } from 'lucide-react';
+import { Download, Terminal, Github, Linkedin, Lock, Key, Code, ShieldCheck, Timer } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -248,6 +248,10 @@ function HomeComponent() {
             <Separator orientation="vertical" className="h-5" />
              <Link href="/terms" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
               Terms of Service
+            </Link>
+             <Separator orientation="vertical" className="h-5" />
+             <Link href="/faq" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
+              FAQ
             </Link>
             <Separator orientation="vertical" className="h-5" />
              <Link href="/privacy" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
