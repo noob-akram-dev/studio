@@ -134,7 +134,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'top-features-for-communities',
     title: 'Top 5 Features Every Online Community Chat App Needs in 2025',
-    imageUrl: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=2070&auto=format&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1488998287214-1e668a8e0dc4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOHx8Y2hhdHxlbnwwfHx8fDE3NTY2MzU5NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     imageHint: 'online community',
     description: 'Running an online community? Here are the essential features your chat platform should have in 2025 to foster engagement, ensure member safety, and make management a breeze. Discover why secure chat and ephemeral messaging are key.',
     date: '2025-08-28',
