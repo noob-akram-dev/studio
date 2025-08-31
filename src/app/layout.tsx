@@ -6,14 +6,14 @@ import { Toaster } from "@/components/ui/toaster"
 const siteConfig = {
   name: 'Code Yapp',
   url: 'https://code-yapp.com', // Replace with your actual domain
-  description: 'A secure, private, and ephemeral chat application. Create temporary, anonymous chat rooms that are automatically deleted. No history, no logs, just private conversation.',
-  keywords: ['private chat', 'ephemeral chat', 'temporary chat', 'secure messaging', 'anonymous chat', 'disappearing messages', 'no logs chat'],
+  description: 'The private and ephemeral chat for developers. Share and discuss code snippets in secure, temporary chat rooms that are automatically deleted. No history, no logs, just secure collaboration.',
+  keywords: ['private chat for developers', 'secure code sharing', 'ephemeral chat', 'temporary chat', 'developer chat', 'code snippets', 'secure messaging', 'anonymous chat'],
 }
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} - Secure & Ephemeral Chat`,
+    default: `${siteConfig.name} - Private & Ephemeral Chat for Developers`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,

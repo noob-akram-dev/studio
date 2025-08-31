@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createRoomAction, joinRoomAction } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Download, Terminal, Github, Linkedin, Lock, Key, CheckCircle, Zap, ShieldCheck, Timer } from 'lucide-react';
+import { Download, Terminal, Github, Linkedin, Lock, Key, Code, Zap, ShieldCheck, Timer } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -188,10 +188,10 @@ function HomeComponent() {
              <Logo className="justify-center" />
             </div>
             <h1 className="text-3xl sm:text-5xl font-bold mt-4">
-              Your Conversation, Gone in a Flash.
+              Private Chat for Developers.
             </h1>
             <p className="text-muted-foreground mt-4 text-md sm:text-lg max-w-2xl mx-auto">
-              Code Yapp is a free, ephemeral chat service. Create secure, temporary chat rooms that are automatically deleted after 2 hours. No sign-up, no history, just truly private conversations.
+              Share and discuss code in secure, temporary chat rooms. No sign-up, no history, just private, ephemeral collaboration for you and your team.
             </p>
         </div>
         
@@ -209,20 +209,20 @@ function HomeComponent() {
         </Suspense>
         
          <section className="w-full max-w-4xl mx-auto mt-24 text-center">
-          <h2 className="text-3xl font-bold mb-8">Why Use Code Yapp?</h2>
+          <h2 className="text-3xl font-bold mb-8">Secure, Swift, and Simple</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
-              <Zap className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Instant & Anonymous</h3>
+              <Code className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Developer Focused</h3>
               <p className="text-muted-foreground">
-                No accounts, no waiting. Create a chat room in seconds and join anonymously. Perfect for quick, private discussions without leaving a trace.
+                Built for coding discussions with syntax highlighting and easy code sharing. Perfect for pair programming, interviews, or quick debugging sessions.
               </p>
             </div>
             <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
               <ShieldCheck className="h-12 w-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Secure & Private</h3>
               <p className="text-muted-foreground">
-                Your conversations are your own. Use password-protected private rooms for sensitive discussions. We never store your data long-term.
+                Your conversations are your own. Use password-protected private rooms. We never store your data long-term.
               </p>
             </div>
             <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
@@ -269,9 +269,9 @@ function HomeComponent() {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
             "name": "Code Yapp",
-            "applicationCategory": "CommunicationApplication",
+            "applicationCategory": "DeveloperTool",
             "operatingSystem": "WEB",
-            "description": "A secure, private, and ephemeral chat application for temporary, anonymous conversations that are automatically deleted.",
+            "description": "A private and ephemeral chat application for developers to share and discuss code snippets in secure, temporary chat rooms.",
             "offers": {
               "@type": "Offer",
               "price": "0",
@@ -280,6 +280,7 @@ function HomeComponent() {
              "featureList": [
                 "Ephemeral Chat Rooms",
                 "Password-Protected Private Rooms",
+                "Syntax Highlighting",
                 "Anonymous Usernames",
                 "No Registration Required",
                 "Automatic Data Deletion"
