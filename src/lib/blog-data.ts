@@ -56,4 +56,72 @@ export const posts: BlogPost[] = [
       <p class="mt-4">Code Yapp was built with this in mind. With no sign-up required, password-protected rooms, and automatic 2-hour deletion, it's designed to be the quickest and safest way for developers to have a technical discussion. It's not just about privacy; it's about good security hygiene.</p>
     `,
   },
+  {
+    slug: 'reduce-meetings-with-chat',
+    title: '7 Ways to Reduce Unnecessary Meetings with Real-Time Chat',
+    imageUrl: 'https://picsum.photos/1200/630',
+    imageHint: 'business meeting',
+    description: 'Tired of back-to-back meetings? Discover how using a simple, real-time chat tool can reclaim your calendar and boost your team\'s productivity.',
+    date: '2025-08-22',
+    content: `
+      <p>The modern workplace is plagued by a common enemy: the unnecessary meeting. It breaks your focus, disrupts your workflow, and often could have been handled with a quick conversation. The good news is that there's a powerful alternative: real-time chat.</p>
+      <p>By leveraging a tool like Code Yapp, you can resolve issues faster and keep projects moving without ever having to book a conference room. Here are seven ways to start.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">1. Quick Status Updates</h2>
+      <p>Instead of a daily 30-minute stand-up, create a dedicated chat room for your project. Team members can post their updates when they start their day, and everyone can read them on their own time. This keeps everyone informed without the synchronous overhead.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">2. Fast, Focused Problem Solving</h2>
+      <p>Have a quick question or a blocker? Instead of scheduling a call, create a temporary room, invite the relevant people, and solve the problem. With Code Yapp, you can even password-protect it for sensitive issues. The conversation disappears in 2 hours, leaving no clutter.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">3. Collaborative Document Review</h2>
+      <p>Rather than a live review session, paste a short text or snippet into the chat and ask for feedback. Team members can respond with their thoughts and edits asynchronously.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">4. Immediate Polls and Feedback</h2>
+      <p>Need a quick decision on a small matter? Just ask the question in the chat. "Do we prefer option A or B?" This gets you an answer in minutes, not hours or days.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">5. Pre-Meeting Agendas</h2>
+      <p>If a meeting is unavoidable, use a chat room beforehand to set the agenda and share relevant documents. This ensures everyone arrives prepared and the meeting is as efficient as possible.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">6. One-on-One Check-ins</h2>
+      <p>A quick "How's it going?" in a private chat can often be more personal and effective than a formal one-on-one meeting, especially for quick check-ins on progress or well-being.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">7. Post-Meeting Action Items</h2>
+      <p>After a meeting, summarize the key decisions and action items in a chat room. This provides a clear, temporary record of what needs to happen next, without getting lost in email threads.</p>
+    `
+  },
+  {
+    slug: 'deep-dive-into-security',
+    title: 'A Deep Dive into Our Security: How We Keep Your Conversations Private',
+    imageUrl: 'https://picsum.photos/1200/630',
+    imageHint: 'data security',
+    description: 'Trust is everything in a private chat app. This article breaks down the core security principles that make Code Yapp a safe place for your temporary conversations.',
+    date: '2025-08-25',
+    content: `
+      <p>When we built Code Yapp, our primary goal was to create a chat service that respects your privacy from the ground up. We believe that you should be in control of your data, and that includes the choice for it to not exist forever. This article offers a transparent look at the security measures we've put in place.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">1. Ephemeral by Design: The 2-Hour Rule</h2>
+      <p>The most powerful security feature we have is what we *don't* do: we don't store your data long-term. Every chat room created on Code Yapp is automatically and permanently deleted from our servers 2 hours after its creation. This isn't an optional setting; it's the core of our architecture. If data doesn't exist, it can't be stolen, leaked, or subpoenaed.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">2. No Accounts, No History, No Tracking</h2>
+      <p>We don't require you to create an account. When you join a room, you're assigned a random, anonymous name. We don't ask for your email, your phone number, or your real name. This anonymity means your conversations are not tied to your personal identity. We don't build user profiles and we don't track you across sessions.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">3. HTTPS Encryption in Transit</h2>
+      <p>All communication between your browser and our servers is encrypted using standard Transport Layer Security (TLS), the same technology that protects your online banking and shopping. This prevents eavesdroppers from intercepting your conversations as they travel across the internet.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">4. Optional Password Protection</h2>
+      <p>For an added layer of security, you can create a private room with a password. Only users who have both the 4-digit room code and the password can enter the chat. This is ideal for discussions that are sensitive and require a specific audience.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">A Note on End-to-End Encryption</h2>
+      <p>While we provide robust security for temporary chats, it's important to note that Code Yapp is not end-to-end encrypted (E2EE). E2EE is a powerful standard, but it presents challenges for features like syntax highlighting that require server-side processing. For the vast majority of private conversations and code-sharing, our ephemeral model provides exceptional security. As always, we advise users to be mindful and avoid sharing their most critical secrets like permanent passwords or private keys.</p>
+    `
+  },
+  {
+    slug: 'top-features-for-communities',
+    title: 'Top 5 Features Every Online Community Chat App Needs in 2025',
+    imageUrl: 'https://picsum.photos/1200/630',
+    imageHint: 'online community',
+    description: 'Running an online community? Here are the essential features your chat platform should have to foster engagement, ensure safety, and make management a breeze.',
+    date: '2025-08-28',
+    content: `
+      <p>Building a vibrant online community requires more than just a place to talk. It requires a tool that is easy to use, safe for members, and simple for managers to administrate. As communities evolve, the platforms that support them must evolve too. Here are the top five features every community chat app should have in 2025.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">1. Frictionless Onboarding</h2>
+      <p>The easier it is for a new member to join the conversation, the more likely they are to stick around. Requiring lengthy sign-up processes is a major barrier. A great community app allows new users to join instantly. With Code Yapp, a new member just needs a link and a room code—they can join from any browser in seconds without creating an account.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">2. Clear Member Lists</h2>
+      <p>Knowing who is currently in the room is vital for building a sense of community and for moderation. A simple, visible list of active users lets members know who they're talking to and helps community managers keep an eye on the room. This visibility fosters a more personal and accountable environment.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">3. Control Over Access</h2>
+      <p>Not every conversation should be public. Community managers need the ability to create private, protected spaces for specific discussions. Password-protected rooms, like those in Code Yapp, are perfect for leadership meetings, event planning, or sensitive topic discussions, ensuring only the right people have access.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">4. Rich Content Sharing</h2>
+      <p>A modern community chat is more than just text. The ability to share formatted content, especially code snippets with proper syntax highlighting, is crucial for technical communities. This makes sharing information clearer, more readable, and more professional.</p>
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">5. An Emphasis on Privacy and Safety</h2>
+      <p>Members need to feel safe. A platform that is ephemeral by design, like Code Yapp, offers a unique kind of safety. It's perfect for support groups, Q&A sessions, or any event where attendees may not want their questions or comments stored permanently. It creates a "safe space" where conversations can happen freely before they disappear.</p>
+    `
+  }
 ];
