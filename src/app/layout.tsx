@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
@@ -5,14 +6,14 @@ import { Toaster } from "@/components/ui/toaster"
 const siteConfig = {
   name: 'Code Yapp',
   url: 'https://code-yapp.com', // Replace with your actual domain
-  description: 'A real-time, temporary chat application for developers to share and discuss code snippets collaboratively. Create public or private chat rooms that expire in 2 hours.',
-  keywords: ['developer chat', 'code sharing', 'real-time collaboration', 'pair programming', 'temporary chat', 'ephemeral chat', 'code snippets'],
+  description: 'A secure, private, and ephemeral chat application. Create temporary, anonymous chat rooms that are automatically deleted. No history, no logs, just private conversation.',
+  keywords: ['private chat', 'ephemeral chat', 'temporary chat', 'secure messaging', 'anonymous chat', 'disappearing messages', 'no logs chat'],
 }
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} - Real-Time Code Collaboration`,
+    default: `${siteConfig.name} - Secure & Ephemeral Chat`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,

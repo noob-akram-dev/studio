@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createRoomAction, joinRoomAction } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Download, Terminal, Github, Linkedin, Lock, Key, CheckCircle, Zap, ShieldCheck } from 'lucide-react';
+import { Download, Terminal, Github, Linkedin, Lock, Key, CheckCircle, Zap, ShieldCheck, Timer } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -56,7 +56,7 @@ function JoinCreateForms() {
               <CardHeader>
                 <CardTitle>Create a Room</CardTitle>
                 <CardDescription>
-                  Start a new session and get a unique room code to share.
+                  Start a new, private session and get a unique room code to share.
                 </CardDescription>
               </CardHeader>
               <form action={createRoomAction}>
@@ -188,10 +188,10 @@ function HomeComponent() {
              <Logo className="justify-center" />
             </div>
             <h1 className="text-3xl sm:text-5xl font-bold mt-4">
-              Real-Time Code Collaboration, Simplified.
+              Your Conversation, Gone in a Flash.
             </h1>
             <p className="text-muted-foreground mt-4 text-md sm:text-lg max-w-2xl mx-auto">
-              Code Yapp is a free, temporary chat service for developers. Share code snippets, discuss solutions, and collaborate in real-time with public or private rooms. No sign-up required, just instant, ephemeral chat.
+              Code Yapp is a free, ephemeral chat service. Create secure, temporary chat rooms that are automatically deleted after 2 hours. No sign-up, no history, just truly private conversations.
             </p>
         </div>
         
@@ -213,23 +213,23 @@ function HomeComponent() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
               <Zap className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Instant Setup</h3>
+              <h3 className="text-xl font-semibold mb-2">Instant & Anonymous</h3>
               <p className="text-muted-foreground">
-                No accounts, no waiting. Create a chat room in seconds and start collaborating instantly. Perfect for quick pair programming sessions or technical interviews.
+                No accounts, no waiting. Create a chat room in seconds and join anonymously. Perfect for quick, private discussions without leaving a trace.
               </p>
             </div>
             <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
               <ShieldCheck className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Private & Ephemeral</h3>
+              <h3 className="text-xl font-semibold mb-2">Secure & Private</h3>
               <p className="text-muted-foreground">
-                All chat rooms are automatically deleted after 2 hours. Use password-protected private rooms for sensitive discussions. Your conversations are temporary by design.
+                Your conversations are your own. Use password-protected private rooms for sensitive discussions. We never store your data long-term.
               </p>
             </div>
             <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
-              <CheckCircle className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Developer Focused</h3>
+               <Timer className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Ephemeral by Design</h3>
               <p className="text-muted-foreground">
-                With automatic syntax highlighting, sharing code is clean and readable. The interface is built for developers who need to get things done quickly.
+                All chat rooms and their content are automatically and permanently deleted after 2 hours. Your conversations disappear, for good.
               </p>
             </div>
           </div>
@@ -269,14 +269,21 @@ function HomeComponent() {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
             "name": "Code Yapp",
-            "applicationCategory": "DeveloperTool",
+            "applicationCategory": "CommunicationApplication",
             "operatingSystem": "WEB",
-            "description": "A real-time, temporary chat application for developers to share and discuss code snippets collaboratively.",
+            "description": "A secure, private, and ephemeral chat application for temporary, anonymous conversations that are automatically deleted.",
             "offers": {
               "@type": "Offer",
               "price": "0",
               "priceCurrency": "USD"
             },
+             "featureList": [
+                "Ephemeral Chat Rooms",
+                "Password-Protected Private Rooms",
+                "Anonymous Usernames",
+                "No Registration Required",
+                "Automatic Data Deletion"
+            ],
             "author": {
                 "@type": "Person",
                 "name": "Akram Shakil"
