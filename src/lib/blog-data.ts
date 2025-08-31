@@ -2,6 +2,8 @@
 export interface BlogPost {
   slug: string;
   title: string;
+  imageUrl: string;
+  imageHint: string;
   description: string;
   date: string;
   content: string;
@@ -11,6 +13,8 @@ export const posts: BlogPost[] = [
   {
     slug: 'why-ephemeral-chat-matters',
     title: 'The Power of "Off the Record": Why Ephemeral Chat Matters',
+    imageUrl: 'https://picsum.photos/1200/630',
+    imageHint: 'security privacy',
     description: 'In a world where digital conversations are permanent, discover the freedom and security that temporary, ephemeral chat provides for modern collaboration.',
     date: '2025-08-15',
     content: `
@@ -32,6 +36,8 @@ export const posts: BlogPost[] = [
   {
     slug: 'secure-collaboration-for-developers',
     title: 'Secure Collaboration: A Developer\'s Guide to Private Chat',
+    imageUrl: 'https://picsum.photos/1200/630',
+    imageHint: 'developer coding',
     description: 'Developers constantly share sensitive information. Learn how using a private, temporary chat tool is a critical best practice for modern software development.',
     date: '2025-08-20',
     content: `

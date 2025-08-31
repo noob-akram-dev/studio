@@ -1,10 +1,11 @@
 
 import Link from 'next/link';
 import { posts, type BlogPost } from '@/lib/blog-data';
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Blog - Code Yapp',
@@ -14,12 +15,24 @@ export const metadata: Metadata = {
 
 function PostCard({ post }: { post: BlogPost }) {
     return (
-        <Card className="flex flex-col h-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30">
-            <CardHeader>
-                <CardTitle className="text-2xl">{post.title}</CardTitle>
-                <CardDescription>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</CardDescription>
+        <Card className="flex flex-col h-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30 overflow-hidden">
+            <CardHeader className="p-0">
+                <Link href={`/blog/${post.slug}`} className="block relative aspect-video">
+                    <Image
+                        src={post.imageUrl}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={post.imageHint}
+                    />
+                </Link>
             </CardHeader>
-            <CardFooter className="mt-auto">
+            <CardContent className="p-6 flex-1 flex flex-col">
+                <CardTitle className="text-2xl mb-2">{post.title}</CardTitle>
+                <CardDescription className="flex-1">{post.description}</CardDescription>
+                <p className="text-sm text-muted-foreground mt-4">{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </CardContent>
+            <CardFooter className="p-6 pt-0">
                 <Button asChild variant="secondary" className="w-full">
                     <Link href={`/blog/${post.slug}`}>
                         Read More <ArrowRight className="ml-2 h-4 w-4" />
@@ -44,7 +57,7 @@ export default function BlogIndexPage() {
         </header>
 
         <main>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {sortedPosts.map(post => (
               <PostCard key={post.slug} post={post} />
             ))}
