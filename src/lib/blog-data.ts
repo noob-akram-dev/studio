@@ -242,7 +242,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'why-ephemeral-chat-matters',
     title: 'The Power of "Off the Record": Why Ephemeral Chat Matters',
-    imageUrl: 'https://picsum.photos/1200/630?grayscale',
+    imageUrl: 'https://images.unsplash.com/photo-1583521214690-73421a1829a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmaWxlc3xlbnwwfHx8fDE3NTY2MzYyNzl8MA&ixlib=rb-4.1.0&q=80&w=1080',
     imageHint: 'security privacy',
     description: 'In a world where digital conversations are permanent, discover the freedom and security that temporary, ephemeral chat provides for modern collaboration. Learn why private chat is more than just a feature.',
     date: '2025-08-15',
@@ -263,6 +263,8 @@ export const posts: BlogPost[] = [
     `
   }
 ];
+
+    
 
     
 
