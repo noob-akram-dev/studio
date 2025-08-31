@@ -188,7 +188,7 @@ function HomeComponent() {
              <Logo className="justify-center" />
             </div>
             <h1 className="text-3xl sm:text-5xl font-bold mt-4">
-              Private Chat for Developers.
+              Private Chat for Everyone.
             </h1>
             <p className="text-muted-foreground mt-4 text-md sm:text-lg max-w-2xl mx-auto">
               Get a secure, temporary chat room for any private discussion. Ideal for developers sharing code and for anyone who needs to talk "off the record."
