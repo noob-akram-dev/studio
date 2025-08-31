@@ -71,7 +71,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'code-yapp-vs-slack-simplicity-is-the-future',
     title: 'Code Yapp vs. Slack: Why Simplicity is the Future of Team Communication',
-    imageUrl: 'https://placehold.co/1200x630/27272a/fafafa?text=Simplicity+vs+Complexity',
+    imageUrl: 'https://images.unsplash.com/photo-1559523182-a284c3fb7cff?q=80&w=1974&auto=format&fit=crop',
     imageHint: 'simplicity vs complexity',
     description: 'Is your team drowning in Slack notifications? Discover how Code Yapp\'s focus on simple, private, and ephemeral chat offers a faster, more focused alternative for modern team communication.',
     date: '2025-08-30',
@@ -134,7 +134,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'top-features-for-communities',
     title: 'Top 5 Features Every Online Community Chat App Needs in 2025',
-    imageUrl: 'https://placehold.co/1200x630/27272a/fafafa?text=Online+Community',
+    imageUrl: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=2070&auto=format&fit=crop',
     imageHint: 'online community',
     description: 'Running an online community? Here are the essential features your chat platform should have in 2025 to foster engagement, ensure member safety, and make management a breeze. Discover why secure chat and ephemeral messaging are key.',
     date: '2025-08-28',
@@ -160,7 +160,7 @@ export const posts: BlogPost[] = [
    {
     slug: 'deep-dive-into-security',
     title: 'A Deep Dive into Our Security: How We Keep Your Conversations Private',
-    imageUrl: 'https://placehold.co/1200x630/27272a/fafafa?text=Data+Security',
+    imageUrl: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=1902&auto=format&fit=crop',
     imageHint: 'data security',
     description: 'Trust is everything in a private chat app. This article breaks down the security principles like ephemeral storage and HTTPS that make Code Yapp a safe place for your temporary conversations. Learn how secure chat is built into our core.',
     date: '2025-08-25',
@@ -186,7 +186,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'reduce-meetings-with-chat',
     title: '7 Ways to Reduce Unnecessary Meetings with Real-Time Chat',
-    imageUrl: 'https://placehold.co/1200x630/27272a/fafafa?text=Business+Meeting',
+    imageUrl: 'https://images.unsplash.com/photo-1573497491208-6b1acb260507?q=80&w=2070&auto=format&fit=crop',
     imageHint: 'business meeting',
     description: 'Tired of back-to-back meetings? Discover how using a simple, real-time chat tool like Code Yapp can reclaim your calendar and boost your team\'s productivity through better, ephemeral communication.',
     date: '2025-08-22',
@@ -219,7 +219,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'secure-collaboration-for-developers',
     title: 'Secure Collaboration: A Developer\'s Guide to Private Chat',
-    imageUrl: 'https://placehold.co/1200x630/27272a/fafafa?text=Developer+Coding',
+    imageUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop',
     imageHint: 'developer coding',
     description: 'Developers constantly share sensitive information. Learn how using a private, temporary chat tool with ephemeral messaging is a critical best practice for modern software development and secure collaboration.',
     date: '2025-08-20',
@@ -242,7 +242,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'why-ephemeral-chat-matters',
     title: 'The Power of "Off the Record": Why Ephemeral Chat Matters',
-    imageUrl: 'https://placehold.co/1200x630/27272a/fafafa?text=Security+Privacy',
+    imageUrl: 'https://images.unsplash.com/photo-1563206767-5b18f218e8de?q=80&w=2069&auto=format&fit=crop',
     imageHint: 'security privacy',
     description: 'In a world where digital conversations are permanent, discover the freedom and security that temporary, ephemeral chat provides for modern collaboration. Learn why private chat is more than just a feature.',
     date: '2025-08-15',
