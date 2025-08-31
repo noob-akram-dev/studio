@@ -1,3 +1,4 @@
+
 import type { Room, Message, User } from './types';
 import { createHash } from 'crypto';
 import getRedisClient from './redis';
@@ -6,9 +7,19 @@ const ROOM_TTL_SECONDS = 2 * 60 * 60; // 2 hours in seconds
 const TYPING_TIMEOUT_SECONDS = 3; // 3 seconds
 const USER_INACTIVE_TIMEOUT_SECONDS = 5 * 60; // 5 minutes
 const MAX_MESSAGES_PER_ROOM = 100;
+const EVENTS_CHANNEL_PREFIX = 'room:events:';
 
-function getRoomKey(code: string): string {
+export function getRoomKey(code: string): string {
     return `room:${code}`;
+}
+
+async function publishRoomUpdate(code: string) {
+    const redis = getRedisClient();
+    const room = await getRoom(code);
+    if (room) {
+        // Use a Redis stream to publish the update
+        await redis.xadd(`${getRoomKey(code)}:events`, '*', 'data', JSON.stringify(room));
+    }
 }
 
 function generateRoomCode(): string {
@@ -159,6 +170,7 @@ export async function addMessage(code: string, message: Omit<Message, 'id' | 'ti
     }
     
     await pipeline.exec();
+    await publishRoomUpdate(code);
     return newMessage;
 }
 
@@ -191,6 +203,7 @@ export async function updateUserTypingStatus(roomCode: string, userName: string)
     }
 
     await pipeline.exec();
+    await publishRoomUpdate(roomCode);
 }
 
 export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'joinedAt'>) {
@@ -211,6 +224,7 @@ export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'j
     userData.joinedAt = now;
 
     await redis.hset(userKey, user.name, JSON.stringify(userData));
+    await publishRoomUpdate(roomCode);
 }
 
 export async function updateMessageLanguage(roomCode: string, messageId: string, language: string) {
@@ -238,5 +252,6 @@ export async function updateMessageLanguage(roomCode: string, messageId: string,
         messageToUpdate.language = language;
         // Update the message in the list at the specific index
         await redis.lset(messagesKey, messageIndex, JSON.stringify(messageToUpdate));
+        await publishRoomUpdate(roomCode);
     }
 }

@@ -75,22 +75,22 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [initialRoom.code]);
 
   useEffect(() => {
-    const fetchRoom = async () => {
-      try {
-        const response = await fetch(`/api/room/${initialRoom.code}`);
-        if (response.ok) {
-          const updatedRoom = await response.json();
-          setRoom(updatedRoom);
-        }
-      } catch (error) {
-        console.error('Failed to fetch room data:', error);
-      }
+    const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
+    
+    eventSource.onmessage = (event) => {
+        const updatedRoom = JSON.parse(event.data);
+        setRoom(updatedRoom);
     };
 
-    const intervalId = setInterval(fetchRoom, 2000); // Poll every 2 seconds
+    eventSource.onerror = (err) => {
+        console.error("EventSource failed:", err);
+        eventSource.close();
+    };
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
+    // Cleanup on component unmount
+    return () => {
+        eventSource.close();
+    };
   }, [initialRoom.code]);
   
   useEffect(() => {
@@ -122,7 +122,10 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     if (!room.typing || !userName) {
       return [];
     }
-    return Object.keys(room.typing).filter(name => name !== userName);
+    const now = Date.now();
+    return Object.entries(room.typing)
+      .filter(([name, timestamp]) => name !== userName && (now - timestamp < 3000))
+      .map(([name]) => name);
   }, [room.typing, userName]);
 
   const activeUsers = useMemo(() => {
