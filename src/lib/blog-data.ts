@@ -13,7 +13,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'beyond-vanish-mode',
     title: 'Beyond Vanish Mode: How True Ephemeral Chat Protects Your Privacy',
-    imageUrl: 'https://images.unsplash.com/photo-1550751827-4138d04d42e3?q=80&w=2070&auto=format&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1613987750911-f768497fb94b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwcml2YWN5fGVufDB8fHx8MTc1NjYzNjEwNnww&ixlib=rb-4.1.0&q=80&w=1080',
     imageHint: 'disappearing message',
     description: 'Instagram and Snapchat have "vanish mode," but is it truly private? Discover the difference between a privacy feature and a privacy-first platform like Code Yapp, and see why ephemeral messaging and secure chat are not the same.',
     date: '2025-08-02',
@@ -201,7 +201,7 @@ export const posts: BlogPost[] = [
       <p>Have a quick question or a blocker? Instead of scheduling a call, create a temporary room, invite the relevant people, and solve the problem. With Code Yapp, you can even password-protect it for sensitive issues. The conversation and all its contents are gone in 2 hours, leaving no digital clutter and enhancing team collaboration. This is the essence of private chat: focused and secure.</p>
 
       <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">3. Asynchronous Document Review</h2>
-      <p>Rather than a live screen-share session to review a short document or code, paste the snippet into a private chat room and ask for feedback. Team members can respond with their thoughts and edits asynchronously, respecting everyone's focus time. For developers, this makes developer collaboration on code seamless.</p>
+      <p>Rather than a live screen-share session to review a short document or code, paste the short document or code into a private chat room and ask for feedback. Team members can respond with their thoughts and edits asynchronously, respecting everyone's focus time. For developers, this makes developer collaboration on code seamless.</p>
 
       <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">4. Immediate Polls and Feedback</h2>
       <p>Need a quick decision on a small matter? Just ask the question in the chat. "Do we prefer option A or B?" This simple tactic gets you an answer in minutes, not hours or days, improving your business communication without the need for a formal meeting.</p>
@@ -242,7 +242,7 @@ export const posts: BlogPost[] = [
   {
     slug: 'why-ephemeral-chat-matters',
     title: 'The Power of "Off the Record": Why Ephemeral Chat Matters',
-    imageUrl: 'https://images.unsplash.com/photo-1563206767-5b18f218e8de?q=80&w=2069&auto=format&fit=crop',
+    imageUrl: 'https://picsum.photos/1200/630?grayscale',
     imageHint: 'security privacy',
     description: 'In a world where digital conversations are permanent, discover the freedom and security that temporary, ephemeral chat provides for modern collaboration. Learn why private chat is more than just a feature.',
     date: '2025-08-15',
@@ -263,5 +263,7 @@ export const posts: BlogPost[] = [
     `
   }
 ];
+
+    
 
     
