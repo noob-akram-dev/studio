@@ -17,8 +17,9 @@ async function publishRoomUpdate(code: string) {
     const redis = getRedisClient();
     const room = await getRoom(code);
     if (room) {
-        // Use a Redis stream to publish the update
-        await redis.xadd(`${getRoomKey(code)}:events`, '*', 'data', JSON.stringify(room));
+        // Use Redis Pub/Sub to publish the update
+        const channel = `${EVENTS_CHANNEL_PREFIX}${code}`;
+        await redis.publish(channel, JSON.stringify(room));
     }
 }
 

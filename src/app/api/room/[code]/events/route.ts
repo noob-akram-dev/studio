@@ -1,7 +1,5 @@
 
-'use client';
-
-import { getRoomKey, getRoom } from '@/lib/chat-store';
+import { getRoom } from '@/lib/chat-store';
 import getRedisClient from '@/lib/redis';
 import type { Room } from '@/lib/types';
 import { NextRequest } from 'next/server';
@@ -9,11 +7,10 @@ import { NextRequest } from 'next/server';
 export const dynamic = 'force-dynamic'
 
 async function* makeIterator(req: NextRequest, code: string) {
-    const roomKey = getRoomKey(code);
-    const channel = `room:${code}:events`;
+    const channel = `room:events:${code}`;
     
     // Set up a new Redis client for subscribing, as a subscribed client cannot be used for other commands.
-    const subClient = getRedisClient();
+    const subClient = getRedisClient(true);
     await subClient.subscribe(channel);
     
     const initialRoomState = await getRoom(code);
@@ -24,12 +21,29 @@ async function* makeIterator(req: NextRequest, code: string) {
     // Generator function that yields messages from the subscribed Redis client
     const messageIterator = (async function*() {
         while (!req.signal.aborted) {
-            const result = await subClient.xread('BLOCK', 0, 'STREAMS', channel, '$');
-            if (result) {
-                // @ts-ignore
-                const [[,[[,[,data]]]]] = result;
-                const room = JSON.parse(data) as Room;
+            try {
+                const message = await new Promise<string | null>((resolve) => {
+                    subClient.once('message', (channel, message) => {
+                        resolve(message);
+                    });
+
+                    // If the request is aborted, we resolve with null to break the loop
+                    req.signal.addEventListener('abort', () => resolve(null));
+                });
+
+                if (message === null) {
+                    break; // Client disconnected
+                }
+
+                const room = JSON.parse(message) as Room;
                 yield `data: ${JSON.stringify(room)}\n\n`;
+
+            } catch (error) {
+                // This can happen if the connection is closed, which is expected on disconnect.
+                if (!req.signal.aborted) {
+                    console.error(`Error reading from Redis pub/sub for room ${code}:`, error);
+                }
+                break;
             }
         }
     })();
@@ -56,6 +70,9 @@ function iteratorToStream(iterator: any) {
         controller.enqueue(value)
       }
     },
+     async cancel() {
+      await iterator.return();
+    }
   })
 }
 
