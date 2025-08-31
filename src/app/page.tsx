@@ -159,7 +159,7 @@ function HomeComponent() {
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstall_InstallPromptEvent);
+      setInstallEvent(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -303,7 +303,3 @@ export default function Home() {
     </Suspense>
   );
 }
-
-    
-
-    

@@ -13,7 +13,7 @@ const siteConfig = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} - Private & Ephemeral Chat for Developers`,
+    default: `${siteConfig.name} - Private & Ephemeral Chat for Everyone`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
