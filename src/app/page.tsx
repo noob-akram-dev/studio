@@ -52,7 +52,7 @@ function JoinCreateForms() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
           <div className="animate-in fade-in slide-in-from-left-12 duration-1000 ease-in-out">
-            <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
+            <Card className="w-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30">
               <CardHeader>
                 <CardTitle>Create a Room</CardTitle>
                 <CardDescription>
@@ -62,7 +62,7 @@ function JoinCreateForms() {
               <form action={createRoomAction}>
                 <CardContent>
                   <Tabs defaultValue="public" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
                       <TabsTrigger value="public">Public</TabsTrigger>
                       <TabsTrigger value="private"><Lock className="mr-2 h-4 w-4" />Private</TabsTrigger>
                     </TabsList>
@@ -84,7 +84,7 @@ function JoinCreateForms() {
                               placeholder="Enter a password (min 4 chars)"
                               minLength={4}
                               required
-                              className="pl-10"
+                              className="pl-10 bg-background/70 border-border/70"
                           />
                       </div>
                       <input type="hidden" name="private" value="true" />
@@ -105,7 +105,7 @@ function JoinCreateForms() {
           </div>
 
           <div className="animate-in fade-in slide-in-from-right-12 duration-1000 ease-in-out">
-            <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
+            <Card className="w-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30">
               <CardHeader>
                 <CardTitle>Join an Existing Room</CardTitle>
                 <CardDescription>
@@ -121,7 +121,7 @@ function JoinCreateForms() {
                       maxLength={4}
                       required
                       pattern="\d{4}"
-                      className="text-center text-lg tracking-widest"
+                      className="text-center text-lg tracking-widest bg-background/70 border-border/70"
                       defaultValue={code ?? ''}
                     />
                   </div>
@@ -131,7 +131,7 @@ function JoinCreateForms() {
                           name="password"
                           type="password"
                           placeholder="Enter password (if required)"
-                          className="pl-10"
+                          className="pl-10 bg-background/70 border-border/70"
                       />
                   </div>
                 </CardContent>
@@ -211,21 +211,21 @@ function HomeComponent() {
          <section className="w-full max-w-4xl mx-auto mt-24 text-center">
           <h2 className="text-3xl font-bold mb-8">Secure, Swift, and Simple</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
+            <div className="flex flex-col items-center p-6 bg-card/50 border-border/50 border rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-all hover:border-primary/30">
               <Code className="h-12 w-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Developer Focused</h3>
               <p className="text-muted-foreground">
                 Built for coding discussions with syntax highlighting and easy code sharing. Perfect for pair programming, interviews, or quick debugging sessions.
               </p>
             </div>
-            <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
+            <div className="flex flex-col items-center p-6 bg-card/50 border-border/50 border rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-all hover:border-primary/30">
               <ShieldCheck className="h-12 w-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Secure & Private</h3>
               <p className="text-muted-foreground">
                 Your conversations are your own. Use password-protected private rooms. We never store your data long-term.
               </p>
             </div>
-            <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
+            <div className="flex flex-col items-center p-6 bg-card/50 border-border/50 border rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-all hover:border-primary/30">
                <Timer className="h-12 w-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Ephemeral by Design</h3>
               <p className="text-muted-foreground">
