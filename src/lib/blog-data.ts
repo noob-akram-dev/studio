@@ -12,7 +12,7 @@ export const posts: BlogPost[] = [
     slug: 'why-ephemeral-chat-matters',
     title: 'The Power of "Off the Record": Why Ephemeral Chat Matters',
     description: 'In a world where digital conversations are permanent, discover the freedom and security that temporary, ephemeral chat provides for modern collaboration.',
-    date: '2024-08-15',
+    date: '2025-08-15',
     content: `
       <p>In our hyper-connected world, almost everything we say online is recorded, archived, and potentially searchable forever. While this permanence has its benefits, it also creates a chilling effect on open and honest communication. The fear that a casual question or a half-formed idea could be taken out of context later can stifle creativity and collaboration.</p>
       <p>This is where ephemeral chat comes in.</p>
@@ -33,7 +33,7 @@ export const posts: BlogPost[] = [
     slug: 'secure-collaboration-for-developers',
     title: 'Secure Collaboration: A Developer\'s Guide to Private Chat',
     description: 'Developers constantly share sensitive information. Learn how using a private, temporary chat tool is a critical best practice for modern software development.',
-    date: '2024-08-20',
+    date: '2025-08-20',
     content: `
       <p>As a developer, how many times have you needed to quickly share a piece of code, an environment variable, or an API key with a colleague? Too often, these sensitive snippets end up in a permanent chat log on platforms like Slack or Microsoft Teams, creating a potential security risk.</p>
       <p>This is a common but dangerous practice. A long-term chat history filled with sensitive data is a goldmine for attackers if an account is ever compromised.</p>
