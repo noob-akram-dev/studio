@@ -212,3 +212,31 @@ export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'j
 
     await redis.hset(userKey, user.name, JSON.stringify(userData));
 }
+
+export async function updateMessageLanguage(roomCode: string, messageId: string, language: string) {
+    const redis = getRedisClient();
+    const roomKey = getRoomKey(roomCode);
+    const messagesKey = `${roomKey}:messages`;
+
+    // Fetch all messages
+    const messages = await redis.lrange(messagesKey, 0, -1);
+    
+    // Find the message and update it
+    let messageToUpdate: Message | undefined;
+    let messageIndex = -1;
+
+    for (let i = 0; i < messages.length; i++) {
+        const msg: Message = JSON.parse(messages[i]);
+        if (msg.id === messageId) {
+            messageToUpdate = msg;
+            messageIndex = i;
+            break;
+        }
+    }
+
+    if (messageToUpdate && messageIndex !== -1) {
+        messageToUpdate.language = language;
+        // Update the message in the list at the specific index
+        await redis.lset(messagesKey, messageIndex, JSON.stringify(messageToUpdate));
+    }
+}

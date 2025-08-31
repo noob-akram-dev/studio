@@ -1,8 +1,8 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword } from '@/lib/chat-store';
-import type { User, Room } from '@/lib/types';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage } from '@/lib/chat-store';
+import type { User, Room, Message } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 import { revalidatePath } from 'next/cache';
 
@@ -45,6 +45,21 @@ export async function joinRoomAction(formData: FormData) {
 
 const isCodeBlock = (text: string) => text.trim().startsWith('```');
 
+async function detectAndSetLanguage(roomCode: string, messageId: string, text: string) {
+    try {
+        if (isCodeBlock(text)) {
+            const result = await detectProgrammingLanguage({ code: text });
+            if (result.language && result.language !== 'Unknown') {
+                 await updateMessageLanguage(roomCode, messageId, result.language);
+                 // We can revalidate here to push the updated language to clients
+                 revalidatePath(`/api/room/${roomCode}`);
+            }
+        }
+    } catch (error) {
+        console.error('Failed to detect language in background:', error);
+    }
+}
+
 export async function sendMessageAction(
   prevState: any,
   formData: FormData
@@ -59,22 +74,18 @@ export async function sendMessageAction(
   }
 
   const user: User = { id: userName, name: userName, avatarUrl: userAvatarUrl };
-  let language: string | undefined = undefined;
-
+  
   try {
-    if (isCodeBlock(text)) {
-      const result = await detectProgrammingLanguage({ code: text });
-      language = result.language;
-    }
-
-    await addMessage(roomCode, {
+    // Add the message immediately without language
+    const newMessage = await addMessage(roomCode, {
       text,
       user,
-      language,
+      language: undefined, // Language will be updated later
     });
+
+    // Don't await this. Let it run in the background.
+    detectAndSetLanguage(roomCode, newMessage.id, text);
   
-    // Revalidating the path is less critical with Redis but can still be useful
-    // for ensuring client UIs update if polling misses a message.
     revalidatePath(`/api/room/${roomCode}`);
     return { success: true };
 
