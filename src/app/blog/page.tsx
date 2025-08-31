@@ -15,31 +15,34 @@ export const metadata: Metadata = {
 
 function PostCard({ post }: { post: BlogPost }) {
     return (
-        <Card className="flex flex-col h-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30 overflow-hidden">
-            <CardHeader className="p-0">
-                <Link href={`/blog/${post.slug}`} className="block relative aspect-video">
-                    <Image
-                        src={post.imageUrl}
-                        alt={post.title}
-                        fill
-                        className="object-cover"
-                        data-ai-hint={post.imageHint}
-                    />
-                </Link>
-            </CardHeader>
-            <CardContent className="p-6 flex-1 flex flex-col">
-                <CardTitle className="text-2xl mb-2">{post.title}</CardTitle>
-                <CardDescription className="flex-1">{post.description}</CardDescription>
-                <p className="text-sm text-muted-foreground mt-4">{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            </CardContent>
-            <CardFooter className="p-6 pt-0">
-                <Button asChild variant="secondary" className="w-full">
-                    <Link href={`/blog/${post.slug}`}>
-                        Read More <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                </Button>
-            </CardFooter>
-        </Card>
+        <Link href={`/blog/${post.slug}`} className="block group">
+            <Card className="flex flex-col h-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out group-hover:shadow-2xl group-hover:shadow-primary/20 group-hover:border-primary/30 overflow-hidden">
+                <CardHeader className="p-0">
+                    <div className="block relative aspect-video">
+                        <Image
+                            src={post.imageUrl}
+                            alt={post.title}
+                            fill
+                            className="object-cover"
+                            data-ai-hint={post.imageHint}
+                        />
+                    </div>
+                </CardHeader>
+                <CardContent className="p-6 flex-1 flex flex-col">
+                    <CardTitle className="text-2xl mb-2">{post.title}</CardTitle>
+                    <CardDescription className="flex-1">{post.description}</CardDescription>
+                    <p className="text-sm text-muted-foreground mt-4">{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </CardContent>
+                <CardFooter className="p-6 pt-0">
+                    <Button asChild variant="secondary" className="w-full" tabIndex={-1}>
+                        {/* The Link is on the parent, this is for styling */}
+                        <div>
+                            Read More <ArrowRight className="ml-2 h-4 w-4" />
+                        </div>
+                    </Button>
+                </CardFooter>
+            </Card>
+        </Link>
     );
 }
 
