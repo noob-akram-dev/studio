@@ -15,7 +15,7 @@ export async function createRoomAction(formData: FormData) {
       return;
   }
   
-  const code = createRoom(isPrivate, password);
+  const code = await createRoom(isPrivate, password);
   redirect(`/room/${code}`);
 }
 
@@ -27,14 +27,14 @@ export async function joinRoomAction(formData: FormData) {
     return { error: 'Room code is required.' };
   }
 
-  const room = getRoom(code);
+  const room = await getRoom(code);
   if (!room) {
     redirect('/?error=not_found');
     return;
   }
 
   if (room.isPrivate) {
-    if (!verifyPassword(code, password)) {
+    if (!await verifyPassword(code, password)) {
         redirect(`/?error=invalid_password&code=${code}`);
         return;
     }
@@ -67,12 +67,14 @@ export async function sendMessageAction(
       language = result.language;
     }
 
-    addMessage(roomCode, {
+    await addMessage(roomCode, {
       text,
       user,
       language,
     });
   
+    // Revalidating the path is less critical with Redis but can still be useful
+    // for ensuring client UIs update if polling misses a message.
     revalidatePath(`/api/room/${roomCode}`);
     return { success: true };
 
@@ -90,8 +92,8 @@ export async function userTypingAction(formData: FormData) {
     return;
   }
   
-  updateUserTypingStatus(roomCode, userName);
-  // We don't need to revalidate here as the client is already polling for updates.
+  await updateUserTypingStatus(roomCode, userName);
+  // No revalidation needed, client polls for this.
 }
 
 export async function joinRoomAndAddUserAction(formData: FormData) {
@@ -103,5 +105,5 @@ export async function joinRoomAndAddUserAction(formData: FormData) {
         return;
     }
 
-    joinRoom(roomCode, { name: userName, avatarUrl: userAvatarUrl });
+    await joinRoom(roomCode, { name: userName, avatarUrl: userAvatarUrl });
 }

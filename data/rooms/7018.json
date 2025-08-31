@@ -1,0 +1,14 @@
+{
+  "code": "7018",
+  "messages": [],
+  "createdAt": 1756018677730,
+  "typing": {},
+  "users": [
+    {
+      "name": "Happy Fox",
+      "avatarUrl": "https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Happy%20Fox",
+      "joinedAt": 1756018680498
+    }
+  ],
+  "isPrivate": false
+}

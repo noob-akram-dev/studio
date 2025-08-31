@@ -1,25 +1,14 @@
-
 import type { Room, Message, User } from './types';
-import fs from 'fs';
-import path from 'path';
 import { createHash } from 'crypto';
+import redis from './redis';
 
+const ROOM_TTL_SECONDS = 2 * 60 * 60; // 2 hours in seconds
+const TYPING_TIMEOUT_SECONDS = 3; // 3 seconds
+const USER_INACTIVE_TIMEOUT_SECONDS = 5 * 60; // 5 minutes
+const MAX_MESSAGES_PER_ROOM = 100;
 
-// This is a simple file-based store.
-// In a real-world serverless environment, you'd use a database like Firestore or Redis.
-const dataDir = path.join(process.cwd(), 'data');
-const roomsDir = path.join(dataDir, 'rooms');
-const ROOM_TTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-const TYPING_TIMEOUT = 3000; // 3 seconds
-const USER_INACTIVE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
-const MAX_MESSAGES_PER_ROOM = 100; // Cap the number of messages to prevent performance issues.
-
-if (!fs.existsSync(roomsDir)) {
-  fs.mkdirSync(roomsDir, { recursive: true });
-}
-
-function getRoomFilePath(code: string): string {
-    return path.join(roomsDir, `${code}.json`);
+function getRoomKey(code: string): string {
+    return `room:${code}`;
 }
 
 function generateRoomCode(): string {
@@ -30,92 +19,102 @@ function hashPassword(password: string): string {
     return createHash('sha256').update(password).digest('hex');
 }
 
-export function createRoom(isPrivate = false, password?: string): string {
-  let code: string;
-  let filePath: string;
-  do {
-    code = generateRoomCode();
-    filePath = getRoomFilePath(code);
-  } while (fs.existsSync(filePath));
+export async function createRoom(isPrivate = false, password?: string): Promise<string> {
+    let code: string;
+    let roomKey: string;
+    let roomExists: number;
 
-  const newRoom: Room = {
-    code,
-    messages: [],
-    createdAt: Date.now(),
-    typing: {},
-    users: [],
-    isPrivate,
-  };
+    // Retry generating a code until we find one that doesn't exist.
+    // This is unlikely to loop more than once.
+    do {
+        code = generateRoomCode();
+        roomKey = getRoomKey(code);
+        roomExists = await redis.exists(roomKey);
+    } while (roomExists);
 
-  if (isPrivate && password) {
-    newRoom.password = hashPassword(password);
-  }
+    const roomData: Omit<Room, 'messages' | 'users' | 'typing'> = {
+        code,
+        createdAt: Date.now(),
+        isPrivate,
+    };
 
-  fs.writeFileSync(filePath, JSON.stringify(newRoom, null, 2));
-  console.log(`Room created: ${code}`);
-  return code;
+    if (isPrivate && password) {
+        roomData.password = hashPassword(password);
+    }
+
+    // Use a Redis transaction to create the room and set its expiration
+    const pipeline = redis.pipeline();
+    pipeline.hset(roomKey, roomData);
+    pipeline.expire(roomKey, ROOM_TTL_SECONDS);
+    await pipeline.exec();
+
+    console.log(`Room created in Redis: ${code}`);
+    return code;
 }
 
-export function getRoom(code: string): Room | undefined {
-    const filePath = getRoomFilePath(code);
-    if (!fs.existsSync(filePath)) {
-        return undefined;
+export async function getRoom(code: string): Promise<Room | undefined> {
+    const roomKey = getRoomKey(code);
+    const roomData = await redis.hgetall(roomKey);
+
+    if (!Object.keys(roomData).length) {
+        return undefined; // Room doesn't exist
     }
-    try {
-        let fileContent = fs.readFileSync(filePath, 'utf-8');
-        let room: Room = JSON.parse(fileContent);
 
-        // Check if the room has expired
-        if (Date.now() - room.createdAt > ROOM_TTL) {
-            fs.unlinkSync(filePath); // Delete the expired room file
-            console.log(`Lazily deleted expired room: ${code}`);
-            return undefined;
+    // Fetch messages, users, and typing indicators in parallel
+    const [messages, users, typing] = await Promise.all([
+        redis.lrange(`${roomKey}:messages`, 0, -1),
+        redis.hgetall(`${roomKey}:users`),
+        redis.hgetall(`${roomKey}:typing`)
+    ]);
+
+    const now = Date.now();
+    const pipeline = redis.pipeline();
+    let modified = false;
+
+    // Clean up stale typing indicators
+    const cleanedTyping: { [userName: string]: number } = {};
+    for (const user in typing) {
+        if (now - parseInt(typing[user]) < TYPING_TIMEOUT_SECONDS * 1000) {
+            cleanedTyping[user] = parseInt(typing[user]);
+        } else {
+            pipeline.hdel(`${roomKey}:typing`, user);
+            modified = true;
         }
-
-        let modified = false;
-
-        // Clean up stale typing indicators
-        if (room.typing) {
-            const now = Date.now();
-            for (const user in room.typing) {
-                if (now - room.typing[user] > TYPING_TIMEOUT) {
-                    delete room.typing[user];
-                    modified = true;
-                }
-            }
-        }
-        
-        // Clean up inactive users
-        if (room.users) {
-            const now = Date.now();
-            const initialUserCount = room.users.length;
-            room.users = room.users.filter(user => (now - user.joinedAt) < USER_INACTIVE_TIMEOUT);
-            if(room.users.length !== initialUserCount) {
-                modified = true;
-            }
-        }
-
-
-        if (modified) {
-             fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
-        }
-
-
-        return room;
-    } catch (error) {
-        console.error(`Error reading room ${code}:`, error);
-        // If file is corrupt, delete it.
-        if (error instanceof SyntaxError) {
-          fs.unlinkSync(filePath);
-          console.log(`Deleted corrupt room file: ${code}`);
-        }
-        return undefined;
     }
+
+    // Clean up inactive users
+    const cleanedUsers: Room['users'] = [];
+    for (const userName in users) {
+        const userData = JSON.parse(users[userName]);
+        if (now - userData.joinedAt < USER_INACTIVE_TIMEOUT_SECONDS * 1000) {
+            cleanedUsers.push(userData);
+        } else {
+            pipeline.hdel(`${roomKey}:users`, userName);
+            modified = true;
+        }
+    }
+
+    if (modified) {
+        await pipeline.exec();
+    }
+    
+    return {
+        code: roomData.code as string,
+        createdAt: parseInt(roomData.createdAt),
+        isPrivate: roomData.isPrivate === 'true',
+        password: roomData.password,
+        messages: messages.map(msg => JSON.parse(msg)),
+        users: cleanedUsers.sort((a, b) => a.joinedAt - b.joinedAt),
+        typing: cleanedTyping,
+    };
 }
 
-export function verifyPassword(code: string, password?: string): boolean {
-    const room = getRoom(code);
-    if (!room || !room.isPrivate) {
+
+export async function verifyPassword(code: string, password?: string): Promise<boolean> {
+    const roomKey = getRoomKey(code);
+    const room = await redis.hgetall(roomKey);
+
+    if (!Object.keys(room).length || room.isPrivate !== 'true') {
         return true; // Not a private room, or doesn't exist
     }
     if (!password) {
@@ -125,77 +124,77 @@ export function verifyPassword(code: string, password?: string): boolean {
 }
 
 
-export function addMessage(code: string, message: Omit<Message, 'id' | 'timestamp'>): Message {
-  const room = getRoom(code);
-  if (!room) {
-    throw new Error('Room not found');
-  }
+export async function addMessage(code: string, message: Omit<Message, 'id' | 'timestamp'>): Promise<Message> {
+    const room = await getRoom(code);
+    if (!room) {
+        throw new Error('Room not found');
+    }
 
-  const newMessage: Message = {
-    ...message,
-    id: Math.random().toString(36).substring(2),
-    timestamp: Date.now(),
-  };
+    const newMessage: Message = {
+        ...message,
+        id: Math.random().toString(36).substring(2),
+        timestamp: Date.now(),
+    };
+    
+    const roomKey = getRoomKey(code);
+    const pipeline = redis.pipeline();
 
-  room.messages.push(newMessage);
+    // Push the new message and trim the list to the max size
+    pipeline.lpush(`${roomKey}:messages`, JSON.stringify(newMessage));
+    pipeline.ltrim(`${roomKey}:messages`, 0, MAX_MESSAGES_PER_ROOM - 1);
 
-  // If messages exceed the limit, truncate the oldest ones.
-  if (room.messages.length > MAX_MESSAGES_PER_ROOM) {
-    room.messages = room.messages.slice(room.messages.length - MAX_MESSAGES_PER_ROOM);
-  }
+    // Remove the user from the typing list when they send a message
+    pipeline.hdel(`${roomKey}:typing`, message.user.name);
 
-  // Remove the user from the typing list when they send a message
-  if (room.typing && room.typing[message.user.name]) {
-    delete room.typing[message.user.name];
-  }
-
-  // Update user's last seen time
-  const userIndex = room.users.findIndex(u => u.name === message.user.name);
-  if (userIndex !== -1) {
-    room.users[userIndex].joinedAt = Date.now();
-  }
-  
-  const filePath = getRoomFilePath(code);
-  fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
-  return newMessage;
+    // Update user's last seen time
+    const userKey = `${roomKey}:users`;
+    const existingUser = await redis.hget(userKey, message.user.name);
+    if(existingUser) {
+        const userData = JSON.parse(existingUser);
+        userData.joinedAt = Date.now();
+        pipeline.hset(userKey, message.user.name, JSON.stringify(userData));
+    }
+    
+    await pipeline.exec();
+    return newMessage;
 }
 
-export function updateUserTypingStatus(roomCode: string, userName: string) {
-  const room = getRoom(roomCode);
-  if (!room) {
-    return;
-  }
-  
-  if (!room.typing) {
-    room.typing = {};
-  }
-  room.typing[userName] = Date.now();
-  
-  // Update user's last seen time
-  const userIndex = room.users.findIndex(u => u.name === userName);
-  if (userIndex !== -1) {
-    room.users[userIndex].joinedAt = Date.now();
-  }
+export async function updateUserTypingStatus(roomCode: string, userName: string) {
+    const roomKey = getRoomKey(roomCode);
+    const userKey = `${roomKey}:users`;
+    
+    const [roomExists, userExists] = await Promise.all([
+        redis.exists(roomKey),
+        redis.hexists(userKey, userName)
+    ]);
 
-  const filePath = getRoomFilePath(roomCode);
-  fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
+    if (!roomExists) return;
+
+    const pipeline = redis.pipeline();
+    const now = Date.now();
+
+    // Set the typing indicator with an expiration
+    pipeline.hset(`${roomKey}:typing`, userName, now.toString());
+    
+    // Update user's activity timestamp
+    if (userExists) {
+        const userDataString = await redis.hget(userKey, userName);
+        if(userDataString) {
+            const userData = JSON.parse(userDataString);
+            userData.joinedAt = now;
+            pipeline.hset(userKey, userName, JSON.stringify(userData));
+        }
+    }
+
+    await pipeline.exec();
 }
 
-export function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'joinedAt'>) {
-  const room = getRoom(roomCode);
-  if (!room) {
-    return;
-  }
-  if (!room.users) {
-    room.users = [];
-  }
-  const userIndex = room.users.findIndex(u => u.name === user.name);
-  if (userIndex !== -1) {
-    room.users[userIndex].joinedAt = Date.now();
-  } else {
-    room.users.push({ ...user, joinedAt: Date.now() });
-  }
+export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'joinedAt'>) {
+    const roomKey = getRoomKey(roomCode);
+    if (!(await redis.exists(roomKey))) {
+        return;
+    }
 
-  const filePath = getRoomFilePath(roomCode);
-  fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
+    const userWithTimestamp = { ...user, joinedAt: Date.now() };
+    await redis.hset(`${roomKey}:users`, user.name, JSON.stringify(userWithTimestamp));
 }
