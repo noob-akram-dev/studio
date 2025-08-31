@@ -1,14 +1,55 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
+const siteConfig = {
+  name: 'Code Yapp',
+  url: 'https://code-yapp.com', // Replace with your actual domain
+  description: 'A real-time, temporary chat application for developers to share and discuss code snippets collaboratively. Create public or private chat rooms that expire in 2 hours.',
+  keywords: ['developer chat', 'code sharing', 'real-time collaboration', 'pair programming', 'temporary chat', 'ephemeral chat', 'code snippets'],
+}
+
 export const metadata: Metadata = {
-  title: 'Code Yapp',
-  description: 'Yapp about your code. Code about your yapp.',
-  manifest: '/manifest.json',
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: `${siteConfig.name} - Real-Time Code Collaboration`,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: [{ name: 'Akram Shakil', url: 'https://github.com/shaikhakramshakil' }],
+  creator: 'Akram Shakil',
+  
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: siteConfig.url,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: `${siteConfig.url}/og-image.png`, // You need to create this image
+        width: 1200,
+        height: 630,
+        alt: `Logo for ${siteConfig.name}`,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [`${siteConfig.url}/og-image.png`], // You need to create this image
+    creator: '@yourtwitterhandle', // Replace with your Twitter handle
+  },
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-icon.png',
+  },
+  manifest: '/manifest.json',
+  alternates: {
+    canonical: '/',
   },
 };
 

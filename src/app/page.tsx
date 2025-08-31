@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createRoomAction, joinRoomAction } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Download, Terminal, Github, Linkedin, Lock, Key } from 'lucide-react';
+import { Download, Terminal, Github, Linkedin, Lock, Key, CheckCircle, Zap, ShieldCheck } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -31,59 +31,15 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-function HomeComponent() {
+function JoinCreateForms() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   const code = searchParams.get('code');
-  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
 
-  useEffect(() => {
-    const beforeInstallPromptHandler = (e: Event) => {
-      e.preventDefault();
-      setInstallEvent(e as BeforeInstallPromptEvent);
-    };
-
-    window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', beforeInstallPromptHandler);
-    };
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (!installEvent) {
-      return;
-    }
-    await installEvent.prompt();
-    const { outcome } = await installEvent.userChoice;
-    if (outcome === 'accepted') {
-      setInstallEvent(null);
-    }
-  };
-
-  return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 overflow-x-hidden">
-        <div className="text-center mb-10 sm:mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-in-out">
-            <div className="inline-block p-4 rounded-full transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
-             <Logo className="justify-center" />
-          </div>
-          <p className="text-muted-foreground mt-2 text-md sm:text-lg">
-            Yapp about your code. Code about your yapp.
-          </p>
-        </div>
-
-        {installEvent && (
-          <div className="mb-8 max-w-md w-full flex justify-center">
-            <Button onClick={handleInstallClick} variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Install App
-            </Button>
-          </div>
-        )}
-
-        {error && (
-            <Alert variant="destructive" className="mb-8 max-w-md">
+   return (
+    <>
+     {error && (
+            <Alert variant="destructive" className="mb-8 max-w-md w-full mx-auto">
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>
@@ -94,7 +50,7 @@ function HomeComponent() {
             </Alert>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
           <div className="animate-in fade-in slide-in-from-left-12 duration-1000 ease-in-out">
             <Card className="w-full bg-card shadow-md transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
               <CardHeader>
@@ -192,6 +148,93 @@ function HomeComponent() {
             </Card>
           </div>
         </div>
+    </>
+  );
+}
+
+
+function HomeComponent() {
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const beforeInstallPromptHandler = (e: Event) => {
+      e.preventDefault();
+      setInstallEvent(e as BeforeInstall_InstallPromptEvent);
+    };
+
+    window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', beforeInstallPromptHandler);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!installEvent) {
+      return;
+    }
+    await installEvent.prompt();
+    const { outcome } = await installEvent.userChoice;
+    if (outcome === 'accepted') {
+      setInstallEvent(null);
+    }
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen bg-background">
+      <main className="flex-1 flex flex-col items-center p-4 sm:p-8 overflow-x-hidden">
+        <div className="text-center mb-10 sm:mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-in-out">
+            <div className="inline-block p-4 rounded-full transition-shadow duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20">
+             <Logo className="justify-center" />
+            </div>
+            <h1 className="text-3xl sm:text-5xl font-bold mt-4">
+              Real-Time Code Collaboration, Simplified.
+            </h1>
+            <p className="text-muted-foreground mt-4 text-md sm:text-lg max-w-2xl mx-auto">
+              Code Yapp is a free, temporary chat service for developers. Share code snippets, discuss solutions, and collaborate in real-time with public or private rooms. No sign-up required, just instant, ephemeral chat.
+            </p>
+        </div>
+        
+        {installEvent && (
+          <div className="mb-8 max-w-md w-full flex justify-center">
+            <Button onClick={handleInstallClick} variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Install App
+            </Button>
+          </div>
+        )}
+
+        <Suspense fallback={<div className="max-w-4xl w-full text-center">Loading forms...</div>}>
+            <JoinCreateForms />
+        </Suspense>
+        
+         <section className="w-full max-w-4xl mx-auto mt-24 text-center">
+          <h2 className="text-3xl font-bold mb-8">Why Use Code Yapp?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
+              <Zap className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Instant Setup</h3>
+              <p className="text-muted-foreground">
+                No accounts, no waiting. Create a chat room in seconds and start collaborating instantly. Perfect for quick pair programming sessions or technical interviews.
+              </p>
+            </div>
+            <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
+              <ShieldCheck className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Private & Ephemeral</h3>
+              <p className="text-muted-foreground">
+                All chat rooms are automatically deleted after 2 hours. Use password-protected private rooms for sensitive discussions. Your conversations are temporary by design.
+              </p>
+            </div>
+            <div className="flex flex-col items-center p-6 bg-card rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-shadow">
+              <CheckCircle className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Developer Focused</h3>
+              <p className="text-muted-foreground">
+                With automatic syntax highlighting, sharing code is clean and readable. The interface is built for developers who need to get things done quickly.
+              </p>
+            </div>
+          </div>
+        </section>
+
       </main>
       <footer className="w-full p-4 border-t border-border">
           <div className="max-w-4xl mx-auto flex items-center justify-center space-x-4">
@@ -220,6 +263,26 @@ function HomeComponent() {
             )}
           </div>
         </footer>
+         <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Code Yapp",
+            "applicationCategory": "DeveloperTool",
+            "operatingSystem": "WEB",
+            "description": "A real-time, temporary chat application for developers to share and discuss code snippets collaboratively.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "author": {
+                "@type": "Person",
+                "name": "Akram Shakil"
+            }
+          })}}
+        />
     </div>
   );
 }
