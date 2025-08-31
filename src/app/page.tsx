@@ -191,7 +191,7 @@ function HomeComponent() {
               Private Chat for Everyone.
             </h1>
             <p className="text-muted-foreground mt-4 text-md sm:text-lg max-w-2xl mx-auto">
-              Get a secure, temporary chat room for any private discussion. Ideal for developers sharing code and for anyone who needs to talk "off the record."
+              Grab a secure, temporary chat room—perfect for sharing code, spilling secrets, or plotting your snack heist "off the record" without leaving a trail of awkward screenshots. Think of it as incognito mode… but for conversations.
             </p>
         </div>
         
