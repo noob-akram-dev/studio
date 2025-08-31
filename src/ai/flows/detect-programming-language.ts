@@ -9,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
 
 const DetectProgrammingLanguageInputSchema = z.object({
   code: z.string().describe('The code snippet to analyze.'),
