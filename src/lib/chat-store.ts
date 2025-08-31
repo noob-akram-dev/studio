@@ -1,6 +1,6 @@
 import type { Room, Message, User } from './types';
 import { createHash } from 'crypto';
-import redis from './redis';
+import getRedisClient from './redis';
 
 const ROOM_TTL_SECONDS = 2 * 60 * 60; // 2 hours in seconds
 const TYPING_TIMEOUT_SECONDS = 3; // 3 seconds
@@ -20,6 +20,7 @@ function hashPassword(password: string): string {
 }
 
 export async function createRoom(isPrivate = false, password?: string): Promise<string> {
+    const redis = getRedisClient();
     let code: string;
     let roomKey: string;
     let roomExists: number;
@@ -53,6 +54,7 @@ export async function createRoom(isPrivate = false, password?: string): Promise<
 }
 
 export async function getRoom(code: string): Promise<Room | undefined> {
+    const redis = getRedisClient();
     const roomKey = getRoomKey(code);
     const roomData = await redis.hgetall(roomKey);
 
@@ -111,6 +113,7 @@ export async function getRoom(code: string): Promise<Room | undefined> {
 
 
 export async function verifyPassword(code: string, password?: string): Promise<boolean> {
+    const redis = getRedisClient();
     const roomKey = getRoomKey(code);
     const room = await redis.hgetall(roomKey);
 
@@ -125,6 +128,7 @@ export async function verifyPassword(code: string, password?: string): Promise<b
 
 
 export async function addMessage(code: string, message: Omit<Message, 'id' | 'timestamp'>): Promise<Message> {
+    const redis = getRedisClient();
     const roomKey = getRoomKey(code);
     if (!(await redis.exists(roomKey))) {
         throw new Error('Room not found');
@@ -159,6 +163,7 @@ export async function addMessage(code: string, message: Omit<Message, 'id' | 'ti
 }
 
 export async function updateUserTypingStatus(roomCode: string, userName: string) {
+    const redis = getRedisClient();
     const roomKey = getRoomKey(roomCode);
     const userKey = `${roomKey}:users`;
     
@@ -189,6 +194,7 @@ export async function updateUserTypingStatus(roomCode: string, userName: string)
 }
 
 export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'joinedAt'>) {
+    const redis = getRedisClient();
     const roomKey = getRoomKey(roomCode);
     if (!(await redis.exists(roomKey))) {
         return;

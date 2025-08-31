@@ -1,22 +1,35 @@
 import Redis from 'ioredis';
 
-// This will load the REDIS_URL from the .env file.
-// Make sure your .env file is configured correctly.
+// This is a common pattern to cache the Redis connection in a serverless environment.
+// It prevents creating a new connection on every function invocation.
+declare global {
+  var redis: Redis | undefined;
+}
+
 const redisUrl = process.env.REDIS_URL;
 
 if (!redisUrl) {
-    throw new Error('REDIS_URL environment variable not set. Please configure your .env file.');
+  throw new Error('REDIS_URL environment variable not set. Please configure your .env file.');
 }
 
-// Create a new Redis client instance.
-// The "lazyConnect" option prevents the client from connecting until a command is actually used.
-const redis = new Redis(redisUrl, {
+function getRedisClient(): Redis {
+  if (global.redis) {
+    return global.redis;
+  }
+
+  const client = new Redis(redisUrl, {
     lazyConnect: true,
     maxRetriesPerRequest: 1, // Don't retry on connection errors, fail fast.
-});
+  });
 
-redis.on('error', (err) => {
+  client.on('error', (err) => {
     console.error('Redis connection error:', err);
-});
+    // On error, we want to clear the cached client to force a reconnect on the next request.
+    global.redis = undefined; 
+  });
+  
+  global.redis = client;
+  return client;
+}
 
-export default redis;
+export default getRedisClient;
