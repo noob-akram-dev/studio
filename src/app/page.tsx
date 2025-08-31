@@ -159,7 +159,7 @@ function HomeComponent() {
   useEffect(() => {
     const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setInstallEvent(e as BeforeInstallPromptEvent);
+      setInstallEvent(e as BeforeInstallGPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallPromptHandler);
@@ -237,40 +237,39 @@ function HomeComponent() {
 
       </main>
       <footer className="w-full p-4 border-t border-border">
-          <div className="max-w-4xl mx-auto flex items-center justify-center space-x-4">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <p className="text-sm text-muted-foreground">Connect with me</p>
-            <Link href="https://www.linkedin.com/in/akramshakil/" target="_blank" rel="noopener noreferrer">
-              <Linkedin className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
-            </Link>
-            <Link href="https://github.com/shaikhakramshakil" target="_blank" rel="noopener noreferrer">
-              <Github className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
-            </Link>
-            <Separator orientation="vertical" className="h-5" />
+            <div className="flex items-center gap-2">
+              <Link href="https://www.linkedin.com/in/akramshakil/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <Linkedin className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
+              </Link>
+              <Link href="https://github.com/shaikhakramshakil" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <Github className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
+              </Link>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
              <Link href="/blog" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
               Blog
             </Link>
-            <Separator orientation="vertical" className="h-5" />
              <Link href="/terms" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
-              Terms of Service
+              Terms
             </Link>
-             <Separator orientation="vertical" className="h-5" />
              <Link href="/faq" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
               FAQ
             </Link>
-            <Separator orientation="vertical" className="h-5" />
              <Link href="/privacy" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
-              Privacy Policy
+              Privacy
             </Link>
             {installEvent && (
-              <>
-                <Separator orientation="vertical" className="h-5" />
-                <button onClick={handleInstallClick} className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
-                  Install App
-                </button>
-              </>
+              <button onClick={handleInstallClick} className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
+                Install App
+              </button>
             )}
           </div>
-        </footer>
+        </div>
+      </footer>
          <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify({
