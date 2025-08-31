@@ -191,7 +191,7 @@ function HomeComponent() {
               Private Chat for Developers.
             </h1>
             <p className="text-muted-foreground mt-4 text-md sm:text-lg max-w-2xl mx-auto">
-              Get a secure, temporary chat room for any private discussion. Ideal for developers sharing code and for anyone who needs to talk "off the record.
+              Get a secure, temporary chat room for any private discussion. Ideal for developers sharing code and for anyone who needs to talk "off the record."
             </p>
         </div>
         
@@ -303,5 +303,7 @@ export default function Home() {
     </Suspense>
   );
 }
+
+    
 
     
