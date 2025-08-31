@@ -13,10 +13,10 @@ export const posts: BlogPost[] = [
   {
     slug: 'beyond-vanish-mode',
     title: 'Beyond Vanish Mode: How True Ephemeral Chat Protects Your Privacy',
-    imageUrl: 'https://placehold.co/1200x630/27272a/fafafa?text=Disappearing+Message',
+    imageUrl: 'https://images.unsplash.com/photo-1550751827-4138d04d42e3?q=80&w=2070&auto=format&fit=crop',
     imageHint: 'disappearing message',
     description: 'Instagram and Snapchat have "vanish mode," but is it truly private? Discover the difference between a privacy feature and a privacy-first platform like Code Yapp, and see why ephemeral messaging and secure chat are not the same.',
-    date: '2025-09-02',
+    date: '2025-08-02',
     content: `
       <p>The rise of "vanish mode" on platforms like Instagram, Facebook Messenger, and Snapchat is a clear signal: users are demanding more privacy and control over their digital conversations. The ability to have a chat that disappears feels liberating. But is a disappearing message on a massive social network the same as a truly private conversation? The answer is no, and understanding the difference is key to protecting your privacy.</p>
       <p>While vanish mode is a step in the right direction, it's crucial to understand the difference between a privacy feature and a privacy-first platform. At Code Yapp, we believe privacy shouldn't be an "on/off" switch; it should be the foundation everything is built on. This is where our ephemeral messaging strategy fundamentally differs from what you find on social media, offering a more secure chat experience.</p>
