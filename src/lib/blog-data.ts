@@ -237,7 +237,7 @@ export const posts: BlogPost[] = [
       </ul>
       <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">Security by Design for Developer Collaboration</h2>
       <p class="mt-4">Code Yapp was built with this in mind. With no sign-up required, password-protected rooms, and automatic 2-hour deletion, it's designed to be the quickest and safest way for developers to have a technical discussion. It's not just about privacy; it's about good security hygiene for modern developer collaboration.</p>
-    `,
+    `
   },
   {
     slug: 'why-ephemeral-chat-matters',
@@ -260,6 +260,8 @@ export const posts: BlogPost[] = [
         <li><strong>Reduce Digital Clutter:</strong> Eliminate the mental and digital burden of maintaining years of chat history.</li>
       </ul>
       <p class="mt-4">At Code Yapp, we built our service around this principle. By making conversations temporary by default, we empower users to communicate with confidence, knowing their discussions are truly "off the record." It's a private chat experience built for the modern need for privacy.</p>
-    `,
-  },
+    `
+  }
 ];
+
+    
