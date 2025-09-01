@@ -17,7 +17,6 @@ import { Download, Terminal, Github, Linkedin, Lock, Key, Code, ShieldCheck, Tim
 import { Logo } from '@/components/logo';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Separator } from '@/components/ui/separator';
 import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -313,3 +312,5 @@ export default function Home() {
     </Suspense>
   );
 }
+
+    
