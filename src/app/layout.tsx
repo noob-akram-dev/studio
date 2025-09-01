@@ -2,6 +2,21 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
+import { Inter, Source_Code_Pro } from 'next/font/google';
+import { cn } from '@/lib/utils';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+const sourceCodePro = Source_Code_Pro({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-source-code-pro',
+});
+
 
 const siteConfig = {
   name: 'Code Yapp',
@@ -60,12 +75,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning={true}>
+    <html lang="en" className={cn("dark", inter.variable, sourceCodePro.variable)} suppressHydrationWarning={true}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"></link>
-        <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet"></link>
         <meta name="theme-color" content="#27272a" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4890339593414259"
      crossOrigin="anonymous"></script>
