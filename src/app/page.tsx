@@ -191,7 +191,7 @@ function HomeComponent() {
               Private Chat for Everyone.
             </h1>
             <p className="text-muted-foreground mt-4 text-md sm:text-lg max-w-2xl mx-auto">
-              Grab a secure, temporary chat room perfect for sharing code, spilling secrets, or plotting your snack heist "off the record" without leaving a trail of awkward screenshots. Think of it as incognito mode… but for conversations.
+              Grab a secure, temporary chat room perfect for sharing code, spilling secrets, or plotting your snack heist "off the record" without leaving a trail of awkward screenshots. Think of it as incognito mode for conversations.
             </p>
         </div>
         
@@ -261,6 +261,9 @@ function HomeComponent() {
             </Link>
              <Link href="/privacy" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
               Privacy Policy
+            </Link>
+            <Link href="/sitemap.xml" className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
+              Sitemap
             </Link>
             {installEvent && (
               <button onClick={handleInstallClick} className="text-sm text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary">
