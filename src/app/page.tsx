@@ -192,17 +192,16 @@ function HomeComponent() {
             <p className="text-muted-foreground mt-4 text-md sm:text-lg max-w-2xl mx-auto">
               Grab a secure, temporary chat room perfect for sharing code, spilling secrets, or plotting your snack heist "off the record" without leaving a trail of awkward screenshots. Think of it as incognito mode for conversations.
             </p>
+             {installEvent && (
+              <div className="mt-8 flex justify-center">
+                <Button onClick={handleInstallClick} variant="outline" size="lg">
+                  <Download className="mr-2 h-4 w-4" />
+                  Install App
+                </Button>
+              </div>
+            )}
         </div>
         
-        {installEvent && (
-          <div className="mb-8 max-w-md w-full flex justify-center">
-            <Button onClick={handleInstallClick} variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Install App
-            </Button>
-          </div>
-        )}
-
         <Suspense fallback={<div className="max-w-4xl w-full text-center">Loading forms...</div>}>
             <JoinCreateForms />
         </Suspense>
