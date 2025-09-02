@@ -13,7 +13,7 @@ export function Logo({ className, variant = 'default', ...props }: LogoProps) {
   return (
     <div className={cn("flex items-center gap-2 sm:gap-3", className)} {...props}>
       <Image
-        src="/Adobe Express - file .png"
+        src="/logo.png"
         alt="Code Yapp Logo"
         width={size}
         height={size}
