@@ -12,6 +12,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'FAQ - Code Yapp',
   description: 'Frequently Asked Questions about Code Yapp. Learn about our private, ephemeral chat rooms, security, and data policies.',
+  alternates: {
+    canonical: '/faq',
+  },
 };
 
 const faqData = [

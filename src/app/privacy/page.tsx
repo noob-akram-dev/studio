@@ -1,6 +1,15 @@
 
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy - Code Yapp',
+  description: 'Our privacy policy explains how we handle your data in our temporary chat service. Your privacy is important to us.',
+    alternates: {
+    canonical: '/privacy',
+  },
+};
 
 export default function PrivacyPolicyPage() {
   return (

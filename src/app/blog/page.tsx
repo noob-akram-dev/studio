@@ -10,6 +10,9 @@ import Image from 'next/image';
 export const metadata: Metadata = {
   title: 'Blog - Code Yapp',
   description: 'Articles and insights on privacy, security, and development from the Code Yapp team.',
+  alternates: {
+    canonical: '/blog',
+  },
 };
 
 

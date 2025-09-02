@@ -22,15 +22,20 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
   }
 
+  const url = `/blog/${post.slug}`;
+
   return {
     title: `${post.title} - Code Yapp Blog`,
     description: post.description,
+    alternates: {
+        canonical: url,
+    },
     openGraph: {
       title: post.title,
       description: post.description,
       type: 'article',
       publishedTime: new Date(post.date).toISOString(),
-      url: `https://code-yapp.com/blog/${post.slug}`,
+      url: url,
       images: [
           {
               url: post.imageUrl,

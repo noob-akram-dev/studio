@@ -1,26 +1,21 @@
 {
-  "name": "Code Yapp",
-  "short_name": "CodeYapp",
-  "description": "Yapp about your code. Code about your yap.",
+  "name": "Code Yapp - Private & Ephemeral Chat",
+  "short_name": "Code Yapp",
+  "description": "Private, ephemeral, and secure chat rooms. Perfect for developers and anyone needing an 'off the record' conversation.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#18181b",
   "theme_color": "#27272a",
   "icons": [
     {
-      "src": "/icon.svg",
-      "sizes": "48x48",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "/icon.svg",
+      "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
-      "src": "/icon.svg",
+      "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ]
 }
