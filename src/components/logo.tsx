@@ -8,7 +8,7 @@ type LogoProps = React.HTMLAttributes<HTMLDivElement> & {
 
 export function Logo({ className, variant = 'default', ...props }: LogoProps) {
   const isSmall = variant === 'small';
-  const size = isSmall ? 36 : 48;
+  const size = isSmall ? 32 : 40;
 
   return (
     <div className={cn("flex items-center gap-2 sm:gap-3", className)} {...props}>
@@ -17,7 +17,7 @@ export function Logo({ className, variant = 'default', ...props }: LogoProps) {
         alt="Code Yapp Logo"
         width={size}
         height={size}
-        className={cn(isSmall ? 'h-8 w-8 sm:h-9 sm:w-9' : 'h-12 w-12')}
+        className={cn(isSmall ? 'h-8 w-8' : 'h-10 w-10')}
       />
       <span
         className={cn(
