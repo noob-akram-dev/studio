@@ -336,7 +336,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           />
       </main>
 
-      <footer className="p-2 sm:p-4 border-t bg-card">
+      <footer className="p-2 sm:p-4 bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
             <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} users={activeUsers} isAdmin={isAdmin} roomAdminName={room.admin} />
