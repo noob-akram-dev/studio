@@ -21,7 +21,7 @@ export function Logo({ className, variant = 'default', ...props }: LogoProps) {
       <span
         className={cn(
           'font-headline font-bold text-primary',
-          isSmall ? 'text-2xl' : 'text-4xl sm:text-6xl'
+          isSmall ? 'text-2xl hidden sm:inline' : 'text-4xl sm:text-6xl'
         )}
       >
         Code Yapp
