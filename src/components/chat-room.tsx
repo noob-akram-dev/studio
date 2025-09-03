@@ -203,12 +203,12 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 )}
                 </Button>
             </div>
-            <div className="hidden md:flex items-center px-3 py-2 rounded-lg bg-secondary/50">
-                 <CountdownTimer createdAt={room.createdAt} />
-            </div>
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
+        <div className="hidden md:flex items-center px-3 py-2 rounded-lg bg-secondary/50">
+             <CountdownTimer createdAt={room.createdAt} />
+        </div>
         {isAdmin ? (
             <AlertDialog open={isDeleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
                 <DropdownMenu>
