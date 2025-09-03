@@ -2,7 +2,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage, kickUser, deleteRoom } from '@/lib/chat-store';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage, kickUser, deleteRoom, removeUserFromRoom } from '@/lib/chat-store';
 import type { User, Room, Message } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 import { revalidatePath } from 'next/cache';
@@ -52,7 +52,6 @@ async function detectAndSetLanguage(roomCode: string, messageId: string, text: s
             const result = await detectProgrammingLanguage({ code: text });
             if (result.language && result.language !== 'Unknown') {
                  await updateMessageLanguage(roomCode, messageId, result.language);
-                 // No need to revalidate, SSE will push the update
             }
         }
     } catch (error) {
@@ -76,18 +75,15 @@ export async function sendMessageAction(
   const user: User = { id: userName, name: userName, avatarUrl: userAvatarUrl };
   
   try {
-    // Add the message immediately without language
     const newMessage = await addMessage(roomCode, {
       text,
       user,
-      language: undefined, // Language will be updated later
+      language: undefined,
     });
 
     // Don't await this. Let it run in the background.
     detectAndSetLanguage(roomCode, newMessage.id, text);
   
-    // No longer needed with SSE
-    // revalidatePath(`/room/${roomCode}`);
     return { success: true };
 
   } catch (error) {
@@ -105,8 +101,6 @@ export async function userTypingAction(formData: FormData) {
   }
   
   await updateUserTypingStatus(roomCode, userName);
-  // No longer needed with SSE
-  // revalidatePath(`/room/${roomCode}`);
 }
 
 export async function joinRoomAndAddUserAction(formData: FormData) {
@@ -119,8 +113,6 @@ export async function joinRoomAndAddUserAction(formData: FormData) {
     }
 
     await joinRoom(roomCode, { name: userName, avatarUrl: userAvatarUrl });
-    // No longer needed with SSE
-    // revalidatePath(`/room/${roomCode}`);
 }
 
 export async function kickUserAction(formData: FormData) {
@@ -144,4 +136,15 @@ export async function deleteRoomAction(formData: FormData) {
     }
     
     await deleteRoom(roomCode, adminName);
+}
+
+export async function removeUserFromRoomAction(formData: FormData) {
+    const roomCode = formData.get('roomCode') as string;
+    const userName = formData.get('userName') as string;
+
+    if (!roomCode || !userName) {
+        return;
+    }
+    
+    await removeUserFromRoom(roomCode, userName);
 }

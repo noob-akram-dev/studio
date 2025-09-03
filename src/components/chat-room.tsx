@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Trash, Clock } from 'lucide-react';
+import { Copy, Check, LogOut, Trash, Clock, ChevronDown } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -39,7 +39,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
-import { joinRoomAndAddUserAction, deleteRoomAction } from '@/app/actions';
+import { joinRoomAndAddUserAction, deleteRoomAction, removeUserFromRoomAction } from '@/app/actions';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -102,10 +102,35 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         formData.append('userAvatarUrl', avatarUrl);
         joinRoomAndAddUserAction(formData);
     }
+    
+    // Add beforeunload event listener to remove user when they leave
+    const handleBeforeUnload = () => {
+        if (name) {
+            const formData = new FormData();
+            formData.append('roomCode', initialRoom.code);
+            formData.append('userName', name);
+            // Use sendBeacon as it's more reliable for requests during unload
+            navigator.sendBeacon('/api/remove-user', formData);
+        }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+     // Cleanup function
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      if (name) {
+          const formData = new FormData();
+          formData.append('roomCode', initialRoom.code);
+          formData.append('userName', name);
+          removeUserFromRoomAction(formData);
+      }
+    };
 
   }, [initialRoom.code]);
 
   useEffect(() => {
+    if (!userName) return; // Don't start EventSource until we have a username
+
     const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
     
     eventSource.onmessage = (event) => {
@@ -120,10 +145,11 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
             eventSource.close();
             return;
         }
-
-        // Check if the current user has been kicked
-        if (userName && !updatedData.users.some(u => u.name === userName)) {
-            toast({
+        
+        // This is the crucial check. If the current user is no longer in the user list, they've been kicked.
+        const currentUserExists = updatedData.users.some(u => u.name === userName);
+        if (!currentUserExists && room.users.some(u => u.name === userName)) {
+             toast({
                 variant: 'destructive',
                 title: "You have been kicked",
                 description: "You have been removed from the room by the admin.",
@@ -132,7 +158,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
             eventSource.close();
             return;
         }
-
 
         setRoom(updatedData);
     };
@@ -146,7 +171,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     return () => {
         eventSource.close();
     };
-  }, [initialRoom.code, router, toast, userName]);
+  }, [initialRoom.code, router, toast, userName, room.users]);
   
   useEffect(() => {
     if (virtuosoRef.current) {
@@ -276,12 +301,12 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
-                            <LogOut className="w-4 h-4 md:mr-2 text-destructive" />
                             <span className="hidden md:inline text-destructive">Options</span>
+                            <LogOut className="w-4 h-4 md:ml-2 text-destructive" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
-                        <DropdownMenuItem onSelect={() => router.push('/')}>
+                         <DropdownMenuItem onSelect={() => router.push('/')}>
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Leave Room</span>
                         </DropdownMenuItem>
@@ -310,8 +335,8 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         ) : (
             <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
               <Link href="/">
-                <LogOut className="w-4 h-4 md:mr-2 text-primary" />
                 <span className="hidden md:inline text-primary">Leave Room</span>
+                <LogOut className="w-4 h-4 md:ml-2 text-primary" />
               </Link>
             </Button>
         )}
