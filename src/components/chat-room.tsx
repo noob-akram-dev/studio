@@ -216,7 +216,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                         <Button variant="ghost" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto text-primary">
                             <LogOut className="w-4 h-4 md:mr-2" />
                             <span className="hidden md:inline">Options</span>
-                            <ChevronDown className="w-4 h-4 ml-1" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
