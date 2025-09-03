@@ -97,7 +97,6 @@ export function MessageForm({
         <input type="hidden" name="userAvatarUrl" value={userAvatarUrl} />
         <Textarea
             name="message"
-            placeholder="Type your message or code snippet here..."
             required
             className="flex-1 resize-none bg-transparent border-0 ring-0 focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
             rows={1}
