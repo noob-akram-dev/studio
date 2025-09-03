@@ -6,13 +6,20 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Share2, Trash, Crown, ShieldX } from 'lucide-react';
+import { Copy, Check, LogOut, Share2, Trash, Crown, ShieldX, ChevronDown } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +29,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import Link from 'next/link';
 import { Logo } from './logo';
@@ -61,6 +67,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userName, setUserName] = useState<string>('');
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
+  const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -150,6 +157,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       formData.append('roomCode', room.code);
       formData.append('adminName', userName);
       deleteRoomAction(formData);
+      setDeleteAlertOpen(false);
   }
 
   const typingUsers = useMemo(() => {
@@ -201,45 +209,51 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
-        {isAdmin && (
-             <AlertDialog>
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <AlertDialogTrigger asChild>
-                                 <Button variant="destructive" className="px-3 py-2 h-auto">
-                                    <Trash className="w-4 h-4 md:mr-2" />
-                                    <span className="hidden md:inline">End Room</span>
-                                </Button>
-                            </AlertDialogTrigger>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>End Room & Delete for Everyone</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+        {isAdmin ? (
+            <AlertDialog open={isDeleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto text-primary">
+                            <LogOut className="w-4 h-4 md:mr-2" />
+                            <span className="hidden md:inline">Options</span>
+                            <ChevronDown className="w-4 h-4 ml-1" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end">
+                        <DropdownMenuItem onSelect={() => router.push('/')}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Leave Room</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onSelect={() => setDeleteAlertOpen(true)} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                            <Trash className="mr-2 h-4 w-4" />
+                            <span>Delete Room</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This action is irreversible. The room and all its messages will be permanently deleted for all users.
-                    </AlertDialogDescription>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action is irreversible. The room and all its messages will be permanently deleted for all users.
+                        </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteRoom}>
-                        Yes, End Room
-                    </AlertDialogAction>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteRoom} className="bg-destructive hover:bg-destructive/90">
+                            Yes, Delete Room
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+        ) : (
+            <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
+              <Link href="/">
+                <LogOut className="w-4 h-4 md:mr-2 text-primary" />
+                <span className="hidden md:inline text-primary">Leave Room</span>
+              </Link>
+            </Button>
         )}
-        <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
-          <Link href="/">
-            <LogOut className="w-4 h-4 md:mr-2 text-primary" />
-            <span className="hidden md:inline text-primary">Leave Room</span>
-          </Link>
-        </Button>
         </div>
       </header>
 
