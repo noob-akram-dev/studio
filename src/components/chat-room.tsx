@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Trash, ChevronDown, Clock } from 'lucide-react';
+import { Copy, Check, LogOut, Trash, Clock } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -262,9 +262,9 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
             <AlertDialog open={isDeleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto text-primary">
-                            <LogOut className="w-4 h-4 md:mr-2" />
-                            <span className="hidden md:inline">Options</span>
+                        <Button variant="ghost" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
+                            <LogOut className="w-4 h-4 md:mr-2 text-destructive" />
+                            <span className="hidden md:inline text-destructive">Options</span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
