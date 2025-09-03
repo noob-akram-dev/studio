@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { posts } from '@/lib/blog-data'
  
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://code-yapp.com'; // Replace with your actual domain
+  const baseUrl = 'https://codeyapp.tech'; // Replace with your actual domain
 
   const blogPosts = posts.map(post => ({
     url: `${baseUrl}/blog/${post.slug}`,

@@ -20,7 +20,7 @@ const sourceCodePro = Source_Code_Pro({
 
 const siteConfig = {
   name: 'Code Yapp',
-  url: 'https://code-yapp.com', // Replace with your actual domain
+  url: 'https://codeyapp.tech', // Replace with your actual domain
   description: 'Grab a secure, temporary chat room perfect for sharing code, spilling secrets, or plotting your snack heist "off the record" without leaving a trail of awkward screenshots. Think of it as incognito mode for conversations.',
   keywords: ['private chat', 'secure chat', 'ephemeral chat', 'temporary chat', 'anonymous chat', 'secure code sharing', 'developer chat', 'private discussion'],
 }
