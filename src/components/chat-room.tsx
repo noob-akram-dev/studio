@@ -211,7 +211,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-x-hidden">
-      <header className="flex items-center justify-between p-2 md:p-4">
+      <header className="flex items-center justify-between p-2 md:p-4 md:border-b">
         <div className="flex items-center gap-2 md:gap-4">
           <Link href="/">
             <Logo variant="small" />
@@ -336,7 +336,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           />
       </main>
 
-      <footer className="p-2 sm:p-4 bg-card">
+      <footer className="p-2 sm:p-4 bg-background md:border-t">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
             <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} users={activeUsers} isAdmin={isAdmin} roomAdminName={room.admin} />
