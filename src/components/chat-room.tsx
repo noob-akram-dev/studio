@@ -129,7 +129,9 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [initialRoom.code]);
 
   useEffect(() => {
-    if (!userName) return; // Don't start EventSource until we have a username
+    // CRITICAL: Do not connect to EventSource until the user's name is set.
+    // This prevents a race condition where the client receives an event before it knows its own identity.
+    if (!userName) return;
 
     const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
     
@@ -147,8 +149,9 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         }
         
         // This is the crucial check. If the current user is no longer in the user list, they've been kicked.
+        // We also check if the initial user list has been populated to avoid false positives on first load.
         const currentUserExists = updatedData.users.some(u => u.name === userName);
-        if (!currentUserExists && room.users.some(u => u.name === userName)) {
+        if (room.users.length > 0 && !currentUserExists && room.users.some(u => u.name === userName)) {
              toast({
                 variant: 'destructive',
                 title: "You have been kicked",
