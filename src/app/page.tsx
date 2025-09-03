@@ -49,7 +49,7 @@ function JoinCreateForms() {
             </Alert>
         )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-5xl">
           <div className="animate-in fade-in slide-in-from-left-12 duration-1000 ease-in-out">
             <Card className="w-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30">
               <CardHeader>
