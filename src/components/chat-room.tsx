@@ -75,6 +75,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const [isProtected, setIsProtected] = useState(true); // Screenshot protection
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -143,6 +144,31 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       });
     }
   }, [lastMessageId]);
+
+  useEffect(() => {
+    const handleBlur = () => {
+        if (isProtected) {
+            document.body.classList.add('protected');
+        }
+    };
+    const handleFocus = () => {
+        document.body.classList.remove('protected');
+    };
+
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
+    
+    // Add class for CSS to target
+    document.body.classList.add('screenshot-protection');
+
+    return () => {
+        window.removeEventListener('blur', handleBlur);
+        window.removeEventListener('focus', handleFocus);
+        document.body.classList.remove('screenshot-protection');
+        document.body.classList.remove('protected');
+    };
+  }, [isProtected]);
+
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(room.code);
