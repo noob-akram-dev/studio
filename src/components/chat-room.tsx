@@ -169,33 +169,33 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-x-hidden">
-      <header className="flex items-center justify-between p-2 sm:p-4 border-b bg-card">
-        <div className="flex items-center gap-2 sm:gap-4">
+      <header className="flex items-center justify-between p-2 md:p-4 border-b bg-card">
+        <div className="flex items-center gap-2 md:gap-4">
           <Link href="/">
             <Logo variant="small" />
           </Link>
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline text-sm text-muted-foreground">Room:</span>
+          <div className="flex items-center gap-2 md:gap-3">
+            <span className="hidden md:inline text-base text-muted-foreground">Room:</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div
-                    className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-md bg-secondary cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary cursor-pointer"
                     onClick={handleCopyCode}
                   >
-                    <span className="font-mono text-base sm:text-lg font-bold text-primary">
+                    <span className="font-mono text-lg md:text-xl font-bold text-primary">
                       {room.code}
                     </span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6"
+                      className="h-7 w-7"
                       aria-label="Copy room code"
                     >
                       {codeCopied ? (
-                        <Check className="w-4 h-4 text-green-500" />
+                        <Check className="w-5 h-5 text-green-500" />
                       ) : (
-                        <Copy className="w-4 h-4" />
+                        <Copy className="w-5 h-5" />
                       )}
                     </Button>
                   </div>
@@ -208,8 +208,8 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
              <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button onClick={handleShareLink} variant="ghost" size="icon" className="h-8 w-8">
-                            <Share2 className="w-4 h-4" />
+                        <Button onClick={handleShareLink} variant="ghost" size="icon" className="h-9 w-9">
+                            <Share2 className="w-5 h-5" />
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -218,18 +218,20 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 </Tooltip>
              </TooltipProvider>
           </div>
-           <CountdownTimer createdAt={room.createdAt} />
+           <div className="hidden md:flex">
+             <CountdownTimer createdAt={room.createdAt} />
+           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 md:gap-3">
         {isAdmin && (
              <AlertDialog>
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <AlertDialogTrigger asChild>
-                                 <Button variant="destructive" size="sm">
-                                    <Trash className="w-4 h-4 mr-0 sm:mr-2" />
-                                    <span className="hidden sm:inline">End Room</span>
+                                 <Button variant="destructive">
+                                    <Trash className="w-4 h-4 mr-0 md:mr-2" />
+                                    <span className="hidden md:inline">End Room</span>
                                 </Button>
                             </AlertDialogTrigger>
                         </TooltipTrigger>
@@ -254,10 +256,10 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 </AlertDialogContent>
             </AlertDialog>
         )}
-        <Button variant="ghost" asChild size="sm">
+        <Button variant="ghost" asChild>
           <Link href="/">
-            <LogOut className="w-4 h-4 mr-0 sm:mr-2" />
-            <span className="hidden sm:inline">Leave Room</span>
+            <LogOut className="w-4 h-4 mr-0 md:mr-2" />
+            <span className="hidden md:inline">Leave Room</span>
           </Link>
         </Button>
         </div>
