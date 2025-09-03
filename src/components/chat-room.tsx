@@ -2,24 +2,36 @@
 'use client';
 
 import type { Room } from '@/lib/types';
-import { useEffect, useState, useRef, useMemo, ElementRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Users, Share2 } from 'lucide-react';
+import { Copy, Check, LogOut, Share2, Trash, Crown, ShieldX } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
-import { joinRoomAndAddUserAction } from '@/app/actions';
+import { joinRoomAndAddUserAction, deleteRoomAction } from '@/app/actions';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
@@ -51,6 +63,9 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [codeCopied, setCodeCopied] = useState(false);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const { toast } = useToast();
+  const router = useRouter();
+
+  const isAdmin = useMemo(() => room.admin === userName && userName !== '', [room.admin, userName]);
   
   const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
 
@@ -78,8 +93,19 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
     
     eventSource.onmessage = (event) => {
-        const updatedRoom = JSON.parse(event.data);
-        setRoom(updatedRoom);
+        const updatedData = JSON.parse(event.data);
+
+        if (updatedData.deleted) {
+            toast({
+                title: "Room Deleted by Admin",
+                description: "You will be redirected to the homepage.",
+            });
+            setTimeout(() => router.push('/'), 2000);
+            eventSource.close();
+            return;
+        }
+
+        setRoom(updatedData);
     };
 
     eventSource.onerror = (err) => {
@@ -91,7 +117,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     return () => {
         eventSource.close();
     };
-  }, [initialRoom.code]);
+  }, [initialRoom.code, router, toast]);
   
   useEffect(() => {
     if (virtuosoRef.current) {
@@ -116,6 +142,14 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           title: "Link Copied!",
           description: "A shareable link has been copied to your clipboard.",
       });
+  }
+
+  const handleDeleteRoom = () => {
+      if (!isAdmin) return;
+      const formData = new FormData();
+      formData.append('roomCode', room.code);
+      formData.append('adminName', userName);
+      deleteRoomAction(formData);
   }
 
   const typingUsers = useMemo(() => {
@@ -149,7 +183,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                     className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-md bg-secondary cursor-pointer"
                     onClick={handleCopyCode}
                   >
-                    <span className="font-mono text-base sm:text-lg font-bold tracking-widest text-primary">
+                    <span className="font-mono text-base sm:text-lg font-bold text-primary">
                       {room.code}
                     </span>
                     <Button
@@ -186,12 +220,47 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           </div>
            <CountdownTimer createdAt={room.createdAt} />
         </div>
+        <div className="flex items-center gap-2">
+        {isAdmin && (
+             <AlertDialog>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                                 <Button variant="destructive" size="sm">
+                                    <Trash className="w-4 h-4 mr-0 sm:mr-2" />
+                                    <span className="hidden sm:inline">End Room</span>
+                                </Button>
+                            </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>End Room & Delete for Everyone</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action is irreversible. The room and all its messages will be permanently deleted for all users.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteRoom}>
+                        Yes, End Room
+                    </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        )}
         <Button variant="ghost" asChild size="sm">
           <Link href="/">
             <LogOut className="w-4 h-4 mr-0 sm:mr-2" />
             <span className="hidden sm:inline">Leave Room</span>
           </Link>
         </Button>
+        </div>
       </header>
 
       <main className="flex-1 overflow-y-auto">
@@ -228,7 +297,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       <footer className="p-2 sm:p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
-            <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} users={activeUsers} />
+            <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} users={activeUsers} isAdmin={isAdmin} roomAdminName={room.admin} />
           ) : (
             <p className="text-center text-muted-foreground">Joining room...</p>
           )}

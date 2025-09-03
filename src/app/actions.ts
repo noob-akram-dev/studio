@@ -2,7 +2,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage } from '@/lib/chat-store';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage, kickUser, deleteRoom } from '@/lib/chat-store';
 import type { User, Room, Message } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 import { revalidatePath } from 'next/cache';
@@ -121,4 +121,27 @@ export async function joinRoomAndAddUserAction(formData: FormData) {
     await joinRoom(roomCode, { name: userName, avatarUrl: userAvatarUrl });
     // No longer needed with SSE
     // revalidatePath(`/room/${roomCode}`);
+}
+
+export async function kickUserAction(formData: FormData) {
+    const roomCode = formData.get('roomCode') as string;
+    const adminName = formData.get('adminName') as string;
+    const userNameToKick = formData.get('userNameToKick') as string;
+
+    if (!roomCode || !adminName || !userNameToKick) {
+        return;
+    }
+
+    await kickUser(roomCode, adminName, userNameToKick);
+}
+
+export async function deleteRoomAction(formData: FormData) {
+    const roomCode = formData.get('roomCode') as string;
+    const adminName = formData.get('adminName') as string;
+
+    if (!roomCode || !adminName) {
+        return;
+    }
+    
+    await deleteRoom(roomCode, adminName);
 }
