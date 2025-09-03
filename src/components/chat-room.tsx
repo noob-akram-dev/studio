@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Share2, Trash, Crown, ShieldX, ChevronDown } from 'lucide-react';
+import { Copy, Check, LogOut, Trash, ChevronDown, Clock } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -30,6 +30,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
@@ -38,6 +43,8 @@ import { joinRoomAndAddUserAction, deleteRoomAction } from '@/app/actions';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
@@ -71,6 +78,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const { toast } = useToast();
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const isAdmin = useMemo(() => room.admin === userName && userName !== '', [room.admin, userName]);
   
@@ -177,38 +185,53 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-x-hidden">
-      <header className="flex items-center justify-between p-2 md:p-4 border-b bg-card">
+      <header className="flex items-center justify-between p-2 md:p-4">
         <div className="flex items-center gap-2 md:gap-4">
-          <Link href="/" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary">
+          <Link href="/">
             <Logo variant="small" />
           </Link>
-          <div className="flex items-center gap-2">
-            <div
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 cursor-pointer transition-colors hover:bg-secondary"
-                onClick={handleCopyCode}
-            >
-                <span className="font-mono text-lg md:text-xl font-bold text-primary">
-                {room.code}
-                </span>
-                <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-primary"
-                aria-label="Copy room code"
-                >
-                {codeCopied ? (
-                    <Check className="w-5 h-5 text-green-500" />
-                ) : (
-                    <Copy className="w-5 h-5" />
-                )}
-                </Button>
-            </div>
+          <div
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 cursor-pointer transition-colors hover:bg-secondary"
+              onClick={handleCopyCode}
+          >
+              <span className="font-mono text-lg md:text-xl font-bold text-primary">
+              {room.code}
+              </span>
+              <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-primary"
+              aria-label="Copy room code"
+              >
+              {codeCopied ? (
+                  <Check className="w-5 h-5 text-green-500" />
+              ) : (
+                  <Copy className="w-5 h-5" />
+              )}
+              </Button>
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
-        <div className="hidden md:flex items-center px-3 py-2 rounded-lg bg-secondary/50">
-             <CountdownTimer createdAt={room.createdAt} />
-        </div>
+
+            {isMobile ? (
+                <Popover>
+                    <PopoverTrigger asChild>
+                         <Button variant="ghost" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto text-primary">
+                            <Clock className="w-4 h-4" />
+                         </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                         <div className="flex items-center px-3 py-2 rounded-lg bg-secondary/50">
+                            <CountdownTimer createdAt={room.createdAt} />
+                        </div>
+                    </PopoverContent>
+                </Popover>
+            ) : (
+                 <div className="flex items-center px-3 py-2 rounded-lg bg-secondary/50">
+                    <CountdownTimer createdAt={room.createdAt} />
+                </div>
+            )}
+        
         {isAdmin ? (
             <AlertDialog open={isDeleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
                 <DropdownMenu>
