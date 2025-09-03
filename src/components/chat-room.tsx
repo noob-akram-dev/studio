@@ -169,54 +169,30 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-x-hidden">
-      <header className="flex items-center justify-between p-2 md:p-4 border-b bg-card">
+        <header className="flex items-center justify-between p-2 md:p-4 border-b bg-card">
         <div className="flex items-center gap-2 md:gap-4">
-          <Link href="/">
+          <Link href="/" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary">
             <Logo variant="small" />
           </Link>
-          <div className="flex items-center gap-2 md:gap-3">
-            <span className="hidden md:inline text-base text-muted-foreground">Room:</span>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div
-                    className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary cursor-pointer"
-                    onClick={handleCopyCode}
-                  >
-                    <span className="font-mono text-lg md:text-xl font-bold text-primary">
-                      {room.code}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      aria-label="Copy room code"
-                    >
-                      {codeCopied ? (
-                        <Check className="w-5 h-5 text-green-500" />
-                      ) : (
-                        <Copy className="w-5 h-5" />
-                      )}
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Click to copy room code</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-             <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button onClick={handleShareLink} variant="ghost" size="icon" className="h-9 w-9">
-                            <Share2 className="w-5 h-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Copy Share Link</p>
-                    </TooltipContent>
-                </Tooltip>
-             </TooltipProvider>
+          <div
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 cursor-pointer transition-colors hover:bg-secondary"
+            onClick={handleCopyCode}
+          >
+            <span className="font-mono text-lg md:text-xl font-bold text-primary">
+              {room.code}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-primary"
+              aria-label="Copy room code"
+            >
+              {codeCopied ? (
+                <Check className="w-5 h-5 text-green-500" />
+              ) : (
+                <Copy className="w-5 h-5" />
+              )}
+            </Button>
           </div>
            <div className="hidden md:flex">
              <CountdownTimer createdAt={room.createdAt} />
@@ -256,10 +232,10 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 </AlertDialogContent>
             </AlertDialog>
         )}
-        <Button variant="ghost" asChild>
+        <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary">
           <Link href="/">
-            <LogOut className="w-4 h-4 mr-0 md:mr-2" />
-            <span className="hidden md:inline">Leave Room</span>
+            <LogOut className="w-4 h-4 md:mr-2 text-primary" />
+            <span className="hidden md:inline text-primary">Leave Room</span>
           </Link>
         </Button>
         </div>
