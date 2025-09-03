@@ -169,34 +169,36 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-x-hidden">
-        <header className="flex items-center justify-between p-2 md:p-4 border-b bg-card">
+      <header className="flex items-center justify-between p-2 md:p-4 border-b bg-card">
         <div className="flex items-center gap-2 md:gap-4">
           <Link href="/" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary">
             <Logo variant="small" />
           </Link>
-          <div
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 cursor-pointer transition-colors hover:bg-secondary"
-            onClick={handleCopyCode}
-          >
-            <span className="font-mono text-lg md:text-xl font-bold text-primary">
-              {room.code}
-            </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-primary"
-              aria-label="Copy room code"
+          <div className="flex items-center gap-2">
+            <div
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 cursor-pointer transition-colors hover:bg-secondary"
+                onClick={handleCopyCode}
             >
-              {codeCopied ? (
-                <Check className="w-5 h-5 text-green-500" />
-              ) : (
-                <Copy className="w-5 h-5" />
-              )}
-            </Button>
+                <span className="font-mono text-lg md:text-xl font-bold text-primary">
+                {room.code}
+                </span>
+                <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-primary"
+                aria-label="Copy room code"
+                >
+                {codeCopied ? (
+                    <Check className="w-5 h-5 text-green-500" />
+                ) : (
+                    <Copy className="w-5 h-5" />
+                )}
+                </Button>
+            </div>
+            <div className="hidden md:flex items-center px-3 py-2 rounded-lg bg-secondary/50">
+                 <CountdownTimer createdAt={room.createdAt} />
+            </div>
           </div>
-           <div className="hidden md:flex">
-             <CountdownTimer createdAt={room.createdAt} />
-           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
         {isAdmin && (
@@ -205,8 +207,8 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <AlertDialogTrigger asChild>
-                                 <Button variant="destructive">
-                                    <Trash className="w-4 h-4 mr-0 md:mr-2" />
+                                 <Button variant="destructive" className="px-3 py-2 h-auto">
+                                    <Trash className="w-4 h-4 md:mr-2" />
                                     <span className="hidden md:inline">End Room</span>
                                 </Button>
                             </AlertDialogTrigger>
@@ -232,7 +234,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 </AlertDialogContent>
             </AlertDialog>
         )}
-        <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary">
+        <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
           <Link href="/">
             <LogOut className="w-4 h-4 md:mr-2 text-primary" />
             <span className="hidden md:inline text-primary">Leave Room</span>
