@@ -109,7 +109,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
     
     eventSource.onmessage = (event) => {
-        const updatedData = JSON.parse(event.data);
+        const updatedData = JSON.parse(event.data) as Room & { deleted?: boolean };
 
         if (updatedData.deleted) {
             toast({
@@ -120,6 +120,19 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
             eventSource.close();
             return;
         }
+
+        // Check if the current user has been kicked
+        if (userName && !updatedData.users.some(u => u.name === userName)) {
+            toast({
+                variant: 'destructive',
+                title: "You have been kicked",
+                description: "You have been removed from the room by the admin.",
+            });
+            setTimeout(() => router.push('/'), 2000);
+            eventSource.close();
+            return;
+        }
+
 
         setRoom(updatedData);
     };
@@ -133,7 +146,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     return () => {
         eventSource.close();
     };
-  }, [initialRoom.code, router, toast]);
+  }, [initialRoom.code, router, toast, userName]);
   
   useEffect(() => {
     if (virtuosoRef.current) {
