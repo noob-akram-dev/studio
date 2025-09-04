@@ -165,21 +165,19 @@ export function MessageForm({
             </PopoverTrigger>
             <PopoverContent className="w-64">
                 <div className="space-y-4">
-                    <h4 className="font-medium leading-none">Active Users</h4>
+                    <h4 className="font-medium leading-none text-center">Active Users</h4>
                      {room.users.length > 0 ? (
                         <ul className="space-y-2">
                         {room.users.map(user => (
-                            <li key={user.name} className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="h-6 w-6 text-xs">
-                                        <AvatarImage src={user.avatarUrl} alt={user.name} />
-                                        <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="text-sm text-muted-foreground">{user.name}</span>
-                                    {user.name === room.admin && (
-                                        <Crown className="w-4 h-4 text-yellow-500" title="Room Admin" />
-                                    )}
-                                </div>
+                            <li key={user.name} className="flex items-center gap-2">
+                                <Avatar className="h-6 w-6 text-xs">
+                                    <AvatarImage src={user.avatarUrl} alt={user.name} />
+                                    <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm text-muted-foreground">{user.name}</span>
+                                {user.name === room.admin && (
+                                    <Crown className="w-4 h-4 text-yellow-500" title="Room Admin" />
+                                )}
                                 {isAdmin && user.name !== userName && (
                                     <KickUserButton 
                                         roomCode={roomCode}
