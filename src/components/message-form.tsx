@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useEffect, useRef, useActionState } from 'react';
+import { useEffect, useRef, useActionState, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
-import { sendMessageAction, userTypingAction } from '@/app/actions';
+import { sendMessageAction, userTypingAction, kickUserAction } from '@/app/actions';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
-import { Send, Loader2, Users } from 'lucide-react';
+import { Send, Loader2, Users, ShieldBan, Crown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useDebouncedCallback } from 'use-debounce';
 import type { Room } from '@/lib/types';
@@ -16,12 +16,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { cn } from '@/lib/utils';
 
 
 function SubmitButton() {
@@ -37,20 +43,73 @@ function SubmitButton() {
   );
 }
 
+function KickUserButton({ roomCode, adminName, userToKickName }: { roomCode: string, adminName: string, userToKickName: string }) {
+    const [isPending, startTransition] = useTransition();
+    const { toast } = useToast();
+
+    const handleKick = () => {
+        startTransition(async () => {
+            const formData = new FormData();
+            formData.append('roomCode', roomCode);
+            formData.append('adminName', adminName);
+            formData.append('userToKickName', userToKickName);
+            const result = await kickUserAction(formData);
+
+            if (result?.error) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error kicking user',
+                    description: result.error,
+                });
+            } else {
+                 toast({
+                    title: 'User Kicked',
+                    description: `${userToKickName} has been removed from the room.`,
+                });
+            }
+        });
+    };
+
+    return (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/70 hover:text-destructive hover:bg-destructive/10">
+                    <ShieldBan className="w-4 h-4" />
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure you want to kick {userToKickName}?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action will permanently remove the user from the room. They will not be able to rejoin.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleKick} disabled={isPending} className="bg-destructive hover:bg-destructive/80">
+                         {isPending ? <Loader2 className="animate-spin" /> : 'Kick User'}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+}
+
 export function MessageForm({
   roomCode,
   userName,
   userAvatarUrl,
-  users,
+  room,
 }: {
   roomCode: string;
-  userName: string;
+  userName:string;
   userAvatarUrl: string;
-  users: Room['users'];
+  room: Room;
 }) {
   const [state, formAction] = useActionState(sendMessageAction, null);
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
+  const isAdmin = room.admin === userName;
   
   const debouncedTypingAction = useDebouncedCallback(() => {
     const formData = new FormData();
@@ -101,15 +160,15 @@ export function MessageForm({
             <PopoverTrigger asChild>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground pr-2 cursor-pointer hover:text-primary transition-colors">
                     <Users className="w-4 h-4" />
-                    <span>{users.length}</span>
+                    <span>{room.users.length}</span>
                 </div>
             </PopoverTrigger>
             <PopoverContent className="w-64">
                 <div className="space-y-4">
                     <h4 className="font-medium leading-none">Active Users</h4>
-                     {users.length > 0 ? (
+                     {room.users.length > 0 ? (
                         <ul className="space-y-2">
-                        {users.map(user => (
+                        {room.users.map(user => (
                             <li key={user.name} className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2">
                                     <Avatar className="h-6 w-6 text-xs">
@@ -117,7 +176,17 @@ export function MessageForm({
                                         <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                                     </Avatar>
                                     <span className="text-sm text-muted-foreground">{user.name}</span>
+                                    {user.name === room.admin && (
+                                        <Crown className="w-4 h-4 text-yellow-500" title="Room Admin" />
+                                    )}
                                 </div>
+                                {isAdmin && user.name !== userName && (
+                                    <KickUserButton 
+                                        roomCode={roomCode}
+                                        adminName={userName}
+                                        userToKickName={user.name}
+                                    />
+                                )}
                             </li>
                         ))}
                         </ul>

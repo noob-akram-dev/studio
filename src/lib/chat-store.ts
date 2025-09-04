@@ -105,6 +105,7 @@ export async function getRoom(code: string): Promise<Room | undefined> {
         createdAt: parseInt(roomData.createdAt),
         isPrivate: roomData.isPrivate === 'true',
         password: roomData.password,
+        admin: roomData.admin,
         messages: messages.map(msg => JSON.parse(msg)).reverse(),
         users: Object.values(users).map(u => JSON.parse(u)).sort((a, b) => a.joinedAt - b.joinedAt),
         typing: cleanedTyping,
@@ -206,6 +207,11 @@ export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'j
     
     const pipeline = redis.pipeline();
     
+    // Assign admin if not already set
+    if (!roomData.admin) {
+        pipeline.hset(roomKey, 'admin', user.name);
+    }
+    
     const userKey = `${roomKey}:users`;
     const now = Date.now();
     const existingUser = await redis.hget(userKey, user.name);
@@ -261,4 +267,26 @@ export async function removeUserFromRoom(roomCode: string, userName: string) {
     await redis.hdel(`${roomKey}:users`, userName);
     await publishRoomUpdate(roomCode);
     console.log(`User ${userName} disconnected and was removed from room ${roomCode}.`);
+}
+
+export async function kickUser(roomCode: string, adminName: string, userToKickName: string) {
+    const redis = getRedisClient();
+    const roomKey = getRoomKey(roomCode);
+
+    const room = await getRoom(roomCode);
+    if (!room) {
+        throw new Error('Room not found.');
+    }
+    if (room.admin !== adminName) {
+        throw new Error('Only the room admin can kick users.');
+    }
+    if (adminName === userToKickName) {
+        throw new Error('Admin cannot kick themselves.');
+    }
+
+    // Remove the user from the users hash
+    await redis.hdel(`${roomKey}:users`, userToKickName);
+    
+    // Publish the update to all clients
+    await publishRoomUpdate(roomCode);
 }

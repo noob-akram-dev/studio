@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -20,4 +21,5 @@ export interface Room {
   users: { name: string; joinedAt: number; avatarUrl: string; }[];
   isPrivate?: boolean;
   password?: string;
+  admin?: string;
 }

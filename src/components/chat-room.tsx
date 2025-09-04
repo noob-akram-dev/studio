@@ -65,18 +65,21 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       name = generateAnonymousName();
       sessionStorage.setItem(`codeyapp-user-${initialRoom.code}`, name);
     }
-    setUserName(name);
     const avatarUrl = getAvatarUrl(name);
-    setUserAvatarUrl(avatarUrl);
+    
+    const joinAndSetUser = async () => {
+        setUserName(name!);
+        setUserAvatarUrl(avatarUrl);
 
-    if (name) {
         const formData = new FormData();
         formData.append('roomCode', initialRoom.code);
-        formData.append('userName', name);
+        formData.append('userName', name!);
         formData.append('userAvatarUrl', avatarUrl);
-        joinRoomAndAddUserAction(formData);
-    }
-    
+        await joinRoomAndAddUserAction(formData);
+    };
+
+    joinAndSetUser();
+
     // Add beforeunload event listener to remove user when they leave
     const handleBeforeUnload = () => {
         if (name) {
@@ -111,6 +114,17 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     eventSource.onmessage = (event) => {
         const updatedRoom = JSON.parse(event.data) as Room;
         setRoom(updatedRoom);
+
+        // Check if the current user was kicked
+        if (room.users && !updatedRoom.users.some(u => u.name === userName)) {
+            toast({
+                variant: 'destructive',
+                title: "You've been kicked",
+                description: "You have been removed from the room by the admin."
+            });
+            setTimeout(() => router.push('/'), 3000);
+            eventSource.close();
+        }
     };
 
     eventSource.onerror = (err) => {
@@ -122,7 +136,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     return () => {
         eventSource.close();
     };
-  }, [initialRoom.code, userName]);
+  }, [initialRoom.code, userName, room.users, router, toast]);
   
   useEffect(() => {
     if (virtuosoRef.current) {
@@ -271,7 +285,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       <footer className="p-2 sm:p-4 bg-background md:border-t">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
-            <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} users={activeUsers} />
+            <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} room={room} />
           ) : (
             <p className="text-center text-muted-foreground">Joining room...</p>
           )}
