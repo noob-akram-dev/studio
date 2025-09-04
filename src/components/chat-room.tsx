@@ -2,11 +2,11 @@
 'use client';
 
 import type { Room } from '@/lib/types';
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, useTransition } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Clock } from 'lucide-react';
+import { Copy, Check, LogOut, Clock, MoreVertical, Trash2 } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -16,11 +16,29 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
-import { joinRoomAndAddUserAction } from '@/app/actions';
+import { joinRoomAndAddUserAction, deleteRoomAction } from '@/app/actions';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 
 const adjectives = [
@@ -46,6 +64,61 @@ function generateAnonymousName() {
 
 const getAvatarUrl = (name: string) => `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${encodeURIComponent(name)}`;
 
+function AdminRoomActions({ roomCode, adminName }: { roomCode: string, adminName: string }) {
+    const [isDeleting, startDeleteTransition] = useTransition();
+
+    const handleDelete = () => {
+        startDeleteTransition(async () => {
+            const formData = new FormData();
+            formData.append('roomCode', roomCode);
+            formData.append('adminName', adminName);
+            await deleteRoomAction(formData);
+        });
+    }
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
+                    <span className="hidden md:inline text-primary">Options</span>
+                     <MoreVertical className="w-4 h-4 md:ml-2 text-primary" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                 <DropdownMenuItem asChild>
+                    <Link href="/" className="flex items-center cursor-pointer">
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Leave Room
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <AlertDialog>
+                     <AlertDialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
+                             <Trash2 className="w-4 h-4 mr-2" />
+                             Delete Room
+                        </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the room and all of its messages.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/80">
+                                {isDeleting ? 'Deleting...' : 'Delete Room'}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
 export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [room, setRoom] = useState<Room>(initialRoom);
   const [userName, setUserName] = useState<string>('');
@@ -59,6 +132,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const router = useRouter();
   
   const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
+  const isAdmin = room.admin === userName;
 
   useEffect(() => {
     let name = sessionStorage.getItem(`codeyapp-user-${initialRoom.code}`);
@@ -91,6 +165,16 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     
     eventSource.onmessage = (event) => {
         const updatedRoom = JSON.parse(event.data) as Room;
+
+        if (!updatedRoom) {
+            toast({
+                title: "Room Deleted",
+                description: "This room has been deleted by the admin."
+            });
+            eventSource.close();
+            setTimeout(() => router.push('/'), 2000);
+            return;
+        }
         
         const amIStillInRoom = updatedRoom.users.some(u => u.name === userName);
         
@@ -221,12 +305,16 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 </div>
             )}
         
-            <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
+           {isAdmin && hasJoined ? (
+               <AdminRoomActions roomCode={room.code} adminName={userName} />
+           ) : (
+             <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
               <Link href="/">
                 <span className="hidden md:inline text-primary">Leave Room</span>
                 <LogOut className="w-4 h-4 md:ml-2 text-primary" />
               </Link>
             </Button>
+           )}
         </div>
       </header>
 

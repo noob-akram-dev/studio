@@ -2,7 +2,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage, kickUser } from '@/lib/chat-store';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage, kickUser, deleteRoom } from '@/lib/chat-store';
 import type { User, Room, Message } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 import { revalidatePath } from 'next/cache';
@@ -131,4 +131,21 @@ export async function kickUserAction(formData: FormData) {
     } catch(error: any) {
         return { error: error.message };
     }
+}
+
+export async function deleteRoomAction(formData: FormData) {
+    const roomCode = formData.get('roomCode') as string;
+    const adminName = formData.get('adminName') as string;
+
+     if (!roomCode || !adminName) {
+        return { error: 'Missing required fields' };
+    }
+
+    try {
+        await deleteRoom(roomCode, adminName);
+    } catch (error: any) {
+        return { error: error.message };
+    }
+
+    redirect('/');
 }

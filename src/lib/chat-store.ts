@@ -12,12 +12,17 @@ export function getRoomKey(code: string): string {
     return `room:${code}`;
 }
 
-async function publishRoomUpdate(code: string) {
+async function publishRoomUpdate(code: string, isDeletion = false) {
     const redis = getRedisClient();
+    const channel = `${EVENTS_CHANNEL_PREFIX}${code}`;
+    if (isDeletion) {
+        // Publish a null message to indicate deletion
+        await redis.publish(channel, JSON.stringify(null));
+        return;
+    }
+
     const room = await getRoom(code);
     if (room) {
-        // Use Redis Pub/Sub to publish the update
-        const channel = `${EVENTS_CHANNEL_PREFIX}${code}`;
         await redis.publish(channel, JSON.stringify(room));
     }
 }
@@ -36,8 +41,6 @@ export async function createRoom(isPrivate = false, password?: string): Promise<
     let roomKey: string;
     let roomExists: number;
 
-    // Retry generating a code until we find one that doesn't exist.
-    // This is unlikely to loop more than once.
     do {
         code = generateRoomCode();
         roomKey = getRoomKey(code);
@@ -54,7 +57,6 @@ export async function createRoom(isPrivate = false, password?: string): Promise<
         roomData.password = hashPassword(password);
     }
 
-    // Use a Redis transaction to create the room and set its expiration
     const pipeline = redis.pipeline();
     pipeline.hset(roomKey, roomData);
     pipeline.expire(roomKey, ROOM_TTL_SECONDS);
@@ -96,7 +98,6 @@ export async function getRoom(code: string): Promise<Room | undefined> {
     }
     
     if (modified) {
-        // Only execute if there were changes
         await pipeline.exec();
     }
     
@@ -119,10 +120,10 @@ export async function verifyPassword(code: string, password?: string): Promise<b
     const room = await redis.hgetall(roomKey);
 
     if (!Object.keys(room).length || room.isPrivate !== 'true') {
-        return true; // Not a private room, or doesn't exist
+        return true; 
     }
     if (!password) {
-        return false; // Private room but no password provided
+        return false; 
     }
     return room.password === hashPassword(password);
 }
@@ -143,11 +144,8 @@ export async function addMessage(code: string, message: Omit<Message, 'id' | 'ti
     
     const pipeline = redis.pipeline();
 
-    // Push the new message and trim the list to the max size
     pipeline.lpush(`${roomKey}:messages`, JSON.stringify(newMessage));
     pipeline.ltrim(`${roomKey}:messages`, 0, MAX_MESSAGES_PER_ROOM - 1);
-
-    // Remove the user from the typing list when they send a message
     pipeline.hdel(`${roomKey}:typing`, message.user.name);
 
     await pipeline.exec();
@@ -178,7 +176,6 @@ export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'j
     
     const pipeline = redis.pipeline();
     
-    // Assign admin if not already set
     if (!roomData.admin) {
         pipeline.hset(roomKey, 'admin', user.name);
     }
@@ -197,10 +194,8 @@ export async function updateMessageLanguage(roomCode: string, messageId: string,
     const roomKey = getRoomKey(roomCode);
     const messagesKey = `${roomKey}:messages`;
 
-    // Fetch all messages
     const messages = await redis.lrange(messagesKey, 0, -1);
     
-    // Find the message and update it
     let messageToUpdate: Message | undefined;
     let messageIndex = -1;
 
@@ -215,7 +210,6 @@ export async function updateMessageLanguage(roomCode: string, messageId: string,
 
     if (messageToUpdate && messageIndex !== -1) {
         messageToUpdate.language = language;
-        // Update the message in the list at the specific index
         await redis.lset(messagesKey, messageIndex, JSON.stringify(messageToUpdate));
         await publishRoomUpdate(roomCode);
     }
@@ -236,9 +230,34 @@ export async function kickUser(roomCode: string, adminName: string, userToKickNa
         throw new Error('Admin cannot kick themselves.');
     }
 
-    // Remove the user from the users hash
     await redis.hdel(`${roomKey}:users`, userToKickName);
-    
-    // Publish the update to all clients
     await publishRoomUpdate(roomCode);
+}
+
+export async function deleteRoom(roomCode: string, adminName: string) {
+    const redis = getRedisClient();
+    const roomKey = getRoomKey(roomCode);
+
+    const room = await getRoom(roomCode);
+    if (!room) {
+        return; // Room already deleted
+    }
+
+    if (room.admin !== adminName) {
+        throw new Error('Only the room admin can delete the room.');
+    }
+    
+    // Notify clients before deleting
+    await publishRoomUpdate(roomCode, true);
+
+    const pipeline = redis.pipeline();
+    pipeline.del(roomKey);
+    pipeline.del(`${roomKey}:messages`);
+    pipeline.del(`${roomKey}:users`);
+    pipeline.del(`${roomKey}:typing`);
+    await pipeline.exec();
+
+    // Close the pub/sub channel gracefully
+    const subClient = getRedisClient(true);
+    subClient.unsubscribe(`${EVENTS_CHANNEL_PREFIX}${roomCode}`);
 }
