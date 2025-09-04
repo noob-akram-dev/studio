@@ -105,7 +105,6 @@ export async function getRoom(code: string): Promise<Room | undefined> {
         createdAt: parseInt(roomData.createdAt),
         isPrivate: roomData.isPrivate === 'true',
         password: roomData.password,
-        admin: roomData.admin,
         messages: messages.map(msg => JSON.parse(msg)).reverse(),
         users: Object.values(users).map(u => JSON.parse(u)).sort((a, b) => a.joinedAt - b.joinedAt),
         typing: cleanedTyping,
@@ -206,11 +205,6 @@ export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'j
     }
     
     const pipeline = redis.pipeline();
-
-    // If no admin is set, this user becomes the admin.
-    if (!roomData.admin) {
-        pipeline.hset(roomKey, 'admin', user.name);
-    }
     
     const userKey = `${roomKey}:users`;
     const now = Date.now();
@@ -252,39 +246,6 @@ export async function updateMessageLanguage(roomCode: string, messageId: string,
         await redis.lset(messagesKey, messageIndex, JSON.stringify(messageToUpdate));
         await publishRoomUpdate(roomCode);
     }
-}
-
-export async function kickUser(roomCode: string, adminName: string, userNameToKick: string) {
-    const redis = getRedisClient();
-    const room = await getRoom(roomCode);
-    if (!room || room.admin !== adminName || adminName === userNameToKick) {
-        return; // Only admin can kick, and cannot kick themselves
-    }
-    await redis.hdel(`${getRoomKey(roomCode)}:users`, userNameToKick);
-    await publishRoomUpdate(roomCode);
-}
-
-export async function deleteRoom(roomCode: string, adminName: string) {
-    const redis = getRedisClient();
-    const room = await getRoom(roomCode);
-    if (!room || room.admin !== adminName) {
-        return; // Only admin can delete
-    }
-
-    // Publish a final "deleted" message so clients can react
-    const channel = `${EVENTS_CHANNEL_PREFIX}${roomCode}`;
-    await redis.publish(channel, JSON.stringify({ deleted: true }));
-
-    const roomKey = getRoomKey(roomCode);
-    const keysToDelete = [
-        roomKey,
-        `${roomKey}:messages`,
-        `${roomKey}:users`,
-        `${roomKey}:typing`
-    ];
-    await redis.del(keysToDelete);
-
-    console.log(`Room ${roomCode} deleted by admin ${adminName}.`);
 }
 
 export async function removeUserFromRoom(roomCode: string, userName: string) {

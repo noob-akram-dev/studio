@@ -6,44 +6,21 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Trash, Clock, ChevronDown } from 'lucide-react';
+import { Copy, Check, LogOut, Clock } from 'lucide-react';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from './ui/tooltip';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover"
 import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
-import { joinRoomAndAddUserAction, deleteRoomAction, removeUserFromRoomAction } from '@/app/actions';
+import { joinRoomAndAddUserAction, removeUserFromRoomAction } from '@/app/actions';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 
 const adjectives = [
@@ -74,14 +51,11 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userName, setUserName] = useState<string>('');
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
   const [codeCopied, setCodeCopied] = useState(false);
-  const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const [isProtected, setIsProtected] = useState(true); // Screenshot protection
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const isMobile = useIsMobile();
   const { toast } = useToast();
   const router = useRouter();
-  const isMobile = useIsMobile();
-
-  const isAdmin = useMemo(() => room.admin === userName && userName !== '', [room.admin, userName]);
   
   const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
 
@@ -130,39 +104,13 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   useEffect(() => {
     // CRITICAL: Do not connect to EventSource until the user's name is set.
-    // This prevents a race condition where the client receives an event before it knows its own identity.
     if (!userName) return;
 
     const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
     
     eventSource.onmessage = (event) => {
-        const updatedData = JSON.parse(event.data) as Room & { deleted?: boolean };
-
-        if (updatedData.deleted) {
-            toast({
-                title: "Room Deleted by Admin",
-                description: "You will be redirected to the homepage.",
-            });
-            setTimeout(() => router.push('/'), 2000);
-            eventSource.close();
-            return;
-        }
-        
-        // This is the crucial check. If the current user is no longer in the user list, they've been kicked.
-        // We also check if the initial user list has been populated to avoid false positives on first load.
-        const currentUserExists = updatedData.users.some(u => u.name === userName);
-        if (room.users.length > 0 && !currentUserExists && room.users.some(u => u.name === userName)) {
-             toast({
-                variant: 'destructive',
-                title: "You have been kicked",
-                description: "You have been removed from the room by the admin.",
-            });
-            setTimeout(() => router.push('/'), 2000);
-            eventSource.close();
-            return;
-        }
-
-        setRoom(updatedData);
+        const updatedRoom = JSON.parse(event.data) as Room;
+        setRoom(updatedRoom);
     };
 
     eventSource.onerror = (err) => {
@@ -174,7 +122,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     return () => {
         eventSource.close();
     };
-  }, [initialRoom.code, router, toast, userName, room.users]);
+  }, [initialRoom.code, userName]);
   
   useEffect(() => {
     if (virtuosoRef.current) {
@@ -216,24 +164,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     setCodeCopied(true);
     setTimeout(() => setCodeCopied(false), 2000);
   };
-  
-  const handleShareLink = () => {
-      const url = `${window.location.origin}/?code=${room.code}`;
-      navigator.clipboard.writeText(url);
-      toast({
-          title: "Link Copied!",
-          description: "A shareable link has been copied to your clipboard.",
-      });
-  }
-
-  const handleDeleteRoom = () => {
-      if (!isAdmin) return;
-      const formData = new FormData();
-      formData.append('roomCode', room.code);
-      formData.append('adminName', userName);
-      deleteRoomAction(formData);
-      setDeleteAlertOpen(false);
-  }
 
   const typingUsers = useMemo(() => {
     if (!room.typing || !userName) {
@@ -279,7 +209,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
-
             {isMobile ? (
                 <Popover>
                     <PopoverTrigger asChild>
@@ -299,50 +228,12 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 </div>
             )}
         
-        {isAdmin ? (
-            <AlertDialog open={isDeleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
-                            <span className="hidden md:inline text-destructive">Options</span>
-                            <LogOut className="w-4 h-4 md:ml-2 text-destructive" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end">
-                         <DropdownMenuItem onSelect={() => router.push('/')}>
-                            <LogOut className="mr-2 h-4 w-4" />
-                            <span>Leave Room</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onSelect={() => setDeleteAlertOpen(true)} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
-                            <Trash className="mr-2 h-4 w-4" />
-                            <span>Delete Room</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action is irreversible. The room and all its messages will be permanently deleted for all users.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteRoom} className="bg-destructive hover:bg-destructive/90">
-                            Yes, Delete Room
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        ) : (
             <Button variant="ghost" asChild className="p-2 bg-secondary/50 rounded-lg transition-colors hover:bg-secondary px-3 py-2 h-auto">
               <Link href="/">
                 <span className="hidden md:inline text-primary">Leave Room</span>
                 <LogOut className="w-4 h-4 md:ml-2 text-primary" />
               </Link>
             </Button>
-        )}
         </div>
       </header>
 
@@ -380,7 +271,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       <footer className="p-2 sm:p-4 bg-background md:border-t">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
-            <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} users={activeUsers} isAdmin={isAdmin} roomAdminName={room.admin} />
+            <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} users={activeUsers} />
           ) : (
             <p className="text-center text-muted-foreground">Joining room...</p>
           )}

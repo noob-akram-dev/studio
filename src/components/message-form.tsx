@@ -3,10 +3,10 @@
 
 import { useEffect, useRef, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { sendMessageAction, userTypingAction, kickUserAction } from '@/app/actions';
+import { sendMessageAction, userTypingAction } from '@/app/actions';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
-import { Send, Loader2, Users, Crown, ShieldX } from 'lucide-react';
+import { Send, Loader2, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useDebouncedCallback } from 'use-debounce';
 import type { Room } from '@/lib/types';
@@ -42,15 +42,11 @@ export function MessageForm({
   userName,
   userAvatarUrl,
   users,
-  isAdmin,
-  roomAdminName
 }: {
   roomCode: string;
   userName: string;
   userAvatarUrl: string;
   users: Room['users'];
-  isAdmin: boolean;
-  roomAdminName?: string;
 }) {
   const [state, formAction] = useActionState(sendMessageAction, null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -62,14 +58,6 @@ export function MessageForm({
     formData.append('userName', userName);
     userTypingAction(formData);
   }, 500, { leading: true, trailing: false });
-
-  const handleKickUser = (userNameToKick: string) => {
-    const formData = new FormData();
-    formData.append('roomCode', roomCode);
-    formData.append('adminName', userName);
-    formData.append('userNameToKick', userNameToKick);
-    kickUserAction(formData);
-  }
 
   useEffect(() => {
     if (state?.success) {
@@ -129,33 +117,7 @@ export function MessageForm({
                                         <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                                     </Avatar>
                                     <span className="text-sm text-muted-foreground">{user.name}</span>
-                                    {user.name === roomAdminName && (
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger>
-                                                    <Crown className="h-4 w-4 text-yellow-500" />
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>Room Admin</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    )}
                                 </div>
-                                {isAdmin && user.name !== userName && (
-                                     <TooltipProvider>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                 <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleKickUser(user.name)}>
-                                                    <ShieldX className="w-4 h-4" />
-                                                </Button>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>Kick {user.name}</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                )}
                             </li>
                         ))}
                         </ul>
