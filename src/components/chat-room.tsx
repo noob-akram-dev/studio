@@ -50,6 +50,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [room, setRoom] = useState<Room>(initialRoom);
   const [userName, setUserName] = useState<string>('');
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
+  const [hasJoined, setHasJoined] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
   const [isProtected, setIsProtected] = useState(true); // Screenshot protection
   const virtuosoRef = useRef<VirtuosoHandle>(null);
@@ -76,23 +77,21 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         formData.append('userName', name!);
         formData.append('userAvatarUrl', avatarUrl);
         await joinRoomAndAddUserAction(formData);
+        setHasJoined(true);
     };
 
     joinAndSetUser();
 
-    // Add beforeunload event listener to remove user when they leave
     const handleBeforeUnload = () => {
         if (name) {
             const formData = new FormData();
             formData.append('roomCode', initialRoom.code);
             formData.append('userName', name);
-            // Use sendBeacon as it's more reliable for requests during unload
             navigator.sendBeacon('/api/remove-user', formData);
         }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-     // Cleanup function
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       if (name) {
@@ -106,8 +105,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [initialRoom.code]);
 
   useEffect(() => {
-    // CRITICAL: Do not connect to EventSource until the user's name is set.
-    if (!userName) return;
+    if (!userName || !hasJoined) return;
 
     const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
     
@@ -115,8 +113,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         const updatedRoom = JSON.parse(event.data) as Room;
         setRoom(updatedRoom);
 
-        // Check if the current user was kicked
-        if (room.users && !updatedRoom.users.some(u => u.name === userName)) {
+        if (hasJoined && !updatedRoom.users.some(u => u.name === userName)) {
             toast({
                 variant: 'destructive',
                 title: "You've been kicked",
@@ -132,11 +129,10 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         eventSource.close();
     };
 
-    // Cleanup on component unmount
     return () => {
         eventSource.close();
     };
-  }, [initialRoom.code, userName, room.users, router, toast]);
+  }, [initialRoom.code, userName, hasJoined, router, toast]);
   
   useEffect(() => {
     if (virtuosoRef.current) {
@@ -161,7 +157,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     window.addEventListener('blur', handleBlur);
     window.addEventListener('focus', handleFocus);
     
-    // Add class for CSS to target
     document.body.classList.add('screenshot-protection');
 
     return () => {
