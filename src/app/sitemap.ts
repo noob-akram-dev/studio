@@ -1,3 +1,4 @@
+
 import { MetadataRoute } from 'next'
 import { posts } from '@/lib/blog-data'
  
@@ -45,5 +46,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 }
-
-    
