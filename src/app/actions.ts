@@ -2,7 +2,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage, removeUserFromRoom, kickUser } from '@/lib/chat-store';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage, kickUser } from '@/lib/chat-store';
 import type { User, Room, Message } from '@/lib/types';
 import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
 import { revalidatePath } from 'next/cache';
@@ -113,17 +113,6 @@ export async function joinRoomAndAddUserAction(formData: FormData) {
     }
 
     await joinRoom(roomCode, { name: userName, avatarUrl: userAvatarUrl });
-}
-
-export async function removeUserFromRoomAction(formData: FormData) {
-    const roomCode = formData.get('roomCode') as string;
-    const userName = formData.get('userName') as string;
-
-    if (!roomCode || !userName) {
-        return;
-    }
-    
-    await removeUserFromRoom(roomCode, userName);
 }
 
 export async function kickUserAction(formData: FormData) {

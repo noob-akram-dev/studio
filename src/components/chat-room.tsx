@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
-import { joinRoomAndAddUserAction, removeUserFromRoomAction } from '@/app/actions';
+import { joinRoomAndAddUserAction } from '@/app/actions';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
@@ -82,26 +82,6 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
     joinAndSetUser();
 
-    const handleBeforeUnload = () => {
-        if (name) {
-            const formData = new FormData();
-            formData.append('roomCode', initialRoom.code);
-            formData.append('userName', name);
-            navigator.sendBeacon('/api/remove-user', formData);
-        }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      if (name) {
-          const formData = new FormData();
-          formData.append('roomCode', initialRoom.code);
-          formData.append('userName', name);
-          removeUserFromRoomAction(formData);
-      }
-    };
-
   }, [initialRoom.code]);
 
   useEffect(() => {
@@ -111,17 +91,21 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     
     eventSource.onmessage = (event) => {
         const updatedRoom = JSON.parse(event.data) as Room;
-        setRoom(updatedRoom);
-
-        if (hasJoined && !updatedRoom.users.some(u => u.name === userName)) {
+        
+        const amIStillInRoom = updatedRoom.users.some(u => u.name === userName);
+        
+        if (hasJoined && !amIStillInRoom) {
             toast({
                 variant: 'destructive',
                 title: "You've been kicked",
                 description: "You have been removed from the room by the admin."
             });
-            setTimeout(() => router.push('/'), 3000);
             eventSource.close();
+            setTimeout(() => router.push('/'), 3000);
+            return;
         }
+        
+        setRoom(updatedRoom);
     };
 
     eventSource.onerror = (err) => {

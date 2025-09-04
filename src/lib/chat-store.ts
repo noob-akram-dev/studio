@@ -150,15 +150,6 @@ export async function addMessage(code: string, message: Omit<Message, 'id' | 'ti
     // Remove the user from the typing list when they send a message
     pipeline.hdel(`${roomKey}:typing`, message.user.name);
 
-    // Update user's last seen time to keep them active
-    const userKey = `${roomKey}:users`;
-    const existingUser = await redis.hget(userKey, message.user.name);
-    if(existingUser) {
-        const userData = JSON.parse(existingUser);
-        userData.joinedAt = Date.now(); // Keep 'joinedAt' updated to track activity
-        pipeline.hset(userKey, message.user.name, JSON.stringify(userData));
-    }
-    
     await pipeline.exec();
     await publishRoomUpdate(code);
     return newMessage;
@@ -167,32 +158,12 @@ export async function addMessage(code: string, message: Omit<Message, 'id' | 'ti
 export async function updateUserTypingStatus(roomCode: string, userName: string) {
     const redis = getRedisClient();
     const roomKey = getRoomKey(roomCode);
-    const userKey = `${roomKey}:users`;
     
-    const [roomExists, userExists] = await Promise.all([
-        redis.exists(roomKey),
-        redis.hexists(userKey, userName)
-    ]);
-
+    const roomExists = await redis.exists(roomKey);
     if (!roomExists) return;
 
-    const pipeline = redis.pipeline();
     const now = Date.now();
-
-    // Set the typing indicator
-    pipeline.hset(`${roomKey}:typing`, userName, now.toString());
-    
-    // Update user's activity timestamp
-    if (userExists) {
-        const userDataString = await redis.hget(userKey, userName);
-        if(userDataString) {
-            const userData = JSON.parse(userDataString);
-            userData.joinedAt = now; // Keep 'joinedAt' updated to track activity
-            pipeline.hset(userKey, userName, JSON.stringify(userData));
-        }
-    }
-
-    await pipeline.exec();
+    await redis.hset(`${roomKey}:typing`, userName, now.toString());
     await publishRoomUpdate(roomCode);
 }
 
@@ -214,11 +185,7 @@ export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'j
     
     const userKey = `${roomKey}:users`;
     const now = Date.now();
-    const existingUser = await redis.hget(userKey, user.name);
-
-    // Add or update the user in the hash
-    const userData = existingUser ? JSON.parse(existingUser) : { ...user };
-    userData.joinedAt = now;
+    const userData = { ...user, joinedAt: now };
     pipeline.hset(userKey, user.name, JSON.stringify(userData));
     
     await pipeline.exec();
@@ -252,21 +219,6 @@ export async function updateMessageLanguage(roomCode: string, messageId: string,
         await redis.lset(messagesKey, messageIndex, JSON.stringify(messageToUpdate));
         await publishRoomUpdate(roomCode);
     }
-}
-
-export async function removeUserFromRoom(roomCode: string, userName: string) {
-    const redis = getRedisClient();
-    const roomKey = getRoomKey(roomCode);
-    
-    // Check if the room exists before trying to remove a user
-    const roomExists = await redis.exists(roomKey);
-    if (!roomExists) {
-        return;
-    }
-
-    await redis.hdel(`${roomKey}:users`, userName);
-    await publishRoomUpdate(roomCode);
-    console.log(`User ${userName} disconnected and was removed from room ${roomCode}.`);
 }
 
 export async function kickUser(roomCode: string, adminName: string, userToKickName: string) {
