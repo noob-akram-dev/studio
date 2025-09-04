@@ -158,12 +158,12 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   }, [initialRoom.code]);
 
   useEffect(() => {
-    if (!userName || !hasJoined) return;
+    if (!userName) return;
 
     const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
     
     eventSource.onmessage = (event) => {
-        const updatedRoom = JSON.parse(event.data) as Room;
+        const updatedRoom = JSON.parse(event.data) as Room | null;
 
         if (!updatedRoom) {
             toast({
@@ -184,6 +184,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
                 description: "You have been removed from the room by the admin."
             });
             eventSource.close();
+            // Redirect after a short delay to allow the user to see the toast.
             setTimeout(() => router.push('/'), 3000);
             return;
         }
@@ -193,7 +194,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
     eventSource.onerror = (err) => {
         console.error("EventSource failed:", err);
-        eventSource.close();
+        // Don't close immediately on one-off errors, but maybe implement a retry limit later.
     };
 
     return () => {

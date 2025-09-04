@@ -22,4 +22,5 @@ export interface Room {
   isPrivate?: boolean;
   password?: string;
   admin?: string;
+  kickedUsers?: string[];
 }

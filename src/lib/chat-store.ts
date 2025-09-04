@@ -47,7 +47,7 @@ export async function createRoom(isPrivate = false, password?: string): Promise<
         roomExists = await redis.exists(roomKey);
     } while (roomExists);
 
-    const roomData: Omit<Room, 'messages' | 'users' | 'typing'> = {
+    const roomData: Omit<Room, 'messages' | 'users' | 'typing' | 'kickedUsers'> = {
         code,
         createdAt: Date.now(),
         isPrivate,
@@ -75,11 +75,12 @@ export async function getRoom(code: string): Promise<Room | undefined> {
         return undefined; // Room doesn't exist
     }
 
-    // Fetch messages, users, and typing indicators in parallel
-    const [messages, users, typing] = await Promise.all([
+    // Fetch messages, users, typing indicators, and kicked users in parallel
+    const [messages, users, typing, kickedUsers] = await Promise.all([
         redis.lrange(`${roomKey}:messages`, 0, -1),
         redis.hgetall(`${roomKey}:users`),
-        redis.hgetall(`${roomKey}:typing`)
+        redis.hgetall(`${roomKey}:typing`),
+        redis.smembers(`${roomKey}:kicked`)
     ]);
 
     const now = Date.now();
@@ -110,6 +111,7 @@ export async function getRoom(code: string): Promise<Room | undefined> {
         messages: messages.map(msg => JSON.parse(msg)).reverse(),
         users: Object.values(users).map(u => JSON.parse(u)).sort((a, b) => a.joinedAt - b.joinedAt),
         typing: cleanedTyping,
+        kickedUsers: kickedUsers || [],
     };
 }
 
@@ -132,8 +134,17 @@ export async function verifyPassword(code: string, password?: string): Promise<b
 export async function addMessage(code: string, message: Omit<Message, 'id' | 'timestamp'>): Promise<Message> {
     const redis = getRedisClient();
     const roomKey = getRoomKey(code);
-    if (!(await redis.exists(roomKey))) {
+    const room = await getRoom(code);
+    
+    if (!room) {
         throw new Error('Room not found');
+    }
+    
+    const isUserInRoom = room.users.some(u => u.name === message.user.name);
+    const isUserKicked = room.kickedUsers?.includes(message.user.name);
+
+    if (!isUserInRoom || isUserKicked) {
+        throw new Error('User is not authorized to send messages to this room.');
     }
 
     const newMessage: Message = {
@@ -168,15 +179,20 @@ export async function updateUserTypingStatus(roomCode: string, userName: string)
 export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'joinedAt'>) {
     const redis = getRedisClient();
     const roomKey = getRoomKey(roomCode);
-    const roomData = await redis.hgetall(roomKey);
+    const room = await getRoom(roomCode);
 
-    if (!Object.keys(roomData).length) {
+    if (!room) {
         return;
+    }
+     // Check if user is on the kicked list
+    if (room.kickedUsers?.includes(user.name)) {
+        console.log(`Preventing kicked user ${user.name} from joining room ${roomCode}`);
+        return; // Silently fail
     }
     
     const pipeline = redis.pipeline();
     
-    if (!roomData.admin) {
+    if (!room.admin) {
         pipeline.hset(roomKey, 'admin', user.name);
     }
     
@@ -230,7 +246,13 @@ export async function kickUser(roomCode: string, adminName: string, userToKickNa
         throw new Error('Admin cannot kick themselves.');
     }
 
-    await redis.hdel(`${roomKey}:users`, userToKickName);
+    const pipeline = redis.pipeline();
+    // Add user to the kicked list (a Redis Set)
+    pipeline.sadd(`${roomKey}:kicked`, userToKickName);
+    // Remove from active users
+    pipeline.hdel(`${roomKey}:users`, userToKickName);
+    await pipeline.exec();
+
     await publishRoomUpdate(roomCode);
 }
 
@@ -255,6 +277,7 @@ export async function deleteRoom(roomCode: string, adminName: string) {
     pipeline.del(`${roomKey}:messages`);
     pipeline.del(`${roomKey}:users`);
     pipeline.del(`${roomKey}:typing`);
+    pipeline.del(`${roomKey}:kicked`); // Also delete the kicked list
     await pipeline.exec();
 
     // Close the pub/sub channel gracefully
