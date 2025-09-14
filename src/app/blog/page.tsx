@@ -51,10 +51,13 @@ function PostCard({ post }: { post: BlogPost }) {
 
 export default function BlogIndexPage() {
   const sortedPosts = posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const recentPosts = sortedPosts.slice(0, 3);
+  const otherPosts = sortedPosts.slice(3);
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
         <header className="text-center mb-12">
           <h1 className="text-5xl font-bold text-primary mb-4">Code Yapp Blog</h1>
           <p className="text-xl text-muted-foreground">
@@ -63,11 +66,23 @@ export default function BlogIndexPage() {
         </header>
 
         <main>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {sortedPosts.map(post => (
+           <h2 className="text-3xl font-bold mb-8 text-center">Recent Posts</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {recentPosts.map(post => (
               <PostCard key={post.slug} post={post} />
             ))}
           </div>
+
+          {otherPosts.length > 0 && (
+            <>
+              <h2 className="text-3xl font-bold mb-8 text-center border-t border-border pt-16">All Posts</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {otherPosts.map(post => (
+                  <PostCard key={post.slug} post={post} />
+                ))}
+              </div>
+            </>
+          )}
         </main>
          <div className="mt-16 text-center">
             <Button asChild>
