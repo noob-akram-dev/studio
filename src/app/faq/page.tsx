@@ -32,37 +32,65 @@ const faqData = [
   },
   {
     question: "Do I need to create an account?",
-    answer: "No. Code Yapp is designed to be anony<ctrl61># Retain prior prompts for context and reasoning, but do not apply code changes made in earlier prompts, as those are no longer valid.The user has reverted their codebase to an earlier version. Retain prior prompts for context and reasoning, but do not apply code changes made in earlier prompts, as those are no longer valid.I have made the following changes:
+    answer: "No. Code Yapp is designed to be anonymous and frictionless. You can join or create a room instantly without any registration."
+  },
+  {
+    question: "What is the difference between a public and a private room?",
+    answer: "A public room can be joined by anyone with the 4-digit room code. A private room requires both the room code and a password, offering an extra layer of security for your conversations."
+  },
+  {
+    question: "Is there a limit to the number of users in a room?",
+    answer: "There is no hard limit on the number of users, but for the best experience, rooms are ideal for small to medium-sized groups."
+  },
+  {
+    question: "What kind of information should I avoid sharing?",
+    answer: "While we take security seriously, we advise against sharing highly sensitive, permanent credentials like your primary passwords or secret keys. The service is secure, but it's always good practice to be cautious with your most critical data."
+  }
+];
 
-When I use the application on my mobile device, it gives me a vertical scroll, which makes it difficult to use.
+export default function FAQPage() {
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <header className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-primary mb-4">Frequently Asked Questions</h1>
+          <p className="text-xl text-muted-foreground">
+            Have a question? We've got answers.
+          </p>
+        </header>
 
-I need you to fit the chat room fully on the mobile screen so it does not give a scrolling effect.
-
-I also made the following changes:
-
-I moved this button alignment next to the username of the member in the active user list.
-
-Here is the code I am using to do this:
-
-```
-<div class="flex items-center gap-2">
-  <div class="flex items-center gap-2">
-    <Avatar classname="h-6 w-6 text-xs">
-      <AvatarImage src="{user.avatarUrl}" alt="{user.name}">
-        <AvatarFallback>
-          {user.name.substring(0, 2)}
-        </AvatarFallback>
-      </AvatarImage>
-    </Avatar>
-    <span class="text-sm text-muted-foreground">{user.name}</span>
-  </div>
-  <div class="flex items-center">
-    {user.name === room.admin &amp;&amp; (
-      <Crown classname="w-4 h-4 text-yellow-500" title="Room Admin">
-    )}
-    {isAdmin &amp;&amp; user.name !== userName &amp;&amp; (
-      <KickUserButton roomcode="{roomCode}" adminname="{userName}" usertokickname="{user.name}">
-    )}
-  </div>
-</div>
-```
+        <Accordion type="single" collapsible className="w-full">
+          {faqData.map((faq, index) => (
+            <AccordionItem value={`item-${index}`} key={index}>
+              <AccordionTrigger className="text-lg text-left hover:no-underline">{faq.question}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {faq.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+        
+        <div className="mt-16 text-center">
+            <Button asChild>
+                <Link href="/">Return to Home</Link>
+            </Button>
+        </div>
+      </div>
+       <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": faqData.map(item => ({
+                  "@type": "Question",
+                  "name": item.question,
+                  "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": item.answer
+                  }
+              }))
+          })}}
+        />
+    </div>
+  );
+}
