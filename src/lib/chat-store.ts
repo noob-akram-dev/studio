@@ -83,6 +83,11 @@ export async function getRoom(code: string): Promise<Room | undefined> {
         redis.smembers(`${roomKey}:kicked`)
     ]);
 
+    // This can happen if the room is deleted between the hgetall and the other fetches.
+    if (!roomData.code) {
+        return undefined;
+    }
+
     const now = Date.now();
     const pipeline = redis.pipeline();
     let modified = false;
@@ -140,10 +145,9 @@ export async function addMessage(code: string, message: Omit<Message, 'id' | 'ti
         throw new Error('Room not found');
     }
     
-    const isUserInRoom = room.users.some(u => u.name === message.user.name);
     const isUserKicked = room.kickedUsers?.includes(message.user.name);
 
-    if (!isUserInRoom || isUserKicked) {
+    if (isUserKicked) {
         throw new Error('User is not authorized to send messages to this room.');
     }
 
