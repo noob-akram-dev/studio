@@ -19,12 +19,12 @@ export function MessageView({
   currentUser: string;
 }) {
   const [copied, setCopied] = useState(false);
-  const [formattedTimestamp, setFormattedTimestamp] = useState('');
+  const [formattedTimestamp, setFormattedTimestamp] = useState<string | null>(null);
   const isCurrentUser = message.user.name === currentUser;
 
   useEffect(() => {
-    // This code runs only on the client, after the component has mounted.
-    // This avoids the hydration mismatch between server and client.
+    // This now runs only on the client, preventing any server-client mismatch on initial render.
+    // It's a safer pattern for dynamic, time-sensitive values.
     setFormattedTimestamp(formatRelative(new Date(message.timestamp), new Date()));
   }, [message.timestamp]);
 
@@ -54,7 +54,7 @@ export function MessageView({
              {isCurrentUser ? 'You' : message.user.name}
            </span>
            <span className="text-xs text-muted-foreground whitespace-nowrap">
-             {formattedTimestamp}
+             {formattedTimestamp || 'sending...'}
            </span>
          </div>
 
@@ -97,3 +97,5 @@ export function MessageView({
     </div>
   );
 }
+
+    

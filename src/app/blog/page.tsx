@@ -27,7 +27,6 @@ function PostCard({ post }: { post: BlogPost }) {
                             alt={post.title}
                             fill
                             className="object-cover"
-                            data-ai-hint={post.imageHint}
                         />
                     </div>
                 </CardHeader>
@@ -93,3 +92,5 @@ export default function BlogIndexPage() {
     </div>
   );
 }
+
+    

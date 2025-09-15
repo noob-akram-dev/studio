@@ -87,7 +87,6 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                       alt={post.title}
                       fill
                       className="object-cover"
-                      data-ai-hint={post.imageHint}
                       priority
                   />
               </div>
@@ -127,3 +126,5 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     </div>
   );
 }
+
+    

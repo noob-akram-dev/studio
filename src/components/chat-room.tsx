@@ -37,7 +37,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 
@@ -47,19 +46,17 @@ const adjectives = [
 ];
 
 const nouns = [
-  // Animals
   'Ape', 'Bear', 'Cat', 'Dog', 'Eagle', 'Fox', 'Goat', 'Hawk', 'Ibex', 'Jaguar', 'Koala', 'Lion', 'Mole',
   'Nightingale', 'Ocelot', 'Panda', 'Quail', 'Rabbit', 'Snake', 'Tiger', 'Vulture', 'Walrus', 'Yak', 'Zebra',
-  // Mythical Creatures
   'Dragon', 'Gryphon', 'Hydra', 'Phoenix', 'Unicorn', 'Basilisk', 'Centaur', 'Fairy', 'Gnome', 'Harpy',
   'Imp', 'Jinn', 'Kelpie', 'Leprechaun', 'Mermaid', 'Nymph', 'Orc', 'Pegasus', 'Roc', 'Satyr', 'Troll', 'Vampire',
   'Werewolf', 'Yeti'
 ];
 
-function generateAnonymousName() {
-  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+const generateAnonymousName = () => {
+  const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
   const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  return `${adjective} ${noun}`;
+  return `${adj} ${noun}`;
 }
 
 const getAvatarUrl = (name: string) => `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${encodeURIComponent(name)}`;
@@ -337,3 +334,5 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     </div>
   );
 }
+
+    
