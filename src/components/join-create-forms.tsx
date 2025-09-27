@@ -16,16 +16,57 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Lock, Key } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState, useTransition } from 'react';
+import { LoadingScreen } from './loading-screen';
 
+
+const createRoomFunnyLines = [
+    "Spinning up a private room...",
+    "Negotiating with the chat hamsters...",
+    "Dusting off the virtual furniture...",
+    "Ensuring the room is properly soundproofed...",
+    "Adding extra privacy shields...",
+    "Generating a top-secret code...",
+];
+
+const joinRoomFunnyLines = [
+    "Checking the guest list...",
+    "Looking for the secret handshake...",
+    "Making sure you're not a robot...",
+    "Entering the chat dimension...",
+    "Warming up the welcome cookies...",
+    "Finding the right room...",
+];
 
 export function JoinCreateForms() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   const code = searchParams.get('code');
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState('');
+
+  const handleCreateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const funnyLine = createRoomFunnyLines[Math.floor(Math.random() * createRoomFunnyLines.length)];
+    setLoadingText(funnyLine);
+    setIsLoading(true);
+    const formData = new FormData(event.currentTarget);
+    createRoomAction(formData);
+  };
+
+  const handleJoinSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const funnyLine = joinRoomFunnyLines[Math.floor(Math.random() * joinRoomFunnyLines.length)];
+    setLoadingText(funnyLine);
+    setIsLoading(true);
+    const formData = new FormData(event.currentTarget);
+    joinRoomAction(formData);
+  };
 
    return (
     <>
-     {error && (
+      {isLoading && <LoadingScreen text={loadingText} />}
+      {error && (
             <Alert variant="destructive" className="mb-8 max-w-md w-full mx-auto">
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
@@ -46,7 +87,7 @@ export function JoinCreateForms() {
                   Start a new, private session and get a unique room code to share.
                 </CardDescription>
               </CardHeader>
-              <form action={createRoomAction}>
+              <form onSubmit={handleCreateSubmit}>
                 <CardContent>
                   <Tabs defaultValue="public" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
@@ -83,8 +124,9 @@ export function JoinCreateForms() {
                       type="submit"
                       className="w-full"
                       variant="default"
+                      disabled={isLoading}
                     >
-                      Create Room
+                      {isLoading ? "Creating..." : "Create Room"}
                     </Button>
                 </CardFooter>
               </form>
@@ -99,7 +141,7 @@ export function JoinCreateForms() {
                   Enter a room code and password if required.
                 </CardDescription>
               </CardHeader>
-              <form action={joinRoomAction} className="w-full">
+              <form onSubmit={handleJoinSubmit} className="w-full">
                 <CardContent className="space-y-4">
                   <div title="Please enter a 4-digit code">
                     <Input
@@ -127,8 +169,9 @@ export function JoinCreateForms() {
                     type="submit"
                     className="w-full"
                     variant="secondary"
+                    disabled={isLoading}
                   >
-                    Join Room
+                    {isLoading ? "Joining..." : "Join Room"}
                   </Button>
                 </CardFooter>
               </form>
