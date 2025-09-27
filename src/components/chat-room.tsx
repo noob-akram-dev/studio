@@ -37,6 +37,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 
@@ -334,5 +335,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     </div>
   );
 }
+
+    
 
     
