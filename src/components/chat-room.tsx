@@ -40,6 +40,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+type RoomEvent = {
+    event: 'updated',
+    room: Room,
+} | {
+    event: 'deleted'
+};
+
 
 const adjectives = [
   'Agile', 'Brave', 'Clever', 'Daring', 'Eager', 'Fierce', 'Gentle', 'Happy', 'Jolly', 'Keen', 'Lazy', 'Mighty',
@@ -161,33 +168,36 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
     
     eventSource.onmessage = (event) => {
-        const updatedRoom = JSON.parse(event.data) as Room | null;
+        const data = JSON.parse(event.data) as RoomEvent;
 
-        if (!updatedRoom) {
+        if (data.event === 'deleted') {
             toast({
                 title: "Room Deleted",
                 description: "This room has been deleted by the admin."
             });
             eventSource.close();
-            setTimeout(() => router.push('/'), 2000);
+            // We use router.replace here to prevent the user from being able to go "back" to the deleted room.
+            setTimeout(() => router.replace('/'), 2000);
             return;
         }
-        
-        const amIStillInRoom = updatedRoom.users.some(u => u.name === userName);
-        
-        if (hasJoined && !amIStillInRoom) {
-            toast({
-                variant: 'destructive',
-                title: "You've been kicked",
-                description: "You have been removed from the room by the admin."
-            });
-            eventSource.close();
-            // Redirect after a short delay to allow the user to see the toast.
-            setTimeout(() => router.push('/'), 3000);
-            return;
+
+        if (data.event === 'updated') {
+            const updatedRoom = data.room;
+            const amIStillInRoom = updatedRoom.users.some(u => u.name === userName);
+            
+            if (hasJoined && !amIStillInRoom) {
+                toast({
+                    variant: 'destructive',
+                    title: "You've been kicked",
+                    description: "You have been removed from the room by the admin."
+                });
+                eventSource.close();
+                setTimeout(() => router.replace('/'), 3000);
+                return;
+            }
+            
+            setRoom(updatedRoom);
         }
-        
-        setRoom(updatedRoom);
     };
 
     eventSource.onerror = (err) => {
@@ -335,7 +345,3 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     </div>
   );
 }
-
-    
-
-    

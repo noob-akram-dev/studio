@@ -15,15 +15,17 @@ export function getRoomKey(code: string): string {
 async function publishRoomUpdate(code: string, isDeletion = false) {
     const redis = getRedisClient();
     const channel = `${EVENTS_CHANNEL_PREFIX}${code}`;
+    
     if (isDeletion) {
-        // Publish a null message to indicate deletion
-        await redis.publish(channel, JSON.stringify(null));
+        // Publish an explicit deletion event
+        await redis.publish(channel, JSON.stringify({ event: 'deleted' }));
         return;
     }
 
     const room = await getRoom(code);
     if (room) {
-        await redis.publish(channel, JSON.stringify(room));
+        // Publish the full room state for updates
+        await redis.publish(channel, JSON.stringify({ event: 'updated', room }));
     }
 }
 
@@ -209,7 +211,7 @@ export async function joinRoom(roomCode: string, user: Omit<Room['users'][0], 'j
     await publishRoomUpdate(roomCode);
 }
 
-export async function updateMessageLanguage(roomCode: string, messageId: string, language: string) {
+export async function updateMessageDetails(roomCode: string, messageId: string, details: { language?: string; explanation?: string }) {
     const redis = getRedisClient();
     const roomKey = getRoomKey(roomCode);
     const messagesKey = `${roomKey}:messages`;
@@ -229,11 +231,12 @@ export async function updateMessageLanguage(roomCode: string, messageId: string,
     }
 
     if (messageToUpdate && messageIndex !== -1) {
-        messageToUpdate.language = language;
-        await redis.lset(messagesKey, messageIndex, JSON.stringify(messageToUpdate));
+        const updatedMessage = { ...messageToUpdate, ...details };
+        await redis.lset(messagesKey, messageIndex, JSON.stringify(updatedMessage));
         await publishRoomUpdate(roomCode);
     }
 }
+
 
 export async function kickUser(roomCode: string, adminName: string, userToKickName: string) {
     const redis = getRedisClient();

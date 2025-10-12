@@ -13,9 +13,11 @@ async function* makeIterator(req: NextRequest, code: string) {
     const subClient = getRedisClient(true);
     await subClient.subscribe(channel);
     
-    const initialRoomState = await getRoom(code);
-    if (initialRoomState) {
-        yield `data: ${JSON.stringify(initialRoomState)}\n\n`;
+    // Send initial state upon connection
+    const initialRoom = await getRoom(code);
+    if (initialRoom) {
+        const initialEvent = { event: 'updated', room: initialRoom };
+        yield `data: ${JSON.stringify(initialEvent)}\n\n`;
     }
 
     // Generator function that yields messages from the subscribed Redis client
@@ -35,8 +37,8 @@ async function* makeIterator(req: NextRequest, code: string) {
                     break; // Client disconnected
                 }
 
-                const room = JSON.parse(message) as Room;
-                yield `data: ${JSON.stringify(room)}\n\n`;
+                // The message from Redis is already a JSON string representing the event object
+                yield `data: ${message}\n\n`;
 
             } catch (error) {
                 // This can happen if the connection is closed, which is expected on disconnect.
