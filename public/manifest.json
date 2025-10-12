@@ -1,10 +1,10 @@
 {
-  "name": "Code Yapp - Private & Ephemeral Chat",
+  "name": "Code Yapp",
   "short_name": "Code Yapp",
-  "description": "Grab a secure, temporary chat room perfect for sharing code, spilling secrets, or plotting your snack heist 'off the record' without leaving a trail of awkward screenshots. Think of it as incognito mode for conversations.",
+  "description": "Private & Ephemeral Chat for Everyone.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#18181b",
+  "background_color": "#27272a",
   "theme_color": "#27272a",
   "icons": [
     {

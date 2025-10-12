@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     creator: '@yourtwitterhandle', // Replace with your Twitter handle
   },
   icons: {
-    icon: '/logo.png',
+    icon: '/favicon.ico',
     apple: '/logo.png',
   },
   manifest: '/manifest.json',
