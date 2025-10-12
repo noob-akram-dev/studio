@@ -11,6 +11,10 @@ export interface Message {
   user: User;
   timestamp: number;
   language?: string;
+  explanation?: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileType?: string;
 }
 
 export interface Room {

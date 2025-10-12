@@ -2,9 +2,9 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageLanguage, kickUser, deleteRoom } from '@/lib/chat-store';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageDetails, kickUser, deleteRoom } from '@/lib/chat-store';
 import type { User, Room, Message } from '@/lib/types';
-import { detectProgrammingLanguage } from '@/ai/flows/detect-programming-language';
+import { explainAndIdentifyCode } from '@/ai/flows/explain-and-identify-code';
 import { revalidatePath } from 'next/cache';
 
 export async function createRoomAction(formData: FormData) {
@@ -46,16 +46,20 @@ export async function joinRoomAction(formData: FormData) {
 
 const isCodeBlock = (text: string) => text.trim().startsWith('```');
 
-async function detectAndSetLanguage(roomCode: string, messageId: string, text: string) {
+async function detectAndExplainCode(roomCode: string, messageId: string, text: string) {
     try {
         if (isCodeBlock(text)) {
-            const result = await detectProgrammingLanguage({ code: text });
-            if (result.language && result.language !== 'Unknown') {
-                 await updateMessageLanguage(roomCode, messageId, result.language);
+            const code = text.replace(/```/g, '');
+            const result = await explainAndIdentifyCode({ code });
+            if (result.language && result.language.toLowerCase() !== 'unknown') {
+                 await updateMessageDetails(roomCode, messageId, { 
+                    language: result.language,
+                    explanation: result.explanation,
+                 });
             }
         }
     } catch (error) {
-        console.error('Failed to detect language in background:', error);
+        console.error('Failed to process code in background:', error);
     }
 }
 
@@ -67,8 +71,15 @@ export async function sendMessageAction(
   const roomCode = formData.get('roomCode') as string;
   const userName = formData.get('userName') as string;
   const userAvatarUrl = formData.get('userAvatarUrl') as string;
+  const fileUrl = formData.get('fileUrl') as string | undefined;
+  const fileName = formData.get('fileName') as string | undefined;
+  const fileType = formData.get('fileType') as string | undefined;
 
-  if (!text || !roomCode || !userName) {
+  if (!text && !fileUrl) {
+    return { error: 'A message or a file is required.' };
+  }
+
+  if (!roomCode || !userName) {
     return { error: 'Missing required fields.' };
   }
 
@@ -78,11 +89,15 @@ export async function sendMessageAction(
     const newMessage = await addMessage(roomCode, {
       text,
       user,
-      language: undefined,
+      fileUrl,
+      fileName,
+      fileType
     });
 
     // Don't await this. Let it run in the background.
-    detectAndSetLanguage(roomCode, newMessage.id, text);
+    if (text) {
+      detectAndExplainCode(roomCode, newMessage.id, text);
+    }
   
     return { success: true };
 
@@ -149,3 +164,4 @@ export async function deleteRoomAction(formData: FormData) {
 
     redirect('/');
 }
+
