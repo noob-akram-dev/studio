@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
         <h1 className="text-4xl font-bold text-primary mb-6">Privacy Policy</h1>
         
         <div className="space-y-6 text-muted-foreground">
-          <p>Last updated: {new Date().toLocaleDateString()}</p>
+          <p>Last updated: August 30, 2025</p>
 
           <p>
             This Privacy Policy explains how Code Yapp ("we," "us," or "our") handles information in connection with our temporary chat service (the "Service"). Your privacy is important to us, and we are committed to being transparent about our data practices.
