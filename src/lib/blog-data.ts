@@ -54,7 +54,7 @@ export const posts: BlogPost[] = [
       <p>When you use vanish mode on a social media app, your messages may disappear from your screen, but you are still operating within a massive data-collection ecosystem. Here’s what’s happening behind the scenes:</p>
       <ul class="list-disc list-inside pl-4 space-y-2 mt-4">
         <li><strong>It's Not Anonymous:</strong> Your conversation is still tied to your real identity and social graph. The platform knows exactly who you are and who you're talking to. This is the opposite of a private chat.</li>
-        <li><strong>Metadata is King:</strong> Even if the content of the message disappears, the platform can still log the metadata—who you talked to, when, for how long. This data is incredibly valuable for advertising and user profiling.</li>
+        <li><strong>Metadata is King:</strong> Even if the content of the message disappears, the platform can still log the metadata: who you talked to, when, for how long. This data is incredibly valuable for advertising and user profiling.</li>
         <li><strong>Trusting the Tech Giant:</strong> You are placing your trust in a large corporation, whose business model is often based on data, to fully delete your information and not use it in other ways. With Code Yapp, the architecture guarantees deletion.</li>
       </ul>
 
@@ -156,7 +156,7 @@ export const posts: BlogPost[] = [
         <li><strong>When you need to have a quick, sensitive conversation:</strong> Discuss a confidential matter in a password-protected room with the assurance it won't be archived.</li>
       </ul>
 
-      <p class="mt-4">In a world of digital maximalism, simplicity is a feature. By focusing on doing one thing exceptionally well—providing secure, temporary chat—Code Yapp offers a powerful escape from the noise. It's the conversation you need to have right now, without the burden of it lasting forever.</p>
+      <p class="mt-4">In a world of digital maximalism, simplicity is a feature. By focusing on doing one thing exceptionally well, which is providing secure, temporary chat, Code Yapp offers a powerful escape from the noise. It's the conversation you need to have right now, without the burden of it lasting forever.</p>
     `
   },
   {
@@ -169,7 +169,7 @@ export const posts: BlogPost[] = [
       <p>Building a vibrant online community requires more than just a place to talk. It requires a tool that is easy to use, safe for members, and simple for managers to administrate. As online communities evolve, the platforms that support them must evolve too. Here are the top five features every community chat app should have in 2025 to foster growth and engagement, with a focus on what makes a platform like Code Yapp ideal for focused, private communities.</p>
       
       <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">1. Frictionless Onboarding and No Sign-Ups</h2>
-      <p>The easier it is for a new member to join the conversation, the more likely they are to stick around. Requiring lengthy sign-up processes is a major barrier. A great community chat app allows new users to join instantly. With Code Yapp, a new member just needs a link and a room code—they can join from any browser in seconds without creating an account, which is a major plus for community growth and event-based chats.</p>
+      <p>The easier it is for a new member to join the conversation, the more likely they are to stick around. Requiring lengthy sign-up processes is a major barrier. A great community chat app allows new users to join instantly. With Code Yapp, a new member just needs a link and a room code. They can join from any browser in seconds without creating an account, which is a major plus for community growth and event-based chats.</p>
       
       <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">2. Clear Member Lists and Presence Indicators</h2>
       <p>Knowing who is currently in the room is vital for building a sense of community and for moderation. A simple, visible list of active users lets members know who they're talking to and helps community managers keep an eye on the room. This visibility fosters a more personal and accountable environment, making it a must-have feature for any online community platform that values real-time interaction.</p>
@@ -217,7 +217,7 @@ export const posts: BlogPost[] = [
     date: '2025-08-22',
     content: `
       <p>The modern workplace is plagued by a universal pain point: the unnecessary meeting. It breaks your focus, disrupts your workflow, and often could have been handled with a quick conversation. The good news is that there's a powerful alternative: a dedicated, real-time chat tool. This is where a service focused on ephemeral messaging and secure chat, like Code Yapp, can transform your team's productivity.</p>
-      <p>By leveraging a private and ephemeral chat service, you can resolve issues faster, boost team collaboration, and keep projects moving—all without booking a conference room. Here are seven actionable ways to reduce meetings and reclaim your day.</p>
+      <p>By leveraging a private and ephemeral chat service, you can resolve issues faster, boost team collaboration, and keep projects moving, all without booking a conference room. Here are seven actionable ways to reduce meetings and reclaim your day.</p>
 
       <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">1. Quick Status Updates, Not Stand-ups</h2>
       <p>Instead of a daily 30-minute stand-up meeting, create a dedicated chat room for your project. Team members can post their updates when they start their day, and everyone can read them on their own time. This asynchronous approach keeps everyone informed without the synchronous overhead, making it a more efficient communication strategy that respects the flow of modern team communication.</p>
