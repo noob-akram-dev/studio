@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Github, Linkedin, Code, ShieldCheck, Timer } from 'lucide-react';
+import { Download, Github, Linkedin, Code, ShieldCheck, Timer, Twitter } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -123,6 +123,9 @@ export function HomePage() {
               </Link>
               <Link href="https://github.com/shaikhakramshakil" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                 <Github className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
+              </Link>
+              <Link href="https://x.com/akram_speakss" target="_blank" rel="noopener noreferrer" aria-label="X">
+                <Twitter className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
               </Link>
             </div>
           </div>
