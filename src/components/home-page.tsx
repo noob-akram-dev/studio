@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Github, Linkedin, Code, ShieldCheck, Timer, Twitter } from 'lucide-react';
+import { Download, Github, Linkedin, Code, ShieldCheck, Timer } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -125,7 +125,14 @@ export function HomePage() {
                 <Github className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
               </Link>
               <Link href="https://x.com/akram_speakss" target="_blank" rel="noopener noreferrer" aria-label="X">
-                <Twitter className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary" />
+                 <svg
+                  className="h-5 w-5 text-muted-foreground transition-colors duration-300 ease-in-out hover:text-primary"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
               </Link>
             </div>
           </div>
