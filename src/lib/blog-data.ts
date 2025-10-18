@@ -9,6 +9,37 @@ export interface BlogPost {
 }
 
 export const posts: BlogPost[] = [
+    {
+    slug: 'that-lock-icon-is-a-lie',
+    title: 'That Lock Icon In Your DMs Is A Lie. Here’s How Meta Still Watches You.',
+    imageUrl: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=1902&auto=format&fit=crop',
+    description: 'You see the “end to end encrypted” message and feel safe. But Meta is still collecting data from your private chats. Discover the truth about metadata and what they are not telling you.',
+    date: '2025-09-02',
+    content: `
+      <p>You have seen it countless times in your Messenger or WhatsApp chats: a small message declaring that your conversation is "end to end encrypted." It is designed to make you feel secure, as if your conversation is happening in a digital vault. But what if that lock icon is more for decoration than for actual privacy? The uncomfortable truth is that even with encryption, Meta is still watching.</p>
+      <p>While it is true that end to end encryption prevents Meta from reading the content of your messages, that is not the whole story. The real prize for a data company is not what you say, but how you say it. This is where metadata comes in, and it is the key to Meta's continued surveillance of your digital life.</p>
+
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">What is Metadata and Why Does It Matter?</h2>
+      <p>Metadata is data about data. In the context of your chats, it includes:</p>
+      <ul class="list-disc list-inside pl-4 space-y-2 mt-4">
+        <li><strong>Who you talk to:</strong> They know your entire social circle.</li>
+        <li><strong>How often you talk:</strong> Are you talking to someone daily or just once?</li>
+        <li><strong>When you talk:</strong> Do you chat late at night or during work hours?</li>
+        <li><strong>From where you talk:</strong> Your location can be inferred from your device and network.</li>
+      </ul>
+      <p class="mt-4">Individually, these pieces of information may seem harmless. But when collected and analyzed on a massive scale, they paint an incredibly detailed picture of your life, your relationships, your habits, and your interests. Meta can use this to predict your behavior, target you with ads with unnerving accuracy, and feed its powerful algorithms. The content is encrypted, but the context is an open book.</p>
+      
+
+      <h2 class="text-2xl font-bold mt-6 mb-3 text-primary">Code Yapp: A Truly Private Alternative</h2>
+      <p>This is why we built Code Yapp. We believe that a private conversation should be truly private. Our philosophy is simple: if the data does not exist, it cannot be exploited. Here is how we are different:</p>
+      <ul class="list-disc list-inside pl-4 space-y-2 mt-4">
+        <li><strong>No Accounts, No Identity:</strong> We do not require an email, phone number, or social profile. You are anonymous.</li>
+        <li><strong>No Metadata Collection:</strong> Since we do not have user accounts, we do not build a history of who you talk to.</li>
+        <li><strong>Total Deletion:</strong> The entire room, including all messages and any associated data, is permanently deleted after 2 hours. Not just hidden, but gone.</li>
+      </ul>
+      <p class="mt-4">The next time you see that lock icon, remember what it is not protecting. For conversations that require genuine privacy, you need more than just a feature. You need a platform that was built from the ground up to forget you. That is the promise of ephemeral chat and the foundation of Code Yapp.</p>
+    `
+  },
   {
     slug: 'beyond-vanish-mode',
     title: 'Beyond Vanish Mode: How True Ephemeral Chat Protects Your Privacy',
@@ -255,6 +286,8 @@ export const posts: BlogPost[] = [
     `
   }
 ];
+
+    
 
     
 
