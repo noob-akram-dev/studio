@@ -92,7 +92,7 @@ export function HomePage() {
               <Code className="h-12 w-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Developer Focused</h3>
               <p className="text-muted-foreground">
-                Built for coding discussions with syntax highlighting and easy code sharing. Perfect for pair programming, interviews, or quick debugging sessions.
+                Built for coding discussions with AI-powered code explanations and easy sharing. Perfect for pair programming or quick debugging sessions.
               </p>
             </div>
             <div className="flex flex-col items-center p-6 bg-card/50 border-border/50 border rounded-lg shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-all hover:border-primary/30">
