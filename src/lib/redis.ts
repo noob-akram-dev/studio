@@ -30,8 +30,6 @@ function createNewClient(): Redis {
 
     client.on('error', (err) => {
         console.error('Redis Client Error:', err);
-        // In a serverless environment, you might not want to destroy the client,
-        // but rather let the next invocation create a new one if it's disconnected.
     });
 
     return client;
@@ -47,6 +45,7 @@ function createNewClient(): Redis {
 function getRedisClient(forSubscription = false): Redis {
     const globalKey = forSubscription ? 'redisSubClient' : 'redisClient';
 
+    // Check if the client exists and its status is not 'end' (closed)
     if (!global[globalKey] || global[globalKey]?.status === 'end') {
         global[globalKey] = createNewClient();
     }
