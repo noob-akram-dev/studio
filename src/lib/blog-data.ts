@@ -14,7 +14,7 @@ export const posts: BlogPost[] = [
     title: 'That Lock Icon In Your DMs Is A Lie. Here’s How Meta Still Watches You.',
     imageUrl: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=1902&auto=format&fit=crop',
     description: 'You see the “end to end encrypted” message and feel safe. But Meta is still collecting data from your private chats. Discover the truth about metadata and what they are not telling you.',
-    date: '2025-09-02',
+    date: '2025-11-02',
     content: `
       <p>You have seen it countless times in your Messenger or WhatsApp chats: a small message declaring that your conversation is "end to end encrypted." It is designed to make you feel secure, as if your conversation is happening in a digital vault. But what if that lock icon is more for decoration than for actual privacy? The uncomfortable truth is that even with encryption, Meta is still watching.</p>
       <p>While it is true that end to end encryption prevents Meta from reading the content of your messages, that is not the whole story. The real prize for a data company is not what you say, but how you say it. This is where metadata comes in, and it is the key to Meta's continued surveillance of your digital life.</p>
@@ -45,7 +45,7 @@ export const posts: BlogPost[] = [
     title: 'Beyond Vanish Mode: How True Ephemeral Chat Protects Your Privacy',
     imageUrl: 'https://images.unsplash.com/photo-1613987750911-f768497fb94b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwcml2YWN5fGVufDB8fHx8MTc1NjYzNjEwNnww&ixlib=rb-4.1.0&q=80&w=1080',
     description: 'Instagram and Snapchat have "vanish mode," but is it truly private? Discover the difference between a privacy feature and a privacy-first platform like Code Yapp, and see why ephemeral messaging and secure chat are not the same.',
-    date: '2025-08-02',
+    date: '2025-11-02',
     content: `
       <p>The rise of "vanish mode" on platforms like Instagram, Facebook Messenger, and Snapchat is a clear signal: users are demanding more privacy and control over their digital conversations. The ability to have a chat that disappears feels liberating. But is a disappearing message on a massive social network the same as a truly private conversation? The answer is no, and understanding the difference is key to protecting your privacy.</p>
       <p>While vanish mode is a step in the right direction, it's crucial to understand the difference between a privacy feature and a privacy-first platform. At Code Yapp, we believe privacy shouldn't be an "on/off" switch; it should be the foundation everything is built on. This is where our ephemeral messaging strategy fundamentally differs from what you find on social media, offering a more secure chat experience.</p>
@@ -102,7 +102,7 @@ export const posts: BlogPost[] = [
     title: 'Code Yapp vs. Slack: Why Simplicity is the Future of Team Communication',
     imageUrl: 'https://images.unsplash.com/photo-1559523182-a284c3fb7cff?q=80&w=1974&auto=format&fit=crop',
     description: 'Is your team drowning in Slack notifications? Discover how Code Yapp\'s focus on simple, private, and ephemeral chat offers a faster, more focused alternative for modern team communication.',
-    date: '2025-08-30',
+    date: '2025-11-30',
     content: `
       <p>Slack is a powerhouse of team communication. It has channels for everything, integrations for every app under the sun, and a permanent, searchable record of every conversation. But for many teams, this power comes at a cost: complexity, notification fatigue, and a "digital office" that never closes. What if there was a simpler, more focused alternative for the conversations that don't need to last forever?</p>
       <p>This is where Code Yapp offers a compellingly different vision for team communication. It's not about replacing Slack, but about providing a better tool for a specific, and very common, job: fast, temporary, and private conversations.</p>
@@ -164,7 +164,7 @@ export const posts: BlogPost[] = [
     title: 'Top 5 Features Every Online Community Chat App Needs in 2025',
     imageUrl: 'https://images.unsplash.com/photo-1488998287214-1e668a8e0dc4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOHx8Y2hhdHxlbnwwfHx8fDE3NTY2MzU5NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     description: 'Running an online community? Here are the essential features your chat platform should have in 2025 to foster engagement, ensure member safety, and make management a breeze. Discover why secure chat and ephemeral messaging are key.',
-    date: '2025-08-28',
+    date: '2025-11-28',
     content: `
       <p>Building a vibrant online community requires more than just a place to talk. It requires a tool that is easy to use, safe for members, and simple for managers to administrate. As online communities evolve, the platforms that support them must evolve too. Here are the top five features every community chat app should have in 2025 to foster growth and engagement, with a focus on what makes a platform like Code Yapp ideal for focused, private communities.</p>
       
@@ -189,7 +189,7 @@ export const posts: BlogPost[] = [
     title: 'A Deep Dive into Our Security: How We Keep Your Conversations Private',
     imageUrl: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=1902&auto=format&fit=crop',
     description: 'Trust is everything in a private chat app. This article breaks down the security principles like ephemeral storage and HTTPS that make Code Yapp a safe place for your temporary conversations. Learn how secure chat is built into our core.',
-    date: '2025-08-25',
+    date: '2025-11-25',
     content: `
       <p>When we built Code Yapp, our primary goal was to create a chat service that respects your privacy from the ground up. We believe that you should be in control of your data, and that includes the choice for it to not exist forever. This article offers a transparent look at the core security principles we've implemented to keep your conversations private and establish a truly secure chat environment.</p>
 
@@ -214,7 +214,7 @@ export const posts: BlogPost[] = [
     title: '7 Ways to Reduce Unnecessary Meetings with Real-Time Chat',
     imageUrl: 'https://images.unsplash.com/photo-1573497491208-6b1acb260507?q=80&w=2070&auto=format&fit=crop',
     description: 'Tired of back-to-back meetings? Discover how using a simple, real-time chat tool like Code Yapp can reclaim your calendar and boost your team\'s productivity through better, ephemeral communication.',
-    date: '2025-08-22',
+    date: '2025-11-22',
     content: `
       <p>The modern workplace is plagued by a universal pain point: the unnecessary meeting. It breaks your focus, disrupts your workflow, and often could have been handled with a quick conversation. The good news is that there's a powerful alternative: a dedicated, real-time chat tool. This is where a service focused on ephemeral messaging and secure chat, like Code Yapp, can transform your team's productivity.</p>
       <p>By leveraging a private and ephemeral chat service, you can resolve issues faster, boost team collaboration, and keep projects moving, all without booking a conference room. Here are seven actionable ways to reduce meetings and reclaim your day.</p>
@@ -246,7 +246,7 @@ export const posts: BlogPost[] = [
     title: 'Secure Collaboration: A Developer\'s Guide to Private Chat',
     imageUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop',
     description: 'Developers constantly share sensitive information. Learn how using a private, temporary chat tool with ephemeral messaging is a critical best practice for modern software development and secure collaboration.',
-    date: '2025-08-20',
+    date: '2025-11-20',
     content: `
       <p>As a developer, how many times have you needed to quickly share a piece of code, an environment variable, or an API key with a colleague? Too often, these sensitive snippets end up in a permanent chat log on platforms like Slack or Microsoft Teams, creating a potential security risk.</p>
       <p>This is a common but dangerous practice. A long-term chat history filled with sensitive data is a goldmine for attackers if an account is ever compromised. This is why a secure chat designed for developers is not just a nice-to-have, but a necessity for secure collaboration.</p>
@@ -268,7 +268,7 @@ export const posts: BlogPost[] = [
     title: 'The Power of "Off the Record": Why Ephemeral Chat Matters',
     imageUrl: 'https://images.unsplash.com/photo-1583521214690-73421a1829a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmaWxlc3xlbnwwfHx8fDE3NTY2MzYyNzl8MA&ixlib=rb-4.1.0&q=80&w=1080',
     description: 'In a world where digital conversations are permanent, discover the freedom and security that temporary, ephemeral chat provides for modern collaboration. Learn why private chat is more than just a feature.',
-    date: '2025-08-15',
+    date: '2025-11-15',
     content: `
       <p>In our hyper-connected world, almost everything we say online is recorded, archived, and potentially searchable forever. While this permanence has its benefits, it also creates a chilling effect on open and honest communication. The fear that a casual question or a half-formed idea could be taken out of context later can stifle creativity and collaboration. This is why private chat is becoming increasingly important.</p>
       <p>This is where ephemeral chat comes in, offering a solution that prioritizes privacy by design.</p>
