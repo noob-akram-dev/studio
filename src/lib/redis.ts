@@ -15,40 +15,44 @@ if (!redisUrl) {
 }
 
 function createNewClient(): Redis {
+    console.log('Creating new Redis client...');
     const client = new Redis(redisUrl, {
-        lazyConnect: true,
-        maxRetriesPerRequest: 1, // Don't retry on connection errors, fail fast.
+        // These options are important for serverless environments
+        lazyConnect: true, 
+        showFriendlyErrorStack: true,
+        enableAutoPipelining: true,
+        maxRetriesPerRequest: 0,
+        retryStrategy: (times) => {
+            // No retries
+            return null;
+        },
     });
-    
-    // On error, we want to clear the cached client to force a reconnect on the next request.
+
     client.on('error', (err) => {
-        console.error('Redis connection error:', err);
-        if (global.redisClient === client) {
-            global.redisClient = undefined;
-        }
-        if (global.redisSubClient === client) {
-            global.redisSubClient = undefined;
-        }
+        console.error('Redis Client Error:', err);
+        // In a serverless environment, you might not want to destroy the client,
+        // but rather let the next invocation create a new one if it's disconnected.
     });
-    
+
     return client;
 }
 
 
+/**
+ * Gets a cached Redis client instance.
+ * In a serverless environment, global variables are reused across invocations within the same container.
+ * This function ensures we don't create a new connection for every single request.
+ * @param forSubscription - Set to true if you need a client for Pub/Sub operations.
+ */
 function getRedisClient(forSubscription = false): Redis {
-    if (forSubscription) {
-        if (!global.redisSubClient) {
-            console.log('Creating new Redis subscription client...');
-            global.redisSubClient = createNewClient();
-        }
-        return global.redisSubClient;
-    }
+    const globalKey = forSubscription ? 'redisSubClient' : 'redisClient';
 
-    if (!global.redisClient) {
-        console.log('Creating new Redis main client...');
-        global.redisClient = createNewClient();
+    if (!global[globalKey] || global[globalKey]?.status === 'end') {
+        global[globalKey] = createNewClient();
     }
-    return global.redisClient;
+    
+    return global[globalKey]!;
 }
 
 export default getRedisClient;
+
