@@ -201,8 +201,10 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     };
 
     eventSource.onerror = (err) => {
-        console.error("EventSource failed:", err);
-        // Don't close immediately on one-off errors, but maybe implement a retry limit later.
+        // This error handler is intentionally left blank.
+        // EventSource will automatically try to reconnect on errors.
+        // Logging these events can be noisy, especially during development with hot-reloading,
+        // as closing a connection is also considered an error.
     };
 
     return () => {
