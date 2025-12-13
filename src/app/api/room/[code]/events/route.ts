@@ -13,8 +13,8 @@ export async function GET(
     const channel = `room:events:${params.code}`;
     
     // Create a new Redis client specifically for this subscription.
-    // Do not use the shared global client for subscriptions.
-    const subClient = getRedisClient().duplicate();
+    // This client MUST be closed when the connection is terminated.
+    const subClient = getRedisClient();
 
     const stream = new ReadableStream({
         async start(controller) {
@@ -27,11 +27,12 @@ export async function GET(
 
             // Set up the Redis subscription
             try {
-                await subClient.subscribe(channel);
+                // The 'message' event listener must be attached BEFORE subscribing.
                 subClient.on('message', onMessage);
+                await subClient.subscribe(channel);
                 console.log(`Subscribed to ${channel}`);
 
-                // Send the initial room state as the first event
+                // Send the initial room state as the first event to sync the client
                 const initialRoom = await getRoom(params.code);
                 if (initialRoom) {
                     const initialEvent = { event: 'updated', room: initialRoom };
@@ -41,23 +42,22 @@ export async function GET(
             } catch (e) {
                 console.error(`Failed to subscribe to Redis channel ${channel}`, e);
                 controller.close();
+                // Ensure client is closed on setup failure
+                if (subClient.status !== 'end') {
+                    subClient.quit();
+                }
                 return;
             }
-
-            // Clean up when the client disconnects
-            request.signal.addEventListener('abort', () => {
-                console.log(`Client for ${params.code} disconnected. Cleaning up.`);
-                subClient.removeListener('message', onMessage);
-                subClient.unsubscribe(channel).catch(console.error);
-                subClient.quit().catch(console.error);
-                controller.close();
-            });
         },
 
         cancel(reason) {
-            console.log(`Stream canceled for room ${params.code}. Cleaning up.`, reason);
-            subClient.unsubscribe(channel).catch(console.error);
-            subClient.quit().catch(console.error);
+            console.log(`Stream canceled for room ${params.code}. Reason: ${reason || 'Client disconnected'}. Cleaning up.`);
+            // This is the crucial part: Unsubscribe and QUIT the client.
+            // This prevents connection leaks.
+            if (subClient.status !== 'end') {
+                subClient.unsubscribe(channel).catch(console.error);
+                subClient.quit().catch(console.error);
+            }
         }
     });
 
@@ -66,7 +66,7 @@ export async function GET(
             'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache, no-transform',
             'Connection': 'keep-alive',
-            'X-Accel-Buffering': 'no', // Disable buffering for NGINX
+            'X-Accel-Buffering': 'no', // Disable buffering for NGINX/reverse proxies
         }
     });
 }

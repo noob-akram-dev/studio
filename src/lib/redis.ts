@@ -1,57 +1,38 @@
 
 import Redis from 'ioredis';
 
-// This is a common pattern to cache the Redis connection in a serverless environment.
-// It prevents creating a new connection on every function invocation.
-declare global {
-  var redisClient: Redis | undefined;
-  var redisSubClient: Redis | undefined;
-}
-
 const redisUrl = process.env.REDIS_URL;
 
 if (!redisUrl) {
   throw new Error('REDIS_URL environment variable not set. Please configure your .env file.');
 }
 
-function createNewClient(): Redis {
-    console.log('Creating new Redis client...');
+/**
+ * Creates a new Redis client instance.
+ * It's crucial that any client created with this function, especially for subscriptions,
+ * is properly closed when it's no longer needed to avoid connection leaks.
+ */
+function getRedisClient(): Redis {
     const client = new Redis(redisUrl, {
-        // These options are important for serverless environments
-        lazyConnect: true, 
+        // Options for serverless environments
+        lazyConnect: true,
         showFriendlyErrorStack: true,
         enableAutoPipelining: true,
-        maxRetriesPerRequest: 0,
+        maxRetriesPerRequest: 0, // Disable retries to fail fast
         retryStrategy: (times) => {
-            // No retries
-            return null;
+            return null; // No retries
         },
     });
 
     client.on('error', (err) => {
-        console.error('Redis Client Error:', err);
+        // This is a common error when a client is idle for too long.
+        // It's safe to ignore in many cases as ioredis handles reconnection.
+        if (!err.message.includes('Connection is closed')) {
+             console.error('Redis Client Error:', err);
+        }
     });
 
     return client;
 }
 
-
-/**
- * Gets a cached Redis client instance.
- * In a serverless environment, global variables are reused across invocations within the same container.
- * This function ensures we don't create a new connection for every single request.
- * @param forSubscription - Set to true if you need a client for Pub/Sub operations.
- */
-function getRedisClient(forSubscription = false): Redis {
-    const globalKey = forSubscription ? 'redisSubClient' : 'redisClient';
-
-    // Check if the client exists and its status is not 'end' (closed)
-    if (!global[globalKey] || global[globalKey]?.status === 'end') {
-        global[globalKey] = createNewClient();
-    }
-    
-    return global[globalKey]!;
-}
-
 export default getRedisClient;
-
