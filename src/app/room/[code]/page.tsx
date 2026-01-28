@@ -1,4 +1,4 @@
-import { getRoom } from '@/lib/chat-store';
+import { getRoom } from '@/lib/firestore-store';
 import { notFound } from 'next/navigation';
 import { ChatRoom } from '@/components/chat-room';
 

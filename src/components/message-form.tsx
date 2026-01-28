@@ -24,6 +24,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { cn } from '@/lib/utils';
@@ -241,7 +242,7 @@ export function MessageForm({
                                         </Avatar>
                                         <span className="text-sm text-muted-foreground">{user.name}</span>
                                         {user.name === room.admin && (
-                                            <Crown className="w-4 h-4 text-yellow-500" title="Room Admin" />
+                                            <Crown className="w-4 h-4 text-yellow-500" aria-label="Room Admin" />
                                         )}
                                     </div>
                                     {isAdmin && user.name !== userName && (

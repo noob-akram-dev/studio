@@ -1,4 +1,4 @@
-import { getRoom } from '@/lib/chat-store';
+import { getRoom } from '@/lib/firestore-store';
 import { NextResponse } from 'next/server';
 
 // Opt out of caching for this route

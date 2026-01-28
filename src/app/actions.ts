@@ -2,10 +2,8 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, updateMessageDetails, kickUser, deleteRoom } from '@/lib/chat-store';
+import { addMessage, createRoom, getRoom, updateUserTypingStatus, joinRoom, verifyPassword, kickUser, deleteRoom } from '@/lib/firestore-store';
 import type { User, Room, Message } from '@/lib/types';
-import { explainAndIdentifyCode } from '@/ai/flows/explain-and-identify-code';
-import { revalidatePath } from 'next/cache';
 
 export async function createRoomAction(formData: FormData) {
   const isPrivate = formData.get('private') === 'true';
@@ -44,25 +42,6 @@ export async function joinRoomAction(formData: FormData) {
   redirect(`/room/${code}`);
 }
 
-const isCodeBlock = (text: string) => text.trim().startsWith('```');
-
-async function detectAndExplainCode(roomCode: string, messageId: string, text: string) {
-    try {
-        if (isCodeBlock(text)) {
-            const code = text.replace(/```/g, '');
-            const result = await explainAndIdentifyCode({ code });
-            if (result.language && result.language.toLowerCase() !== 'unknown') {
-                 await updateMessageDetails(roomCode, messageId, { 
-                    language: result.language,
-                    explanation: result.explanation,
-                 });
-            }
-        }
-    } catch (error) {
-        console.error('Failed to process code in background:', error);
-    }
-}
-
 export async function sendMessageAction(
   prevState: any,
   formData: FormData
@@ -93,11 +72,6 @@ export async function sendMessageAction(
       fileName,
       fileType
     });
-
-    // Don't await this. Let it run in the background.
-    if (text) {
-      detectAndExplainCode(roomCode, newMessage.id, text);
-    }
   
     return { success: true };
 

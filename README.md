@@ -15,8 +15,8 @@ Code Yapp is a real-time chat application with a strong focus on privacy, securi
 ## Tech Stack
 
 - **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Database**: [Redis](https://redis.io/) for high-speed, ephemeral data storage.
-- **Real-time Engine**: [Server-Sent Events (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) for pushing live updates from the server.
+- **Database**: [Firebase Firestore](https://firebase.google.com/docs/firestore) for real-time, ephemeral data storage with built-in TTL.
+- **Real-time Engine**: Firestore `onSnapshot` listeners for instant live updates.
 - **AI**: [Genkit](https://firebase.google.com/docs/genkit) with Google's Gemini model for language detection.
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) with [ShadCN UI](https://ui.shadcn.com/) components.
 - **Deployment**: Configured for [Firebase App Hosting](https://firebase.google.com/docs/app-hosting).
@@ -33,7 +33,7 @@ You will need the following software installed on your machine:
 
 - [Node.js](https://nodejs.org/) (v20 or later)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- [Redis](https://redis.io/docs/latest/operate/oss_and_stack/install/): You need a Redis instance running. You can install it locally or use a cloud provider like [Redis Cloud](https://redis.com/try-free/).
+- A [Firebase project](https://console.firebase.google.com/) with Firestore enabled
 
 ### Installation & Setup
 
@@ -48,21 +48,48 @@ You will need the following software installed on your machine:
     npm install
     ```
 
-3.  **Set Up Environment Variables**
+3.  **Set Up Firebase Project**
 
-    Create a `.env` file in the root of your project by copying the example:
-    
-    Now, open the `.env` file and add the following required variables:
+    - Go to [Firebase Console](https://console.firebase.google.com/)
+    - Create a new project or use an existing one
+    - Enable **Firestore Database** (in Native mode)
+    - Go to Project Settings > General > Your apps > Add a web app
+    - Copy the Firebase config values
+
+4.  **Set Up Environment Variables**
+
+    Create a `.env.local` file in the root of your project:
 
     ```env
-    # The connection URL for your Redis instance.
-    # If you are running Redis locally, the default is usually:
-    REDIS_URL="redis://127.0.0.1:6379"
+    # Firebase Configuration (get these from Firebase Console > Project Settings)
+    NEXT_PUBLIC_FIREBASE_API_KEY="your-api-key"
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-project.firebaseapp.com"
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="your-project.appspot.com"
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="your-sender-id"
+    NEXT_PUBLIC_FIREBASE_APP_ID="your-app-id"
 
     # Your API key for Google's Gemini model.
     # Get this from Google AI Studio: https://aistudio.google.com/app/apikey
     GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
     ```
+
+5.  **Set Up Firestore Security Rules**
+
+    In the Firebase Console, go to Firestore Database > Rules and add:
+
+    ```javascript
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        match /rooms/{roomId} {
+          allow read, write: if true;
+        }
+      }
+    }
+    ```
+    
+    ⚠️ Note: These are permissive rules for development. For production, consider adding more restrictive rules.
 
 ### Running the Application
 

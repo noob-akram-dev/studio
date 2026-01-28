@@ -39,13 +39,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-type RoomEvent = {
-    event: 'updated',
-    room: Room,
-} | {
-    event: 'deleted'
-};
+import { db } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 
 const adjectives = [
@@ -162,53 +157,84 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   }, [initialRoom.code]);
 
+  // Real-time listener using Firestore onSnapshot
   useEffect(() => {
     if (!userName) return;
 
-    const eventSource = new EventSource(`/api/room/${initialRoom.code}/events`);
+    const roomRef = doc(db, 'rooms', initialRoom.code);
     
-    eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data) as RoomEvent;
+    const unsubscribe = onSnapshot(roomRef, (snapshot) => {
+      if (!snapshot.exists()) {
+        // Room was deleted
+        toast({
+          title: "Room Deleted",
+          description: "This room has been deleted by the admin."
+        });
+        setTimeout(() => router.replace('/'), 2000);
+        return;
+      }
 
-        if (data.event === 'deleted') {
-            toast({
-                title: "Room Deleted",
-                description: "This room has been deleted by the admin."
-            });
-            eventSource.close();
-            // We use router.replace here to prevent the user from being able to go "back" to the deleted room.
-            setTimeout(() => router.replace('/'), 2000);
-            return;
-        }
+      const data = snapshot.data();
+      
+      // Check if room was marked as deleted
+      if (data.deleted) {
+        toast({
+          title: "Room Deleted",
+          description: "This room has been deleted by the admin."
+        });
+        setTimeout(() => router.replace('/'), 2000);
+        return;
+      }
 
-        if (data.event === 'updated') {
-            const updatedRoom = data.room;
-            const amIStillInRoom = updatedRoom.users.some(u => u.name === userName);
-            
-            if (hasJoined && !amIStillInRoom) {
-                toast({
-                    variant: 'destructive',
-                    title: "You've been kicked",
-                    description: "You have been removed from the room by the admin."
-                });
-                eventSource.close();
-                setTimeout(() => router.replace('/'), 3000);
-                return;
-            }
-            
-            setRoom(updatedRoom);
-        }
-    };
+      // Check if room has expired
+      const expiresAt = data.expiresAt?.toDate?.() || new Date(data.expiresAt);
+      if (expiresAt < new Date()) {
+        toast({
+          title: "Room Expired",
+          description: "This room has expired and been deleted."
+        });
+        setTimeout(() => router.replace('/'), 2000);
+        return;
+      }
 
-    eventSource.onerror = (err) => {
-        // This error handler is intentionally left blank.
-        // EventSource will automatically try to reconnect on errors.
-        // Logging these events can be noisy, especially during development with hot-reloading,
-        // as closing a connection is also considered an error.
-    };
+      const updatedRoom: Room = {
+        code: data.code,
+        createdAt: data.createdAt,
+        isPrivate: data.isPrivate || false,
+        password: data.password,
+        admin: data.admin,
+        messages: data.messages || [],
+        users: (data.users || []).sort((a: any, b: any) => a.joinedAt - b.joinedAt),
+        typing: data.typing || {},
+        kickedUsers: data.kickedUsers || [],
+      };
+
+      // Check if user was kicked
+      const amIStillInRoom = updatedRoom.users.some(u => u.name === userName);
+      const wasIKicked = updatedRoom.kickedUsers?.includes(userName);
+      
+      if (hasJoined && (!amIStillInRoom || wasIKicked)) {
+        toast({
+          variant: 'destructive',
+          title: "You've been kicked",
+          description: "You have been removed from the room by the admin."
+        });
+        setTimeout(() => router.replace('/'), 3000);
+        return;
+      }
+      
+      setRoom(updatedRoom);
+    }, (error) => {
+      console.error('Firestore listener error:', error);
+      toast({
+        variant: 'destructive',
+        title: "Connection Error",
+        description: "Lost connection to the room. Trying to reconnect..."
+      });
+    });
 
     return () => {
-        eventSource.close();
+      unsubscribe();
     };
   }, [initialRoom.code, userName, hasJoined, router, toast]);
   
