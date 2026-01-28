@@ -126,6 +126,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [hasJoined, setHasJoined] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const isRedirecting = useRef(false);
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const router = useRouter();
@@ -159,13 +160,24 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
 
   // Real-time listener using Firestore onSnapshot
   useEffect(() => {
-    if (!userName) return;
+    // Only start listening after user has fully joined the room
+    if (!userName || !hasJoined) return;
+    
+    // Skip if already redirecting away
+    if (isRedirecting.current) return;
 
     const roomRef = doc(db, 'rooms', initialRoom.code);
     
     const unsubscribe = onSnapshot(roomRef, (snapshot) => {
+      // Skip stale cached data that may incorrectly show document as non-existent
+      if (snapshot.metadata.fromCache) return;
+      
+      // Prevent multiple redirects/toasts
+      if (isRedirecting.current) return;
+      
       if (!snapshot.exists()) {
         // Room was deleted
+        isRedirecting.current = true;
         toast({
           title: "Room Deleted",
           description: "This room has been deleted by the admin."
@@ -178,6 +190,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       
       // Check if room was marked as deleted
       if (data.deleted) {
+        isRedirecting.current = true;
         toast({
           title: "Room Deleted",
           description: "This room has been deleted by the admin."
@@ -189,6 +202,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       // Check if room has expired
       const expiresAt = data.expiresAt?.toDate?.() || new Date(data.expiresAt);
       if (expiresAt < new Date()) {
+        isRedirecting.current = true;
         toast({
           title: "Room Expired",
           description: "This room has expired and been deleted."
@@ -213,7 +227,8 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       const amIStillInRoom = updatedRoom.users.some(u => u.name === userName);
       const wasIKicked = updatedRoom.kickedUsers?.includes(userName);
       
-      if (hasJoined && (!amIStillInRoom || wasIKicked)) {
+      if (!amIStillInRoom || wasIKicked) {
+        isRedirecting.current = true;
         toast({
           variant: 'destructive',
           title: "You've been kicked",
@@ -226,11 +241,14 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       setRoom(updatedRoom);
     }, (error) => {
       console.error('Firestore listener error:', error);
-      toast({
-        variant: 'destructive',
-        title: "Connection Error",
-        description: "Lost connection to the room. Trying to reconnect..."
-      });
+      // Only show connection error if not already redirecting
+      if (!isRedirecting.current) {
+        toast({
+          variant: 'destructive',
+          title: "Connection Error",
+          description: "Lost connection to the room. Trying to reconnect..."
+        });
+      }
     });
 
     return () => {
