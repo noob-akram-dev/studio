@@ -27,4 +27,5 @@ export interface Room {
   password?: string;
   admin?: string;
   kickedUsers?: string[];
+  pinnedMessageId?: string;
 }

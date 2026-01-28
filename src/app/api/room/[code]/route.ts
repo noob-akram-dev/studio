@@ -6,9 +6,10 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: Request,
-  { params }: { params: { code: string } }
+  { params }: { params: Promise<{ code: string }> }
 ) {
-  const room = await getRoom(params.code);
+  const { code } = await params;
+  const room = await getRoom(code);
 
   if (!room) {
     // Return a 404 in a standard Next.js way

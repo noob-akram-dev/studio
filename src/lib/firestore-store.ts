@@ -58,6 +58,7 @@ export async function createRoom(isPrivate = false, password?: string): Promise<
     users: [],
     typing: {},
     kickedUsers: [],
+    pinnedMessageId: null,
   };
 
   await roomRef.set(roomData);
@@ -88,7 +89,7 @@ export async function getRoom(code: string): Promise<Room | undefined> {
   const now = Date.now();
   const cleanedTyping: { [userName: string]: number } = {};
   const typing = data.typing || {};
-  
+
   for (const user in typing) {
     if (now - typing[user] < 3000) {
       cleanedTyping[user] = typing[user];
@@ -118,15 +119,15 @@ export async function verifyPassword(code: string, password?: string): Promise<b
   }
 
   const data = snapshot.data()!;
-  
+
   if (!data.isPrivate) {
     return true;
   }
-  
+
   if (!password) {
     return false;
   }
-  
+
   return data.password === hashPassword(password);
 }
 
@@ -290,7 +291,7 @@ export async function deleteRoom(roomCode: string, adminName: string) {
 
   // Mark as deleted before removing (for real-time listeners to detect)
   await roomRef.update({ deleted: true });
-  
+
   // Then delete the document
   await roomRef.delete();
 }
@@ -308,4 +309,23 @@ export async function removeUserFromRoom(roomCode: string, userName: string) {
   delete typing[userName];
 
   await roomRef.update({ users, typing });
+}
+
+export async function pinMessage(roomCode: string, adminName: string, messageId: string | null) {
+  const db = getAdminDb();
+  const roomRef = db.collection('rooms').doc(roomCode);
+  const snapshot = await roomRef.get();
+
+  if (!snapshot.exists) {
+    throw new Error('Room not found.');
+  }
+
+  const data = snapshot.data()!;
+
+  if (data.admin !== adminName) {
+    throw new Error('Only the room admin can pin messages.');
+  }
+
+  // If messageId is null, unpin the current message
+  await roomRef.update({ pinnedMessageId: messageId });
 }

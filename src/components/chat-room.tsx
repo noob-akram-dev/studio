@@ -6,7 +6,8 @@ import { useEffect, useState, useRef, useMemo, useTransition } from 'react';
 import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, LogOut, Clock, MoreVertical, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Copy, Check, LogOut, Clock, MoreVertical, Trash2, Share2, Download, Pin } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -16,7 +17,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { CountdownTimer } from './countdown-timer';
 import { TypingIndicator } from './typing-indicator';
-import { joinRoomAndAddUserAction, deleteRoomAction } from '@/app/actions';
+import { joinRoomAndAddUserAction, deleteRoomAction, pinMessageAction } from '@/app/actions';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
@@ -226,6 +227,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         users: (data.users || []).sort((a: any, b: any) => a.joinedAt - b.joinedAt),
         typing: data.typing || {},
         kickedUsers: data.kickedUsers || [],
+        pinnedMessageId: data.pinnedMessageId || undefined,
       };
 
       // Check if user was kicked (only trust server data for kick detection)
@@ -279,6 +281,51 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     setTimeout(() => setCodeCopied(false), 2000);
   };
 
+  const handleShareRoom = () => {
+    const url = `${window.location.origin}/room/${room.code}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: "Link Copied!",
+      description: "Share this link to invite others to the room."
+    });
+  };
+
+  const handleExportChat = (format: 'txt' | 'md') => {
+    const formatDate = (timestamp: number) => {
+      return new Date(timestamp).toLocaleString();
+    };
+
+    const content = room.messages.map(m => {
+      const time = formatDate(m.timestamp);
+      if (format === 'md') {
+        return `**${m.user.name}** _(${time})_\n${m.text}\n`;
+      }
+      return `[${time}] ${m.user.name}: ${m.text}`;
+    }).join('\n');
+
+    const header = format === 'md'
+      ? `# Chat Export - Room ${room.code}\nExported on ${formatDate(Date.now())}\n\n---\n\n`
+      : `Chat Export - Room ${room.code}\nExported on ${formatDate(Date.now())}\n\n`;
+
+    const blob = new Blob([header + content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chat-${room.code}.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Chat Exported!",
+      description: `Downloaded as chat-${room.code}.${format}`
+    });
+  };
+
+  const pinnedMessage = useMemo(() => {
+    if (!room.pinnedMessageId) return null;
+    return room.messages.find(m => m.id === room.pinnedMessageId);
+  }, [room.pinnedMessageId, room.messages]);
+
   const typingUsers = useMemo(() => {
     if (!room.typing || !userName) {
       return [];
@@ -292,6 +339,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const activeUsers = useMemo(() => {
     return room.users || [];
   }, [room.users]);
+
 
 
   return (
@@ -321,6 +369,30 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
               )}
             </Button>
           </div>
+
+          {/* Share & Export Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9 bg-secondary/50 hover:bg-secondary">
+                <Share2 className="w-4 h-4 text-primary" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleShareRoom}>
+                <Share2 className="w-4 h-4 mr-2" />
+                Copy Room Link
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleExportChat('txt')}>
+                <Download className="w-4 h-4 mr-2" />
+                Export as .txt
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExportChat('md')}>
+                <Download className="w-4 h-4 mr-2" />
+                Export as .md
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
           {isMobile ? (
@@ -355,6 +427,38 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         </div>
       </header>
 
+      {/* Pinned Message Banner */}
+      {pinnedMessage && (
+        <div className="px-4 py-2 bg-primary/10 border-b border-primary/20 flex items-start gap-3">
+          <Pin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="font-medium text-primary">Pinned</span>
+              <span>by {room.admin}</span>
+            </div>
+            <p className="text-sm text-foreground truncate">
+              <span className="font-medium">{pinnedMessage.user.name}:</span> {pinnedMessage.text}
+            </p>
+          </div>
+          {isAdmin && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-6 px-2"
+              onClick={async () => {
+                const formData = new FormData();
+                formData.append('roomCode', room.code);
+                formData.append('adminName', userName);
+                formData.append('messageId', '');
+                await pinMessageAction(formData);
+              }}
+            >
+              Unpin
+            </Button>
+          )}
+        </div>
+      )}
+
       <main className="flex-1 overflow-y-auto">
         <Virtuoso
           ref={virtuosoRef}
@@ -364,9 +468,30 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           followOutput={'auto'}
           itemContent={index => {
             const msg = room.messages[index];
+            const isPinned = room.pinnedMessageId === msg.id;
             return (
-              <div className="p-2 sm:p-4 max-w-4xl mx-auto w-full">
+              <div className="p-2 sm:p-4 max-w-4xl mx-auto w-full group relative">
                 <MessageView key={msg.id} message={msg} currentUser={userName} />
+                {isAdmin && hasJoined && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "absolute top-2 right-4 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity",
+                      isPinned && "opacity-100 text-primary"
+                    )}
+                    onClick={async () => {
+                      const formData = new FormData();
+                      formData.append('roomCode', room.code);
+                      formData.append('adminName', userName);
+                      formData.append('messageId', isPinned ? '' : msg.id);
+                      await pinMessageAction(formData);
+                    }}
+                    title={isPinned ? "Unpin message" : "Pin message"}
+                  >
+                    <Pin className="w-3 h-3" />
+                  </Button>
+                )}
               </div>
             );
           }}
