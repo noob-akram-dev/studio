@@ -5,3 +5,18 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+
+env:
+  # Firebase Client SDK Configuration (public, safe to commit)
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyDKw-lfTtDF3nUrkkTvpcl5x-o9TT1YJYA"
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "codeshare-1rerz.firebaseapp.com"
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "codeshare-1rerz"
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "codeshare-1rerz.firebasestorage.app"
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "184673938457"
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:184673938457:web:ca97136c5a234c4359ce88"

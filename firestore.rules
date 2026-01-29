@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read and write access to all rooms
+    // Note: In a production app, you'd want more restrictive rules
+    match /rooms/{roomId} {
+      // Allow anyone to read rooms (needed for real-time listeners)
+      allow read: if true;
+      
+      // Allow anyone to create and update rooms
+      allow create, update: if true;
+      
+      // Allow delete (for room expiry and admin deletion)
+      allow delete: if true;
+    }
+  }
+}
