@@ -7,9 +7,9 @@ import { createHash } from 'crypto';
 function getAdminDb() {
   if (getApps().length === 0) {
     // For Firebase App Hosting, credentials are auto-injected
-    // For local dev, use GOOGLE_APPLICATION_CREDENTIALS env var
+    // We explicitly provide the projectId to ensure it's never undefined
     initializeApp({
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      projectId: "codeshare-1rerz",
     });
   }
   return getAdminFirestore();
