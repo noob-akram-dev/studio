@@ -21,21 +21,21 @@ import { LoadingScreen } from './loading-screen';
 
 
 const createRoomFunnyLines = [
-    "Spinning up a private room...",
-    "Negotiating with the chat hamsters...",
-    "Dusting off the virtual furniture...",
-    "Ensuring the room is properly soundproofed...",
-    "Adding extra privacy shields...",
-    "Generating a top-secret code...",
+  "Spinning up a private room...",
+  "Negotiating with the chat hamsters...",
+  "Dusting off the virtual furniture...",
+  "Ensuring the room is properly soundproofed...",
+  "Adding extra privacy shields...",
+  "Generating a top-secret code...",
 ];
 
 const joinRoomFunnyLines = [
-    "Checking the guest list...",
-    "Looking for the secret handshake...",
-    "Making sure you're not a robot...",
-    "Entering the chat dimension...",
-    "Warming up the welcome cookies...",
-    "Finding the right room...",
+  "Checking the guest list...",
+  "Looking for the secret handshake...",
+  "Making sure you're not a robot...",
+  "Entering the chat dimension...",
+  "Warming up the welcome cookies...",
+  "Finding the right room...",
 ];
 
 export function JoinCreateForms() {
@@ -45,139 +45,151 @@ export function JoinCreateForms() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
 
-  const handleCreateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const funnyLine = createRoomFunnyLines[Math.floor(Math.random() * createRoomFunnyLines.length)];
     setLoadingText(funnyLine);
     setIsLoading(true);
     const formData = new FormData(event.currentTarget);
-    createRoomAction(formData);
+    try {
+      await createRoomAction(formData);
+      // If we get here, the redirect didn't happen (shouldn't normally happen)
+    } catch (error) {
+      // createRoomAction uses redirect(), which throws an error in Next.js
+      // This is expected behavior, so we don't reset loading
+    }
   };
 
-  const handleJoinSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleJoinSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const funnyLine = joinRoomFunnyLines[Math.floor(Math.random() * joinRoomFunnyLines.length)];
     setLoadingText(funnyLine);
     setIsLoading(true);
     const formData = new FormData(event.currentTarget);
-    joinRoomAction(formData);
+    try {
+      await joinRoomAction(formData);
+      // If we get here, the redirect didn't happen (shouldn't normally happen)
+    } catch (error) {
+      // joinRoomAction uses redirect(), which throws an error in Next.js
+      // This is expected behavior, so we don't reset loading
+    }
   };
 
-   return (
+  return (
     <>
       {isLoading && <LoadingScreen text={loadingText} />}
       {error && (
-            <Alert variant="destructive" className="mb-8 max-w-md w-full mx-auto">
-                <Terminal className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>
-                    {error === 'not_found' && 'The room code you entered was not found. Please check the code or create a new room.'}
-                    {error === 'password_too_short' && 'Password must be at least 4 characters long.'}
-                    {error === 'invalid_password' && `Invalid password for room ${code}. Please try again.`}
-                </AlertDescription>
-            </Alert>
-        )}
+        <Alert variant="destructive" className="mb-8 max-w-md w-full mx-auto">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {error === 'not_found' && 'The room code you entered was not found. Please check the code or create a new room.'}
+            {error === 'password_too_short' && 'Password must be at least 4 characters long.'}
+            {error === 'invalid_password' && `Invalid password for room ${code}. Please try again.`}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
-          <div className="animate-in fade-in slide-in-from-left-12 duration-1000 ease-in-out">
-            <Card className="w-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30">
-              <CardHeader>
-                <CardTitle>Create a Room</CardTitle>
-                <CardDescription>
-                  Start a new, private session and get a unique room code to share.
-                </CardDescription>
-              </CardHeader>
-              <form onSubmit={handleCreateSubmit}>
-                <CardContent>
-                  <Tabs defaultValue="public" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
-                      <TabsTrigger value="public">Public</TabsTrigger>
-                      <TabsTrigger value="private"><Lock className="mr-2 h-4 w-4" />Private</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="public" className="pt-4">
-                      <p className="text-sm text-muted-foreground">
-                        Anyone with the room code can join.
-                      </p>
-                      <input type="hidden" name="private" value="false" />
-                    </TabsContent>
-                    <TabsContent value="private" className="pt-4 space-y-4">
-                      <p className="text-sm text-muted-foreground">
-                          Only people with the password can join this room.
-                      </p>
-                      <div className="relative">
-                          <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                              name="password"
-                              type="password"
-                              placeholder="Enter a password (min 4 chars)"
-                              minLength={4}
-                              required
-                              className="pl-10 bg-background/70 border-border/70"
-                          />
-                      </div>
-                      <input type="hidden" name="private" value="true" />
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-                <CardFooter>
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      variant="default"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Creating..." : "Create Room"}
-                    </Button>
-                </CardFooter>
-              </form>
-            </Card>
-          </div>
-
-          <div className="animate-in fade-in slide-in-from-right-12 duration-1000 ease-in-out">
-            <Card className="w-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30">
-              <CardHeader>
-                <CardTitle>Join an Existing Room</CardTitle>
-                <CardDescription>
-                  Enter a room code and password if required.
-                </CardDescription>
-              </CardHeader>
-              <form onSubmit={handleJoinSubmit} className="w-full">
-                <CardContent className="space-y-4">
-                  <div title="Please enter a 4-digit code">
-                    <Input
-                      name="code"
-                      placeholder="e.g. 1234"
-                      maxLength={4}
-                      required
-                      pattern="\d{4}"
-                      className="text-center text-lg tracking-widest bg-background/70 border-border/70"
-                      defaultValue={code ?? ''}
-                    />
-                  </div>
-                   <div className="relative">
+        <div className="animate-in fade-in slide-in-from-left-12 duration-1000 ease-in-out">
+          <Card className="w-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30">
+            <CardHeader>
+              <CardTitle>Create a Room</CardTitle>
+              <CardDescription>
+                Start a new, private session and get a unique room code to share.
+              </CardDescription>
+            </CardHeader>
+            <form onSubmit={handleCreateSubmit}>
+              <CardContent>
+                <Tabs defaultValue="public" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
+                    <TabsTrigger value="public">Public</TabsTrigger>
+                    <TabsTrigger value="private"><Lock className="mr-2 h-4 w-4" />Private</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="public" className="pt-4">
+                    <p className="text-sm text-muted-foreground">
+                      Anyone with the room code can join.
+                    </p>
+                    <input type="hidden" name="private" value="false" />
+                  </TabsContent>
+                  <TabsContent value="private" className="pt-4 space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      Only people with the password can join this room.
+                    </p>
+                    <div className="relative">
                       <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
-                          name="password"
-                          type="password"
-                          placeholder="Enter password (if required)"
-                          className="pl-10 bg-background/70 border-border/70"
+                        name="password"
+                        type="password"
+                        placeholder="Enter a password (min 4 chars)"
+                        minLength={4}
+                        required
+                        className="pl-10 bg-background/70 border-border/70"
                       />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                 <Button
-                    type="submit"
-                    className="w-full"
-                    variant="secondary"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Joining..." : "Join Room"}
-                  </Button>
-                </CardFooter>
-              </form>
-            </Card>
-          </div>
+                    </div>
+                    <input type="hidden" name="private" value="true" />
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  variant="default"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Creating..." : "Create Room"}
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
         </div>
+
+        <div className="animate-in fade-in slide-in-from-right-12 duration-1000 ease-in-out">
+          <Card className="w-full bg-card/50 border-border/50 shadow-md transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30">
+            <CardHeader>
+              <CardTitle>Join an Existing Room</CardTitle>
+              <CardDescription>
+                Enter a room code and password if required.
+              </CardDescription>
+            </CardHeader>
+            <form onSubmit={handleJoinSubmit} className="w-full">
+              <CardContent className="space-y-4">
+                <div title="Please enter a 4-digit code">
+                  <Input
+                    name="code"
+                    placeholder="e.g. 1234"
+                    maxLength={4}
+                    required
+                    pattern="\d{4}"
+                    className="text-center text-lg tracking-widest bg-background/70 border-border/70"
+                    defaultValue={code ?? ''}
+                  />
+                </div>
+                <div className="relative">
+                  <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    name="password"
+                    type="password"
+                    placeholder="Enter password (if required)"
+                    className="pl-10 bg-background/70 border-border/70"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  variant="secondary"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Joining..." : "Join Room"}
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </div>
+      </div>
     </>
   );
 }
