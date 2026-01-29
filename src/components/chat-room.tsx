@@ -125,12 +125,23 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [userName, setUserName] = useState<string>('');
   const [userAvatarUrl, setUserAvatarUrl] = useState<string>('');
   const [hasJoined, setHasJoined] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const isRedirecting = useRef(false);
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    // Detect debug mode from URL
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('debug') === 'true') {
+        setDebugMode(true);
+      }
+    }
+  }, []);
 
   const lastMessageId = room.messages.length > 0 ? room.messages[room.messages.length - 1].id : null;
   const isAdmin = room.admin === userName;
@@ -142,34 +153,64 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       sessionStorage.setItem(`codeyapp-user-${initialRoom.code}`, name);
     }
     const avatarUrl = getAvatarUrl(name);
+    setUserName(name);
+    setUserAvatarUrl(avatarUrl);
 
-    const joinAndSetUser = async () => {
-      setUserName(name!);
-      setUserAvatarUrl(avatarUrl);
+    if (debugMode) console.log('User initialized:', { name, avatarUrl });
+  }, [initialRoom.code, debugMode]);
 
-      const formData = new FormData();
-      formData.append('roomCode', initialRoom.code);
-      formData.append('userName', name!);
-      formData.append('userAvatarUrl', avatarUrl);
-      await joinRoomAndAddUserAction(formData);
-      setHasJoined(true);
+  useEffect(() => {
+    const join = async () => {
+      if (!hasJoined && userName && userAvatarUrl) { // Ensure userName and userAvatarUrl are set before attempting to join
+        try {
+          const formData = new FormData();
+          formData.append('roomCode', initialRoom.code);
+          formData.append('userName', userName);
+          formData.append('userAvatarUrl', userAvatarUrl);
+
+          if (debugMode) console.log('Joining room via server action...', { room: initialRoom.code, user: userName });
+          const result = await joinRoomAndAddUserAction(formData);
+
+          if (result?.error) {
+            console.error('Join error:', result.error);
+            toast({
+              variant: 'destructive',
+              title: "Join Error",
+              description: result.error
+            });
+          } else {
+            if (debugMode) console.log('Join successful!');
+            setHasJoined(true);
+          }
+        } catch (error) {
+          console.error('Join failed exception:', error);
+        }
+      }
     };
-
-    joinAndSetUser();
-
-  }, [initialRoom.code]);
+    join();
+  }, [hasJoined, initialRoom.code, userName, userAvatarUrl, debugMode, toast]);
 
   // Real-time listener using Firestore onSnapshot
   useEffect(() => {
-    // Only start listening after user has fully joined the room
-    if (!userName || !hasJoined) return;
+    // Only listen for updates once joined
+    if (!initialRoom.code || !hasJoined) {
+      if (debugMode) console.log('Waiting to join before starting Firestore listener...');
+      return;
+    }
 
-    // Skip if already redirecting away
-    if (isRedirecting.current) return;
-
+    if (debugMode) console.log('Starting Firestore onSnapshot listener for room:', initialRoom.code);
     const roomRef = doc(db, 'rooms', initialRoom.code);
 
     const unsubscribe = onSnapshot(roomRef, (snapshot) => {
+      if (debugMode) {
+        console.log('Snapshot received!', {
+          exists: snapshot.exists(),
+          fromCache: snapshot.metadata.fromCache,
+          hasPendingWrites: snapshot.metadata.hasPendingWrites,
+          data: snapshot.data()
+        });
+      }
+
       // Prevent multiple redirects/toasts
       if (isRedirecting.current) return;
 
@@ -177,6 +218,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       const isFromServer = !snapshot.metadata.fromCache;
 
       if (!snapshot.exists()) {
+        if (debugMode) console.warn('Room document does not exist!');
         // Room may be deleted - only act on server-confirmed deletion
         if (isFromServer) {
           isRedirecting.current = true;
@@ -191,9 +233,11 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       }
 
       const data = snapshot.data();
+      if (!data) return; // Should not happen if snapshot.exists() is true, but good for type safety
 
       // Check if room was marked as deleted (only trust server data)
       if (data.deleted && isFromServer) {
+        if (debugMode) console.log('Room marked as deleted by server.');
         isRedirecting.current = true;
         toast({
           title: "Room Deleted",
