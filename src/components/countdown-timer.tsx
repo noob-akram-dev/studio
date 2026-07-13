@@ -2,13 +2,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Timer } from 'lucide-react';
+import { Timer, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const TWO_HOURS_IN_MS = 2 * 60 * 60 * 1000;
 
 export function CountdownTimer({ createdAt }: { createdAt: number }) {
   const [timeLeft, setTimeLeft] = useState('');
   const [hasExpired, setHasExpired] = useState(false);
+  const [isUrgent, setIsUrgent] = useState(false);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -22,6 +24,8 @@ export function CountdownTimer({ createdAt }: { createdAt: number }) {
         clearInterval(timer);
         return;
       }
+
+      setIsUrgent(difference < 15 * 60 * 1000); // under 15 minutes
 
       const hours = Math.floor((difference / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
       const minutes = Math.floor((difference / 1000 / 60) % 60).toString().padStart(2, '0');
@@ -38,17 +42,30 @@ export function CountdownTimer({ createdAt }: { createdAt: number }) {
 
   if (hasExpired) {
     return (
-       <div className="flex items-center gap-2 text-sm text-destructive">
-        <Timer className="w-4 h-4" />
+       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-destructive/15 text-destructive text-xs font-medium border border-destructive/20">
+        <Timer className="w-3.5 h-3.5" />
         <span>Room Expired</span>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Timer className="w-4 h-4" />
-      <span className="font-mono">{timeLeft}</span>
+    <div
+      className={cn(
+        "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors",
+        isUrgent
+          ? "bg-amber-500/15 text-amber-500 border-amber-500/30 animate-pulse"
+          : "bg-secondary/60 text-muted-foreground border-border/50"
+      )}
+      title="Time remaining until room and messages self-destruct"
+    >
+      {isUrgent ? (
+        <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+      ) : (
+        <Timer className="w-3.5 h-3.5 text-primary" />
+      )}
+      <span className="font-mono tracking-tight">{timeLeft}</span>
     </div>
   );
 }
+

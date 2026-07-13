@@ -80,6 +80,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#27272a" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4890339593414259"
      crossOrigin="anonymous"></script>
+        <script src="https://pl30351315.effectivecpmnetwork.com/fb/99/fe/fb99fe667013670e81d9a219241207ec.js"></script>
       </head>
       <body className="font-body antialiased">
         {children}

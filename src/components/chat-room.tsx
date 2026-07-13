@@ -7,7 +7,27 @@ import { MessageView } from '@/components/message-view';
 import { MessageForm } from '@/components/message-form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Copy, Check, LogOut, Clock, MoreVertical, Trash2, Share2, Download, Pin } from 'lucide-react';
+import { Copy, Check, LogOut, Clock, MoreVertical, Trash2, Share2, Download, Pin, Volume2, VolumeX } from 'lucide-react';
+
+const playNotificationSound = () => {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.12);
+  } catch (e) {
+    // Ignore audio context issues
+  }
+};
+
 import {
   Popover,
   PopoverContent,
@@ -127,11 +147,34 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
   const [hasJoined, setHasJoined] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const isMutedRef = useRef(false);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const isRedirecting = useRef(false);
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
+
+  const handleOptimisticSend = (messageText: string, fileData?: { name: string, type: string, url: string }) => {
+    const optimisticMessage = {
+      id: `optimistic-${Date.now()}-${Math.random().toString(36).substring(2)}`,
+      text: messageText,
+      user: { id: userName, name: userName, avatarUrl: userAvatarUrl },
+      timestamp: Date.now(),
+      fileUrl: fileData?.url,
+      fileName: fileData?.name,
+      fileType: fileData?.type,
+    };
+    setRoom(prev => ({
+      ...prev,
+      messages: [...prev.messages, optimisticMessage],
+    }));
+  };
 
   useEffect(() => {
     // Detect debug mode from URL
@@ -202,6 +245,7 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
     const roomRef = doc(db, 'rooms', initialRoom.code);
 
     const unsubscribe = onSnapshot(roomRef, (snapshot) => {
+      setIsConnected(true);
       if (debugMode) {
         console.log('Snapshot received!', {
           exists: snapshot.exists(),
@@ -291,9 +335,35 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
         }
       }
 
-      setRoom(updatedRoom);
+      // Merge local optimistic messages to prevent message flicker
+      const incomingMessages = data.messages || [];
+      setRoom(prev => {
+        const optimisticToKeep = prev.messages.filter(m => {
+          if (!m.id.startsWith('optimistic-')) return false;
+          const isAlreadyWritten = incomingMessages.some((im: any) => 
+            im.user.name === m.user.name && im.text === m.text
+          );
+          return !isAlreadyWritten;
+        });
+
+        // Trigger chime sound for new message from other users
+        const currentMessagesCount = prev.messages.filter(m => !m.id.startsWith('optimistic-')).length;
+        const incomingMessagesCount = incomingMessages.length;
+        if (incomingMessagesCount > currentMessagesCount) {
+          const lastIncoming = incomingMessages[incomingMessagesCount - 1];
+          if (lastIncoming && lastIncoming.user?.name !== userName && !isMutedRef.current) {
+            playNotificationSound();
+          }
+        }
+
+        return {
+          ...updatedRoom,
+          messages: [...incomingMessages, ...optimisticToKeep],
+        };
+      });
     }, (error) => {
       console.error('Firestore listener error:', error);
+      setIsConnected(false);
       // Only show connection error if not already redirecting
       if (!isRedirecting.current) {
         toast({
@@ -439,6 +509,20 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           </DropdownMenu>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-secondary/40 border-border/40">
+            <span className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-500" : "bg-amber-500 animate-pulse"}`} />
+            <span className="text-muted-foreground">{isConnected ? "Live" : "Connecting..."}</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-primary"
+            onClick={() => setIsMuted(m => !m)}
+            title={isMuted ? "Unmute sound notifications" : "Mute sound notifications"}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </Button>
+
           {isMobile ? (
             <Popover>
               <PopoverTrigger asChild>
@@ -558,7 +642,13 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
       <footer className="p-2 sm:p-4 bg-background md:border-t">
         <div className="max-w-4xl mx-auto w-full">
           {userName ? (
-            <MessageForm roomCode={room.code} userName={userName} userAvatarUrl={userAvatarUrl} room={room} />
+            <MessageForm
+              roomCode={room.code}
+              userName={userName}
+              userAvatarUrl={userAvatarUrl}
+              room={room}
+              onOptimisticSend={handleOptimisticSend}
+            />
           ) : (
             <p className="text-center text-muted-foreground">Joining room...</p>
           )}
