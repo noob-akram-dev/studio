@@ -15,6 +15,8 @@ import { Logo } from '@/components/logo';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { AdsterraBanner } from '@/components/adsterra-banner';
+
 
 const JoinCreateForms = dynamic(() => import('@/components/join-create-forms').then(mod => mod.JoinCreateForms), {
     ssr: false,
@@ -112,6 +114,10 @@ export function HomePage() {
           </div>
         </section>
 
+        {/* Adsterra Display Banner Ad Slot */}
+        <div className="w-full max-w-4xl mx-auto mt-12">
+          <AdsterraBanner adKey="YOUR_ADSTERRA_KEY_HERE" width={728} height={90} />
+        </div>
       </main>
       <footer className="w-full p-4 border-t border-border">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
