@@ -86,7 +86,18 @@ export function HomePage() {
         <Suspense fallback={<div className="max-w-4xl w-full text-center">Loading forms...</div>}>
             <JoinCreateForms />
         </Suspense>
-        
+
+        <div className="mt-8 text-center animate-in fade-in zoom-in-95 duration-700">
+          <a
+            href="https://www.effectivecpmnetwork.com/jfe9mp07?key=b1dad629b95901fc6328d11d37aa4f58"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-semibold border border-primary/20 hover:bg-primary/20 transition-all shadow-md hover:scale-105"
+          >
+            <span>🎁 Special Offer: Free Developer Tools & Rewards!</span>
+          </a>
+        </div>
+
          <section className="w-full max-w-4xl mx-auto mt-24 text-center">
           <h2 className="text-3xl font-bold mb-8">Secure, Swift, and Simple</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

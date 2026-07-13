@@ -509,6 +509,15 @@ export function ChatRoom({ initialRoom }: { initialRoom: Room }) {
           </DropdownMenu>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
+          <a
+            href="https://www.effectivecpmnetwork.com/jfe9mp07?key=b1dad629b95901fc6328d11d37aa4f58"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-500 border border-amber-500/25 hover:bg-amber-500/25 transition-all animate-pulse"
+            title="Special Offers & Rewards"
+          >
+            <span>🎁 Deals</span>
+          </a>
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-secondary/40 border-border/40">
             <span className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-500" : "bg-amber-500 animate-pulse"}`} />
             <span className="text-muted-foreground">{isConnected ? "Live" : "Connecting..."}</span>
